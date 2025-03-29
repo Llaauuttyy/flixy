@@ -1,0 +1,6 @@
+# Workspace
+.qodo
+
+# Backend
+/backend/.venv
+/backend/__pycache__
