@@ -1,1 +1,9 @@
+# Credentials
 *.env
+
+# Workspace
+.qodo
+
+# Backend
+/backend/.venv
+/backend/app/__pycache__
