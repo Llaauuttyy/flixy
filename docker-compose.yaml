@@ -3,7 +3,8 @@ services:
     build: ./frontend/app-front
     ports:
       - "${EXT_FRONT_PORT}:${INT_FRONT_PORT}"
-  # back:
-      # build: ./backend
-      #   ports:
-      #     - "${EXT_BACK_PORT}:${INT_BACK_PORT}"
+
+  back:
+    build: ./backend
+    ports:
+      - "${EXT_BACK_PORT}:${INT_BACK_PORT}"
