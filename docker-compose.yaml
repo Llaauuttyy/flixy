@@ -15,3 +15,18 @@ services:
       - "${EXT_BACK_PORT}:${INT_BACK_PORT}"
     volumes:
       - ./backend:/code
+
+  db:
+    build: ./db
+    ports:
+      - "${EXT_DB_PORT}:${INT_DB_PORT}"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_mysql:/var/lib/mysql
+  
+volumes:
+  db_mysql:
