@@ -10,7 +10,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Loader2, Github, Mail } from "lucide-react"
 import Link from "next/link"
 
+import { useRouter } from 'next/navigation'
+
 export default function LoginForm() {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -131,7 +135,10 @@ export default function LoginForm() {
       <div className="text-center">
         <p className="text-gray-400 text-sm">
           Don't have an account?{" "}
-          <Link href="#" className="text-purple-400 hover:text-purple-300 font-medium">
+          <Link 
+            href="/register" 
+            className="text-purple-400 hover:text-purple-300 font-medium"
+          >
             Sign up
           </Link>
         </p>

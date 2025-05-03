@@ -1,8 +1,13 @@
+"use client"
+
 import LoginForm from "@/components/login-form"
 import { MoveRight } from "lucide-react"
 import Link from "next/link"
+// import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  // const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
       <header className="container mx-auto py-6 px-4 flex justify-between items-center">
@@ -13,7 +18,7 @@ export default function Home() {
           <span className="text-white font-medium">Flixy</span>
         </div>
         <nav>
-          <Link href="#" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1 text-sm">
+          <Link href="/register" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1 text-sm">
             Create account <MoveRight className="size-4" />
           </Link>
         </nav>
