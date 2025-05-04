@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { number, z } from 'zod'
  
 export const SignupFormSchema = z.object({
     name: z
@@ -36,3 +36,10 @@ export type FormState =
         message?: string
         }
     | undefined
+
+
+export type SessionPayload = {
+    userId: string,
+    expiresAt: Date
+    // role: String,
+}
