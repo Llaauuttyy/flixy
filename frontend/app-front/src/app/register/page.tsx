@@ -5,21 +5,25 @@ import { MoveRight } from "lucide-react"
 import Link from "next/link"
 
 import { useRouter } from 'next/navigation'
+import Image from "next/image"
 
 
 export default function Home() {
-    const router = useRouter();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
       <header className="container mx-auto py-6 px-4 flex justify-between items-center">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
-            <div className="flex items-center gap-2">
-            <div className="size-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
-                F
-            </div>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/flixy-logo.png"
+              alt="Flixy Logo"
+              width={40}
+              height={40}
+            />
             <span className="text-white font-medium">Flixy</span>
-            </div>
+          </div>
         </div>
       </header>
 
