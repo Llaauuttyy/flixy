@@ -11,6 +11,8 @@ services:
 
   back:
     build: ./backend
+    depends_on:
+      - db
     ports:
       - "${EXT_BACK_PORT}:${INT_BACK_PORT}"
     volumes:
@@ -27,6 +29,6 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_mysql:/var/lib/mysql
-  
+
 volumes:
   db_mysql:
