@@ -1,49 +1,27 @@
-from fastapi import Depends, FastAPI, HTTPException, Request
-import logging
-from typing import Annotated
-from sqlalchemy.orm import Session
-
-from .dto.register import RegisterDTO, RegisterForm
-from .service.user_service import UserService
-from .db import models
-from .db.database import engine, SessionLocal
+from typing import Union, Annotated
+from app.model.user import User
+from app.dto.register import RegisterDTO, RegisterForm
+from app.dto.user import UserDTO
+from app.service.user_service import UserService
+from app.db.database import Database
+from fastapi import Depends, FastAPI
+from sqlmodel import Session
+from app.db.database_setup import engine
 
 app = FastAPI()
-models.Base.metadata.create_all(bind=engine)
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+def get_session():
+    with Session(engine) as session:
+        yield session
 
+SessionDep = Annotated[Session, Depends(get_session)]
+UserServiceDep = Annotated[UserService, Depends(lambda: UserService())]
 
-async def get_user_service(request: Request):
-    return request.app.state.user_service
+@app.post("/register")
+async def create_user(register_form: RegisterForm, session: SessionDep, user_service: UserServiceDep) -> RegisterDTO:
+    return await user_service.register_user(register_form, Database(session))
 
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-db_dependency = Annotated[Session, Depends(get_db)]
-
-
-@app.get("/")
-def read_root():
-    return {"Health": "Ok!"}
-
-
-@app.post("/register", response_model=RegisterDTO)
-async def login(
-        register_form: RegisterForm,
-        db: db_dependency,
-        user_service: UserService = Depends(get_user_service)):
-    try:
-        new_user = await user_service.register_user(register_form, db)
-        logger.info(f"User registered successfully: {new_user.email}")
-        return new_user
-    except Exception as e:
-        logger.error(f"Error registering user: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+@app.get("/users")
+def get_users(session: SessionDep) -> list[UserDTO]:
+    users = session.query(User).all()
+    return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email) for user in users]

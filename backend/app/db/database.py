@@ -1,14 +1,11 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-# from os import getenv
+class Database:
+    def __init__(self, db_session):
+        self.db_session = db_session
 
-# URL_DATABASE = f"jdbc:mysql://{getenv('DB_USER')}:{getenv('DB_PWD')}@{getenv('DB_URL')}/flixy"
-# URL_DATABASE = "mysql+pymysql://root:root@localhost:6666/flixy"
-URL_DATABASE = "mysql+mysqlconnector://root:root@localhost:6666/flixy"
+    def add(self, register):
+        self.db_session.add(register)
+        self.db_session.commit()
+        self.db_session.refresh(register)
 
-engine = create_engine(URL_DATABASE)
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
+    def rollback(self):
+        self.db_session.rollback()
