@@ -4,7 +4,8 @@ USE flixy;
 
 CREATE TABLE IF NOT EXISTS users (
   id INT NOT NULL AUTO_INCREMENT,
-  username VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  username VARCHAR(255) UNIQUE NOT NULL,
   email VARCHAR(255) NOT NULL,
   password VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -13,4 +14,4 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (username, email, password, created_at, updated_at)
-VALUES ('juancito', 'juancito@gmail.com', '123456', NOW(), NOW());
+VALUES ('Juan Gomez', 'jgomez', 'juancito@gmail.com', '123456', NOW(), NOW());

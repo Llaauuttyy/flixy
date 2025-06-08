@@ -11,8 +11,14 @@ services:
 
   back:
     build: ./backend
+    depends_on:
+      - db
     ports:
       - "${EXT_BACK_PORT}:${INT_BACK_PORT}"
+    environment:
+      DB_HOST: ${DB_HOST}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_PORT: ${INT_DB_PORT}
     volumes:
       - ./backend:/code
 
@@ -27,6 +33,15 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_mysql:/var/lib/mysql
-  
+
+  test-db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: flixy_test
+    ports:
+      - "3307:3306"
+
 volumes:
   db_mysql:
