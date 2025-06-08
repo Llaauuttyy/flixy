@@ -18,7 +18,7 @@ services:
     environment:
       DB_HOST: ${DB_HOST}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      DB_PORT: ${DB_PORT}
+      DB_PORT: ${INT_DB_PORT}
     volumes:
       - ./backend:/code
 
