@@ -6,3 +6,5 @@ passlib~=1.7.4
 sqlmodel
 mysql-connector-python
 passlib
+httpx
+pytest-asyncio

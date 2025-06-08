@@ -1,4 +1,4 @@
-from typing import Union, Annotated
+from typing import Annotated
 from app.model.user import User
 from app.dto.register import RegisterDTO, RegisterForm
 from app.dto.user import UserDTO

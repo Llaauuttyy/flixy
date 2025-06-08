@@ -30,5 +30,14 @@ services:
     volumes:
       - db_mysql:/var/lib/mysql
 
+  test-db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: flixy_test
+    ports:
+      - "3307:3306"
+
 volumes:
   db_mysql:
