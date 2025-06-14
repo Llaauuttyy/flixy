@@ -34,7 +34,7 @@ export default function Home() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Flixy</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-md mx-auto md:mx-0">
-            Sign in to access your dashboard and continue your journey with us.
+            Sign in to access your profile and continue your journey with us.
           </p>
           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
             <div className="flex items-center gap-2">

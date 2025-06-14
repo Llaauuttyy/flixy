@@ -1,0 +1,15 @@
+FROM node:20.18.0
+
+WORKDIR /front
+
+COPY package.json package-lock.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

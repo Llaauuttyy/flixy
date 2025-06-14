@@ -10,6 +10,13 @@ export default defineConfig({
       '@': './app-react',
     },
   },
+  // Permite que Vite escuche en 0.0.0.0 y se pueda acceder en modo dev 
+  // desde afuera del container.
+  server: {
+    host: true,
+    port: 3000
+  }
+
 
 });
 
