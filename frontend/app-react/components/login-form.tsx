@@ -6,13 +6,10 @@ import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Checkbox } from "../components/ui/checkbox"
 import { Loader2, Github, Mail } from "lucide-react"
-// import Link from "next/link"
-import { Link } from 'react-router-dom';
-
-// import { useRouter } from 'next/navigation'
+import { Link, useActionData } from 'react-router-dom';
 
 export default function LoginForm() {
-  // const router = useRouter();
+  const actionData = useActionData();
 
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
@@ -65,13 +62,15 @@ export default function LoginForm() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form method="post" className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-gray-300">
               Email
             </Label>
             <Input
               id="email"
+              // Se pone nombre para que llegue en el request a routes/login.tsx
+              name="email"
               type="email"
               placeholder="name@example.com"
               value={email}
@@ -92,6 +91,7 @@ export default function LoginForm() {
             </div>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
               value={password}
@@ -113,6 +113,8 @@ export default function LoginForm() {
               Remember me
             </label>
           </div>
+
+          {actionData?.error && (<p className="text-red-500">{actionData.error}</p>)}
 
           <Button
             type="submit"

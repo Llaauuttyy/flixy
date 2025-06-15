@@ -1,29 +1,81 @@
 import LoginForm from "../../components/login-form"
-import { MoveRight } from "lucide-react"
+import { MoveRight, MoveLeft } from "lucide-react"
 // import Link from "next/link"
 import { Link } from 'react-router-dom';
-import Image from "next/image"
+import { Button } from "../../components/ui/button"
+
+import { useState } from "react"
+import { Loader2 } from "lucide-react"
+// import Image from "next/image"
 // import { useRouter } from 'next/navigation'
 
+import { data, redirect } from "react-router";
+import type { Route } from "./+types/login";
+
+import { useSubmit } from "react-router-dom"
+
+import { getSession, commitSession, destroySession } from "../session/sessions.server";
+
+export async function loader({request}: Route.LoaderArgs) {
+    const session = await getSession(
+        request.headers.get("Cookie")
+    );
+
+    if (session.has("userId")) {
+        // Me quedo en /home
+        return null;
+    }
+
+    return redirect("/login", {
+        headers: {
+            "Set-Cookie": await commitSession(session),
+        },
+    })
+}
+
+export async function action({request,}: Route.ActionArgs) {
+    const session = await getSession(
+        request.headers.get("Cookie")
+    );
+
+    return redirect("/login", {
+        headers: {
+            "Set-Cookie": await destroySession(session),
+        },
+    });
+}
+
+
 export default function Home() {
-  // const router = useRouter();
+    // const router = useRouter();
+    const submit = useSubmit();
+    const [isLoading, setIsLoading] = useState(false);
+    //   const [pending, setPending] = useState(false);
+    
+    function signOut() {
+        setIsLoading(true);
+
+        submit(null, {
+            method: "post",
+        })
+    }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
       <header className="container mx-auto py-6 px-4 flex justify-between items-center">
-        <div className="flex items-center justify-center gap-2">
-          <img
-            src="./flixy-logo.png"
-            alt="Flixy Logo"
-            width={40}
-            height={40}
-          />
-          <span className="text-white font-medium">Flixy</span>
-        </div>
         <nav>
-          <Link to="/register" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1 text-sm">
-            Create account <MoveRight className="size-4" />
-          </Link>
+            <div onClick={signOut} 
+                className="text-gray-300 hover:text-white transition-colors flex items-center gap-1 text-sm"
+                >
+                {isLoading ? (
+                <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Signing out...
+                    </> 
+                ) : (
+                "Sign out" 
+            )}
+            </div>
         </nav>
       </header>
 
@@ -49,12 +101,6 @@ export default function Home() {
               <div className="size-2 rounded-full bg-purple-500"></div>
               <span className="text-gray-300 text-sm">24/7 Support</span>
             </div>
-          </div>
-        </div>
-
-        <div className="w-full md:w-1/2 max-w-md">
-          <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl border border-gray-700 shadow-xl">
-            <LoginForm />
           </div>
         </div>
       </main>

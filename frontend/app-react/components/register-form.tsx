@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react"
+// import { redirect } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../components/ui/button"
@@ -8,10 +9,14 @@ import { Label } from "../components/ui/label"
 import { Loader2 } from "lucide-react"
 import { SignupFormSchema } from "../lib/definitions";
 
+import { useNavigate } from "react-router-dom";
+
 // Tipo derivado del esquema con zod
 type FormData = z.infer<typeof SignupFormSchema>;
 
 function RegisterForm() {
+  const navigate = useNavigate();
+
   // Estados reactivos que re-renderizan el componente al actualizarse.
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
@@ -24,17 +29,18 @@ function RegisterForm() {
     resolver: zodResolver(SignupFormSchema),
   });
 
-
   const onSubmit = (data: FormData) => {
     setIsLoading(true);
     setPending(true);
 
     console.log("Valid data:", data);
 
-    // TODO: Llamar API.
+    // TODO: Llamar API para registrar usuario.
     setTimeout(() => {
       setIsLoading(false);
-    }, 1500)
+    }, 1500);
+
+    navigate("/");
   };
 
   return (

@@ -9,7 +9,7 @@ export default function Register() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
         <header className="container mx-auto py-6 px-4 flex justify-between items-center">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/login" className="flex items-center gap-2">
                 <div className="flex items-center gap-2 cursor-pointer">
                     <div className="flex items-center gap-2">
                         <img
