@@ -1,10 +1,10 @@
 services:
   front:
-    build: ./frontend/app-react
+    build: ./frontend/app-front
     ports:
       - "${EXT_FRONT_PORT}:${INT_FRONT_PORT}"
     volumes:
-      - ./frontend/app-react:/front
+      - ./frontend/app-front:/front
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
