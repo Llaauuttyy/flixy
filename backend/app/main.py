@@ -1,22 +1,22 @@
 from typing import Annotated
-from app.model.user import User
 from app.dto.register import RegisterDTO, RegisterForm
 from app.dto.user import UserDTO
 from app.service.user_service import UserService
 from app.db.database import Database
 from app.dto.login import LoginDTO, LoginResponse
+from app.middleware.auth_middleware import AuthMiddleware
 from fastapi import Depends, FastAPI
 from sqlmodel import Session
 from app.db.database_setup import engine
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 app = FastAPI()
+
+app.add_middleware(AuthMiddleware)
 
 def get_session():
     with Session(engine) as session:
         yield session
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 SessionDep = Annotated[Session, Depends(get_session)]
 UserServiceDep = Annotated[UserService, Depends(lambda: UserService())]
 
