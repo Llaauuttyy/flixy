@@ -4,7 +4,7 @@ services:
     ports:
       - "${EXT_FRONT_PORT}:${INT_FRONT_PORT}"
     volumes:
-      - ./frontend/app-front:/app
+      - ./frontend/app-front:/front
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
