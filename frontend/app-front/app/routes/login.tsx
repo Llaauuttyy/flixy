@@ -1,0 +1,124 @@
+import LoginForm from "../../components/login-form"
+import { MoveRight } from "lucide-react"
+import { Link } from 'react-router-dom';
+import { data, redirect } from "react-router";
+import type { Route } from "./+types/login";
+import { getSession, commitSession } from "../session/sessions.server";
+
+export async function loader({
+  request,
+}: Route.LoaderArgs) {
+  const session = await getSession(
+    request.headers.get("Cookie")
+  );
+
+  if (session.has("userId")) {
+    // Redirect to the home page if they are already signed in.
+    return redirect("/");
+  }
+
+  return data(
+    { error: session.get("error") },
+    {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    }
+  );
+}
+
+export async function action({
+  request,
+}: Route.ActionArgs) {
+  const session = await getSession(
+    request.headers.get("Cookie")
+  );
+  const form = await request.formData();
+  const username = form.get("email");
+  const password = form.get("password");
+
+  console.log("Login action called");
+  console.log(username);
+  console.log(password);
+
+  // TODO: Call API to handle credentials and 
+  // get ID from DB or NULL if wrong credentials.
+  const userId = "5";
+  // const userId = null;
+
+  if (userId == null) {
+    session.flash("error", "Invalid username/password");
+
+    return data({ error: "Invalid username or password." }, { status: 400 });
+  }
+
+  session.set("userId", userId);
+
+  // Login succeeded, send them to the home page.
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
+}
+
+export default function Login() {
+  // const router = useRouter();
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
+      <header className="container mx-auto py-6 px-4 flex justify-between items-center">
+        <div className="flex items-center justify-center gap-2">
+          <img
+            src="./flixy-logo.png"
+            alt="Flixy Logo"
+            width={40}
+            height={40}
+          />
+          <span className="text-white font-medium">Flixy</span>
+        </div>
+        <nav>
+          <Link to="/register" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1 text-sm">
+            Create account <MoveRight className="size-4" />
+          </Link>
+        </nav>
+      </header>
+
+      <main className="flex-1 container mx-auto flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-10">
+        <div className="w-full md:w-1/2 space-y-6 text-center md:text-left">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+            Welcome back to{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Flixy</span>
+          </h1>
+          <p className="text-gray-400 text-lg max-w-md mx-auto md:mx-0">
+            Sign in to access your profile and continue your journey with us.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+            <div className="flex items-center gap-2">
+              <div className="size-2 rounded-full bg-green-500"></div>
+              <span className="text-gray-300 text-sm">99.9% Uptime</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="size-2 rounded-full bg-blue-500"></div>
+              <span className="text-gray-300 text-sm">Secure Access</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="size-2 rounded-full bg-purple-500"></div>
+              <span className="text-gray-300 text-sm">24/7 Support</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full md:w-1/2 max-w-md">
+          <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl border border-gray-700 shadow-xl">
+            <LoginForm />
+          </div>
+        </div>
+      </main>
+
+      <footer className="container mx-auto py-6 px-4 text-center border-t border-gray-800">
+        <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Flixy. All rights reserved.</p>
+      </footer>
+    </div>
+  )
+}
