@@ -4,6 +4,10 @@
 # Workspace
 .qodo
 
+# Front
+.npmrc
+package-lock.json
+
 # Backend
 /backend/.venv
 __pycache__/

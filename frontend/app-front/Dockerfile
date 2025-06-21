@@ -2,7 +2,7 @@ FROM node:20.18.0
 
 WORKDIR /front
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
 RUN npm install
 
