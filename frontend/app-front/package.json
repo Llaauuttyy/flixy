@@ -1,5 +1,5 @@
 {
-  "name": "app-react",
+  "name": "app-front",
   "private": true,
   "type": "module",
   "scripts": {
@@ -61,5 +61,10 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.3",
     "vite-tsconfig-paths": "^5.1.4"
+  },
+  "overrides": {
+    "vite": {
+      "rollup": "npm:@rollup/wasm-node"
+    }
   }
 }

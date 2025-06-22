@@ -8,3 +8,4 @@ mysql-connector-python
 passlib
 httpx
 pytest-asyncio
+pyjwt

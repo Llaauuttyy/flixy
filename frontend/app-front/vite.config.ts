@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   resolve: {
     alias: {
-      '@': './app-react',
+      '@': './app-front',
     },
   },
   // Permite que Vite escuche en 0.0.0.0 y se pueda acceder en modo dev 
@@ -16,7 +16,5 @@ export default defineConfig({
     host: true,
     port: 3000
   }
-
-
 });
 
