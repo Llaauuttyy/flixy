@@ -4,8 +4,8 @@ services:
     ports:
       - "${EXT_FRONT_PORT}:${INT_FRONT_PORT}"
     volumes:
-      - ./frontend/app-front:/app
-      - /app/node_modules
+      - ./frontend/app-front:/front
+      - /front/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
 
@@ -35,7 +35,7 @@ services:
       - db_mysql:/var/lib/mysql
 
   test-db:
-    image: mysql:8
+    image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_PASSWORD: root

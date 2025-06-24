@@ -1,12 +1,14 @@
 FROM node:20.18.0
 
-WORKDIR /app
+WORKDIR /front
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
 RUN npm install
 
 COPY . .
+
+RUN npm run build
 
 EXPOSE 3000
 
