@@ -1,14 +1,4 @@
-from .setup import client, test_engine
-from sqlmodel import SQLModel, Session, text
-
-# Configuración de pytest para limpiar la base de datos antes de cada prueba
-def setup_function():
-    with Session(test_engine) as session:
-        session.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
-        for table in reversed(SQLModel.metadata.sorted_tables):
-            session.execute(table.delete())
-        session.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
-        session.commit()
+from .setup import client
 
 def test_register_with_valid_user_should_success():
     register_form = {

@@ -3,6 +3,11 @@
 
 # Workspace
 .qodo
+.vscode
+
+# Frontend
+.npmrc
+.react-router
 
 # Backend
 /backend/.venv
