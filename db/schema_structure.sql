@@ -13,5 +13,5 @@ CREATE TABLE IF NOT EXISTS users (
   PRIMARY KEY (id)
 );
 
-INSERT INTO users (username, email, password, created_at, updated_at)
+INSERT INTO users (username, name, email, password, created_at, updated_at)
 VALUES ('Juan Gomez', 'jgomez', 'juancito@gmail.com', '123456', NOW(), NOW());
