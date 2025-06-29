@@ -39,7 +39,7 @@ export type FormState =
 
 
 export type SessionPayload = {
-    userId: string,
+    accessToken: string,
     expiresAt: Date
     // role: String,
 }

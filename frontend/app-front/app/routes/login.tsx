@@ -5,6 +5,8 @@ import { data, redirect } from "react-router";
 import type { Route } from "./+types/login";
 import { getSession, commitSession } from "../session/sessions.server";
 
+import { handleLogin } from "services/api/auth";
+
 export async function loader({
   request,
 }: Route.LoaderArgs) {
@@ -12,7 +14,7 @@ export async function loader({
     request.headers.get("Cookie")
   );
 
-  if (session.has("userId")) {
+  if (session.has("accessToken")) {
     // Redirect to the home page if they are already signed in.
     return redirect("/");
   }
@@ -34,32 +36,27 @@ export async function action({
     request.headers.get("Cookie")
   );
   const form = await request.formData();
-  const username = form.get("email");
+
+  const username = form.get("username");
   const password = form.get("password");
 
-  console.log("Login action called");
-  console.log(username);
-  console.log(password);
+  try {
+    const accessToken = await handleLogin({ username, password });
+    console.log('Login successful:', accessToken);
 
-  // TODO: Call API to handle credentials and 
-  // get ID from DB or NULL if wrong credentials.
-  const userId = "5";
-  // const userId = null;
+    // TODO: Guardar token en localstorage?
+    
+    session.set("accessToken", accessToken);
 
-  if (userId == null) {
-    session.flash("error", "Invalid username/password");
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
 
-    return data({ error: "Invalid username or password." }, { status: 400 });
+  } catch (err: Error | any) {
+    return data({ error: err.message }, { status: 400 });
   }
-
-  session.set("userId", userId);
-
-  // Login succeeded, send them to the home page.
-  return redirect("/", {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
 }
 
 export default function Login() {

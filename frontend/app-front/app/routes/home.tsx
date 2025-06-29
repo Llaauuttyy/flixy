@@ -21,7 +21,7 @@ export async function loader({request}: Route.LoaderArgs) {
         request.headers.get("Cookie")
     );
 
-    if (session.has("userId")) {
+    if (session.has("accessToken")) {
         // Me quedo en /home
         return null;
     }

@@ -12,7 +12,7 @@ export default function LoginForm() {
   const actionData = useActionData();
 
   const [isLoading, setIsLoading] = useState(false)
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,17 +64,17 @@ export default function LoginForm() {
 
         <form method="post" className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-300">
-              Email
+            <Label htmlFor="username" className="text-gray-300">
+              Username
             </Label>
             <Input
-              id="email"
+              id="username"
               // Se pone nombre para que llegue en el request a routes/login.tsx
-              name="email"
-              type="email"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="username"
+              type="username"
+              placeholder="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />

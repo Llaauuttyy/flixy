@@ -1,7 +1,7 @@
 import { createCookieSessionStorage } from "react-router";
 
 type SessionData = {
-  userId: string;
+  accessToken: string;
 };
 
 type SessionFlashData = {
@@ -20,10 +20,12 @@ const { getSession, commitSession, destroySession } =
 
         // maxAge overrides expires
         // expires: new Date(Date.now() + 60_000),
-        httpOnly: true,
+        httpOnly: true, // Para no ser accesible via JS.
         maxAge: 60,
         path: "/",
         sameSite: "lax",
+
+        //TODO: Cambiar por una variable de entorno.
         secrets: ["super_secret_secret"],
         secure: true,
       },
