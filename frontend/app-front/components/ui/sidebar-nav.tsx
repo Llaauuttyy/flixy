@@ -11,8 +11,12 @@ import {
   User,
   Users,
 } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+// import Link from "next/link";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
+
+// import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navigationItems = [
@@ -50,7 +54,10 @@ const navigationItems = [
 
 export function SidebarNav() {
   const [collapsed, setCollapsed] = useState(false);
-  const pathname = usePathname();
+  // const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
+
 
   return (
     <div
@@ -97,7 +104,7 @@ export function SidebarNav() {
             const isActive = pathname === item.href;
 
             return (
-              <Link key={item.href} href={item.href}>
+              <Link key={item.href} to={item.href}>
                 <Button
                   variant={isActive ? "default" : "ghost"}
                   className={cn(
@@ -118,7 +125,7 @@ export function SidebarNav() {
 
       {/* Settings */}
       <div className="p-4 border-t border-gray-800">
-        <Link href="/settings">
+        <Link to="/settings">
           <Button
             variant="ghost"
             className={cn(
