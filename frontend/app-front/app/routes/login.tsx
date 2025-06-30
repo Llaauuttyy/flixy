@@ -54,13 +54,18 @@ export async function action({
       },
     });
 
-  } catch (err: Error | any) {
-    return data({ error: err.message }, { status: 400 });
+  } catch (err: Error | TypeError | any) {
+      console.log("API POST /login said: ", err.code);
+      
+      if (err instanceof TypeError) {
+        return data({ error: "Service's not working properly. Please try again later." }, { status: 500 });
+      }
+
+      return data({ error: err.message }, { status: 400 });
   }
 }
 
 export default function Login() {
-  // const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">

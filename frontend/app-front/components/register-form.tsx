@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react"
+import { useRef, useState } from "react"
 // import { redirect } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,8 @@ import { SignupFormSchema } from "../lib/definitions";
 
 import { useNavigate } from "react-router-dom";
 
+import { handleRegistration } from "../services/api/auth";
+
 // Tipo derivado del esquema con zod
 type FormData = z.infer<typeof SignupFormSchema>;
 
@@ -20,6 +22,9 @@ function RegisterForm() {
   // Estados reactivos que re-renderizan el componente al actualizarse.
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
+  const [apiNotAvailable, setApiNotAvailable] = useState(false);
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const {
     register,
@@ -33,14 +38,7 @@ function RegisterForm() {
     setIsLoading(true);
     setPending(true);
 
-    console.log("Valid data:", data);
-
-    // TODO: Llamar API para registrar usuario.
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-
-    navigate("/");
+    formRef.current?.submit();
   };
 
   return (
@@ -59,7 +57,7 @@ function RegisterForm() {
           </div>
         </div>
 
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form method='post' ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
         <div>
           <Label htmlFor="name" className="text-gray-300">
@@ -79,19 +77,19 @@ function RegisterForm() {
 
       <div className="space-y-2">
         <div>
-          <Label htmlFor="surname" className="text-gray-300">
-            Surname
+          <Label htmlFor="username" className="text-gray-300">
+            Username
           </Label>
         </div>
-        <Input {...register("surname")}
-          id="surname"
-          name="surname"
-          type="surname"
-          placeholder="surname"
+        <Input {...register("username")}
+          id="username"
+          name="username"
+          type="username"
+          placeholder="username"
           required
           className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
         />
-        {errors.surname && <p style={{ color: "red" }}>{errors.surname.message}</p>}
+        {errors.username && <p style={{ color: "red" }}>{errors.username.message}</p>}
       </div>
 
       <div className="space-y-2">
