@@ -1,10 +1,8 @@
 import type { LoginCredentials, RegistrationData } from './utils';
 
-const API_URI = "http://back:8088";
-
 export async function handleLogin(credentials: LoginCredentials) {
 
-    const response = await fetch(API_URI + "/login", {
+    const response = await fetch(process.env.API_URL + "/login", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -23,7 +21,7 @@ export async function handleLogin(credentials: LoginCredentials) {
 
 export async function handleRegistration(userData: RegistrationData) {
 
-    const response = await fetch(API_URI + "/register", {
+    const response = await fetch(process.env.API_URL + "/register", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

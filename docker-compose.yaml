@@ -1,6 +1,9 @@
 services:
   front:
-    build: ./frontend/app-front
+    build: 
+      context: .
+      dockerfile: frontend/app-front/Dockerfile
+    env_file: .env
     ports:
       - "${EXT_FRONT_PORT}:${INT_FRONT_PORT}"
     volumes:
