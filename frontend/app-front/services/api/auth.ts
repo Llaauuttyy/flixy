@@ -15,7 +15,7 @@ export async function handleLogin(credentials: LoginCredentials) {
     throw new Error(`${response_json.detail}`);
   }
 
-  return response_json.access_token;
+  return response_json;
 }
 
 export async function handleRegistration(userData: RegistrationData) {

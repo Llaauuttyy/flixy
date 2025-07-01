@@ -9,7 +9,7 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 class SecurityService:
     def __init__(self):
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        self.access_token_expiration_minutes = 60
+        self.access_token_expiration_seconds = 3600
 
     def is_password_valid(self, password: str) -> bool:
         """
@@ -37,7 +37,7 @@ class SecurityService:
     def create_access_token(self, data: dict):
         to_encode = data.copy()
         datetime.now(timezone.utc)
-        expiration = datetime.now(timezone.utc) + timedelta(minutes=self.access_token_expiration_minutes)
+        expiration = datetime.now(timezone.utc) + timedelta(seconds=self.access_token_expiration_seconds)
         to_encode.update({"expiration": expiration.isoformat()})
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt

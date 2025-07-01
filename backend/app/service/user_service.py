@@ -53,4 +53,5 @@ class UserService:
         
         return LoginResponse(
             access_token=self.security_service.create_access_token(data={"username": user.username, "id": user.id}),
+            expiration_time=self.security_service.access_token_expiration_seconds
         )
