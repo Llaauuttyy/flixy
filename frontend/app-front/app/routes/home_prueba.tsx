@@ -28,55 +28,9 @@ import {
 } from "lucide-react";
 import { Suspense, useState } from "react";
 
-import { useSubmit } from "react-router-dom"
-import { Loader2 } from "lucide-react"
-import { redirect } from "react-router";
-import type { Route } from "./+types/login";
-import { getSession, commitSession, destroySession } from "../session/sessions.server";
-
-
-export async function loader({request}: Route.LoaderArgs) {
-  const session = await getSession(
-      request.headers.get("Cookie")
-  );
-
-  if (session.has("accessToken")) {
-      // Me quedo en /home
-      return null;
-  }
-
-  return redirect("/login", {
-      headers: {
-          "Set-Cookie": await commitSession(session),
-      },
-  })
-}
-
-export async function action({request,}: Route.ActionArgs) {
-  const session = await getSession(
-      request.headers.get("Cookie")
-  );
-
-  return redirect("/login", {
-      headers: {
-          "Set-Cookie": await destroySession(session),
-      },
-  });
-}
-
 export default function SocialPage() {
   const [activeTab, setActiveTab] = useState("feed");
 
-  const submit = useSubmit();
-  const [isLoading, setIsLoading] = useState(false);
-
-  function signOut() {
-    setIsLoading(true);
-
-    submit(null, {
-        method: "post",
-    })
-}
   return (
     <html lang="es">
       <body>
@@ -97,18 +51,6 @@ export default function SocialPage() {
                 </div>
 
                 <div className="flex items-center space-x-4">
-                  <div onClick={signOut} 
-                      className="md:text-pink-600 hover:text-red-600 hover:font-bold hover:cursor-pointer transition-colors flex items-center gap-1 text-sm"
-                      >
-                      {isLoading ? (
-                      <>
-                          <Loader2 className="mr-2 size-4 animate-spin" />
-                          Signing out...
-                          </> 
-                      ) : (
-                      "Sign out" 
-                          )}
-                    </div>
                   <Button
                     variant="ghost"
                     size="icon"

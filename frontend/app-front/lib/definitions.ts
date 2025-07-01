@@ -5,18 +5,19 @@ export const SignupFormSchema = z.object({
         .string()
         .trim()
         .min(2, { message: 'Name must be at least 2 characters long.' }),
-    surname: z
+    username: z
         .string()
         .trim()
-        .min(2, { message: 'Surname must be at least 2 characters long.' }),
+        .min(2, { message: 'Username must be at least 2 characters long.' }),
     email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
     password: z
         .string()
         .trim()
         .min(4, { message: 'Be at least 4 characters long' })
-        .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
-        .regex(/[0-9]/, { message: 'Contain at least one number.' }),
-    // .regex(/[^a-zA-Z0-9]/, { message: 'Contain at least one special character.' })
+        .regex(/[a-z]/, { message: 'Must contain at least one lowercase letter.' })
+        .regex(/[A-Z]/, { message: 'Must contain at least one uppercase letter.' })
+        .regex(/[0-9]/, { message: 'Must contain at least one number.' })
+        .regex(/[^a-zA-Z0-9]/, { message: 'Must contain at least one special character.' }),
     confirmPassword: z.string().trim(),
 })
     .refine((data) => data.password === data.confirmPassword, {
@@ -39,7 +40,7 @@ export type FormState =
 
 
 export type SessionPayload = {
-    userId: string,
+    accessToken: string,
     expiresAt: Date
     // role: String,
 }
