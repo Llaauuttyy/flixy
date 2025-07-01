@@ -1,6 +1,6 @@
 services:
   front:
-    build: 
+    build:
       context: .
       dockerfile: frontend/app-front/Dockerfile
     env_file: .env
