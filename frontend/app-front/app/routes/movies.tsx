@@ -2,6 +2,11 @@
 import { ArrowLeft } from "lucide-react"
 import { MovieCard } from "components/ui/movie-card"
 import { SidebarNav } from "components/ui/sidebar-nav"
+import { HeaderFull } from "components/ui/header-full"
+
+import type { Route } from "./+types/login";
+import { getSession, commitSession, destroySession } from "../session/sessions.server";
+import { redirect } from "react-router";
 
 interface Movie {
   id: string
@@ -21,17 +26,55 @@ const movies: Movie[] = [
   { id: "8", title: "Mountain Trek", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 5 },
 ]
 
+export async function loader({request}: Route.LoaderArgs) {
+  const session = await getSession(
+      request.headers.get("Cookie")
+  );
+
+  if (session.has("accessToken")) {
+      // Me quedo en /home
+      return null;
+  }
+
+  return redirect("/login", {
+      headers: {
+          "Set-Cookie": await commitSession(session),
+      },
+  })
+}
+
+export async function action({request,}: Route.ActionArgs) {
+  const session = await getSession(
+      request.headers.get("Cookie")
+  );
+
+  return redirect("/login", {
+      headers: {
+          "Set-Cookie": await destroySession(session),
+      },
+  });
+}
+
 export default function MoviesPage() {
   return (
     <html lang="es">
       <body>
         <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
           <SidebarNav />
-          <div>
+
+          <div className="flex-1 overflow-y-auto">
+            <HeaderFull />
             {/* Movies Section */}
-            <main className="p-8">
-              <h1 className="text-4xl font-bold mb-10 text-center">Our Movie Collection</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 justify-items-center">
+            <main className="p-6">
+              <div className="mb-6">
+                <h1 className="text-3xl font-bold text-white mb-2">
+                  Movies
+                </h1>
+                <p className="text-gray-300">
+                  Rate movies you've watched and share your thoughts
+                </p>
+              </div>
+              <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
                 {movies.map((movie) => (
                   <MovieCard key={movie.id} movie={movie} />
                 ))}
