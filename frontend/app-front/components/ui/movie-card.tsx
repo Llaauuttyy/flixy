@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { StarRating } from "./star-rating"
 import { Card, CardContent, CardHeader, CardTitle } from "./card"
+import { Link } from "react-router-dom";
 
 interface MovieCardProps {
   movie: {
@@ -24,7 +25,7 @@ export function MovieCard({ movie }: MovieCardProps) {
 
   return (
     <Card
-      className="relative w-64 h-80 bg-slate-800 border-slate-700 flex flex-col items-center justify-center p-4 overflow-hidden group"
+      className="relative w-64 h-80 bg-slate-800 border-slate-700 flex flex-col items-center justify-center p-4 overflow-hidden group transition transform border border-gray-700 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:border-purple-600"
       onMouseEnter={() => setShowRating(true)}
       onMouseLeave={() => setShowRating(false)}
     >
@@ -37,15 +38,20 @@ export function MovieCard({ movie }: MovieCardProps) {
           alt={`${movie.title} logo`}
           width={150}
           height={150}
-          className="object-contain transition-transform duration-300 group-hover:scale-90"
+          className="object-contain transition-all duration-300 group-hover:blur-sm group-hover:opacity-100"
         />
         {/* Rating overlay */}
         <div
-          className={`absolute inset-0 flex items-center justify-center bg-slate-800/90 transition-opacity duration-300 ${
-            showRating ? "opacity-100" : "opacity-0 pointer-events-none"
+          className={`absolute inset-0 flex flex-col gap-2 items-center justify-center bg-slate-800/90 transition-opacity duration-300 ${
+            showRating ? "opacity-90" : "opacity-0 pointer-events-none"
           }`}
         >
-          <StarRating initialRating={currentRating} onRatingChange={handleRatingChange} size={32} />
+          <div>Rate this movie</div>
+          <div><StarRating initialRating={currentRating} onRatingChange={handleRatingChange} size={32} /></div>
+          
+          <Link to={`/movies/${movie.id}`} state={ movie }>
+            <p className="p-5 hover:cursor-pointer hover:underline">Show movie details...</p>
+          </Link>
         </div>
       </CardContent>
     </Card>

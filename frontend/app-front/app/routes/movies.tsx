@@ -8,6 +8,8 @@ import type { Route } from "./+types/login";
 import { getSession, commitSession, destroySession } from "../session/sessions.server";
 import { redirect } from "react-router";
 
+import { Outlet } from "react-router-dom"
+
 interface Movie {
   id: string
   title: string
@@ -83,6 +85,8 @@ export default function MoviesPage() {
           </div>
         </div>
       </body>
+
+      {/* <Outlet /> */}
     </html>
   )
 }
