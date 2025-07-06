@@ -6,5 +6,7 @@ export default [
   route("register", "routes/register.tsx"),
 
   route("movies", "routes/movies.tsx"),
-  route("movies/:movieId", "routes/movie-detail.tsx")
+  route("movies/:movieId", "routes/movie-detail.tsx"),
+
+  route("settings", "routes/settings.tsx"),
 ] satisfies RouteConfig;
