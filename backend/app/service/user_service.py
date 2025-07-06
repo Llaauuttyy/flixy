@@ -1,57 +1,30 @@
 from app.model.user import User
 from app.db.database import Database
-from app.dto.user import UserDTO
-from app.dto.login import LoginResponse
-from fastapi import HTTPException
-import jwt
-
-from app.security.security_service import SecurityService
-
-from ..dto.register import RegisterDTO, RegisterForm
+from app.dto.user import UserDTO, UserUpdateDTO
+from app.constants.message import USER_NOT_FOUND
 
 
 class UserService:
-    def __init__(self):
-        self.security_service = SecurityService()
-
-    def register_user(self, register_form: RegisterForm, db: Database) -> RegisterDTO:
-        if not self.security_service.is_password_valid(register_form.password):
-            raise HTTPException(
-                status_code=400,
-                detail="La contraseña debe contener: mayuscula, minuscula, numero y caracter especial."
-            )
-        
-        hashed_password = self.security_service.get_password_hash(password=register_form.password)
-        user = User(
-            name=register_form.name,
-            username=register_form.username,
-            email=register_form.email,
-            password=hashed_password
-        )
-
-        try:
-            db.add(user)
-        except Exception as e:
-            db.rollback()
-            raise HTTPException(status_code=400, detail=str(e))
-        
-        return RegisterDTO(
-            id=user.id,
-            name=user.name,
-            username=user.username,
-            email=user.email
-        )
-    
-    def get_all_users(self, db: Database) -> list[RegisterDTO]:
+    def get_all_users(self, db: Database) -> list[UserDTO]:
         users = db.find_all(User)
         return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email) for user in users]
     
-    def login(self, login_dto: UserDTO, db: Database) -> LoginResponse:
-        user = db.find_by(User, 'username', login_dto.username)
-        if not user or not self.security_service.verify_password(login_dto.password, user.password):
-            raise HTTPException(status_code=400, detail="Usuario o contraseña incorrectos.")
+    def update_user_data(self, user_dto: UserUpdateDTO, user_id: int, db: Database) -> UserDTO:
+        user_to_update = db.find_by(User, "id", user_id)
+
+        if user_to_update is None:
+            raise Exception(USER_NOT_FOUND)
         
-        return LoginResponse(
-            access_token=self.security_service.create_access_token(data={"username": user.username, "id": user.id}),
-            expiration_time=self.security_service.access_token_expiration_seconds
+        for attr, value in user_dto.model_dump(exclude_unset=True).items():
+            if attr == "username" and db.exists_by(User, attr, value):
+                raise Exception("Ya existe otro usuario con ese nombre de usuario.")
+            setattr(user_to_update, attr, value)
+
+        db.save(user_to_update)
+        
+        return UserDTO(
+            id=user_to_update.id,
+            name=user_to_update.name,
+            username=user_to_update.username,
+            email=user_to_update.email
         )
