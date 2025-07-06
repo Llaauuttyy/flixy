@@ -2,8 +2,8 @@ from .setup import client
 
 def test_register_with_valid_user_should_success():
     register_form = {
-        "name": "Usuario Prueba",
-        "username": "test_user",
+        "name": "Other Prueba",
+        "username": "test_user_unexistent",
         "email": "user@example.com",
         "password": "User.1234"
     }
@@ -14,7 +14,7 @@ def test_register_with_valid_user_should_success():
 
 def test_register_with_no_username_should_fail():
     register_form = {
-        "name": "Usuario Prueba",
+        "name": "Other Prueba",
         "email": "user@example.com",
         "password": "User.1234"
     }
@@ -24,8 +24,8 @@ def test_register_with_no_username_should_fail():
 
 def test_register_with_invalid_password_should_fail():
     register_form = {
-        "name": "Usuario Prueba",
-        "username": "test_user",
+        "name": "Other Prueba",
+        "username": "test_user_unexistent",
         "email": "user@example.com",
         "password": "user"
     }
@@ -34,21 +34,12 @@ def test_register_with_invalid_password_should_fail():
     assert response.status_code == 400
 
 def test_register_with_existent_user_should_fail():
-    valid_register_form = {
-        "name": "Usuario Prueba",
-        "username": "test_user",
-        "email": "user@example.com",
-        "password": "User.1234"
-    }
-
     invalid_register_form = {
         "name": "Other User",
-        "username": "test_user",
+        "username": "test_user_1",
         "email": "other@example.com",
         "password": "Other.1234"
     }
 
-    valid_response = client.post("/register", json=valid_register_form)
-    assert valid_response.status_code == 200
     invalid_response = client.post("/register", json=invalid_register_form)
     assert invalid_response.status_code == 400

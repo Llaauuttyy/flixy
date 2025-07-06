@@ -1,20 +1,8 @@
 from .setup import client
-import pytest
-
-@pytest.fixture(scope="module", autouse=True)
-def register_test_user():
-    register_form = {
-        "name": "Usuario Prueba",
-        "username": "test_user",
-        "email": "user@example.com",
-        "password": "User.1234"
-    }
-
-    client.post("/register", json=register_form)
 
 def test_login_with_valid_user_should_return_access_token():
     login_form = {
-        "username": "test_user",
+        "username": "test_user_1",
         "password": "User.1234"
     }
 
@@ -24,7 +12,7 @@ def test_login_with_valid_user_should_return_access_token():
 
 def test_login_with_existent_username_but_wrong_password_should_fail():
     login_form = {
-        "username": "test_user",
+        "username": "test_user_1",
         "password": "user1234"
     }
 

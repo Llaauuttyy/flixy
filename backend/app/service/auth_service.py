@@ -3,7 +3,7 @@ from app.db.database import Database
 from app.dto.user import UserDTO
 from app.dto.login import LoginResponse
 from app.dto.auth import PasswordUpdateDTO
-from app.constants.message import OLD_AND_NEW_PASSWORDS_ARE_DIFFERENT, OLD_PASSWORD_DOESNT_MATCH, PASSWORD_VALIDATION_ERROR, USER_NOT_FOUND
+from app.constants.message import LOGIN_CREDENTIALS_ERROR, OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR, OLD_PASSWORD_DOESNT_MATCH_ERROR, PASSWORD_VALIDATION_ERROR, USER_NOT_FOUND
 from fastapi import HTTPException
 
 from app.security.security_service import SecurityService
@@ -46,7 +46,7 @@ class AuthService:
     def login(self, login_dto: UserDTO, db: Database) -> LoginResponse:
         user = db.find_by(User, 'username', login_dto.username)
         if not user or not self.security_service.verify_password(login_dto.password, user.password):
-            raise HTTPException(status_code=400, detail="Usuario o contraseña incorrectos.")
+            raise HTTPException(status_code=400, detail=LOGIN_CREDENTIALS_ERROR)
         
         return LoginResponse(
             access_token=self.security_service.create_access_token(data={"username": user.username, "id": user.id}),
@@ -60,10 +60,10 @@ class AuthService:
             raise Exception(USER_NOT_FOUND)
         
         if not self.security_service.verify_password(password_update_dto.old_password, user.password):
-            raise Exception(OLD_PASSWORD_DOESNT_MATCH)
+            raise Exception(OLD_PASSWORD_DOESNT_MATCH_ERROR)
         
         if password_update_dto.old_password == password_update_dto.new_password:
-            raise Exception(OLD_AND_NEW_PASSWORDS_ARE_DIFFERENT)
+            raise Exception(OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR)
         
         if not self.security_service.is_password_valid(password_update_dto.new_password):
             raise Exception(PASSWORD_VALIDATION_ERROR)

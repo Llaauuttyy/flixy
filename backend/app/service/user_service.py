@@ -1,7 +1,7 @@
 from app.model.user import User
 from app.db.database import Database
 from app.dto.user import UserDTO, UserUpdateDTO
-from app.constants.message import USER_NOT_FOUND
+from app.constants.message import EXISTENT_USERNAME_ERROR, USER_NOT_FOUND
 
 
 class UserService:
@@ -17,7 +17,7 @@ class UserService:
         
         for attr, value in user_dto.model_dump(exclude_unset=True).items():
             if attr == "username" and db.exists_by(User, attr, value):
-                raise Exception("Ya existe otro usuario con ese nombre de usuario.")
+                raise Exception(EXISTENT_USERNAME_ERROR)
             setattr(user_to_update, attr, value)
 
         db.save(user_to_update)
