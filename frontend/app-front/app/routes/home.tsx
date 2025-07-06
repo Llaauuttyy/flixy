@@ -15,12 +15,15 @@ import { Textarea } from "components/ui/textarea";
 import {
   Activity,
   Bell,
+  BookOpen,
   Film,
   Heart,
   MessageCircle,
   Plus,
   Search,
   Share2,
+  Sparkle,
+  Sparkles,
   Star,
   TrendingUp,
   UserPlus,
@@ -30,7 +33,7 @@ import { Suspense, useState } from "react";
 
 import { useSubmit } from "react-router-dom"
 import { Loader2 } from "lucide-react"
-import { redirect } from "react-router";
+import { Link, redirect } from "react-router";
 import type { Route } from "./+types/login";
 import { getSession, commitSession, destroySession } from "../session/sessions.server";
 import { HeaderFull } from "../../components/ui/header-full";
@@ -461,51 +464,24 @@ export default function SocialPage() {
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
                         <CardTitle className="text-lg text-white">
-                          Sugerencias
+                          Do not know what to watch?
                         </CardTitle>
                         <CardDescription className="text-gray-400">
-                          Personas que podrían interesarte
+                          Get personalized movie suggestions based on your taste
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-3">
-                          {[
-                            { name: "Pedro Silva", mutual: 5 },
-                            { name: "Laura Vega", mutual: 3 },
-                            { name: "Diego Morales", mutual: 8 },
-                          ].map((suggestion, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <Avatar className="h-8 w-8">
-                                  <AvatarFallback className="text-xs bg-gray-700 text-gray-300">
-                                    {suggestion.name
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <p className="text-sm font-medium text-white">
-                                    {suggestion.name}
-                                  </p>
-                                  <p className="text-xs text-gray-400">
-                                    {suggestion.mutual} amigos en común
-                                  </p>
-                                </div>
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
-                              >
-                                <UserPlus className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
+                        <Link to='/recommendations'>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            // className="borde r-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                            className="bg-gradient-to-r hover:border-transparent hover:from-purple-700 hover:to-pink-700 hover:text-white"
+                          >
+                            <Sparkles className="h-3 w-3" />
+                            Give it a try!
+                          </Button>
+                        </Link>
                       </CardContent>
                     </Card>
 
@@ -537,6 +513,31 @@ export default function SocialPage() {
                             </Badge>
                           ))}
                         </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Suggested Friends */}
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-white">
+                        So, how was that last movie you watched?
+                        </CardTitle>
+                        <CardDescription className="text-gray-400">
+                          Tell the world about it!
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Link to='/recommendations'>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            // className="borde r-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                            className="bg-gradient-to-r hover:border-transparent hover:from-purple-700 hover:to-pink-700 hover:text-white"
+                          >
+                            <BookOpen className="h-3 w-3" />
+                            Write your thoughts!
+                          </Button>
+                        </Link>
                       </CardContent>
                     </Card>
                   </div>

@@ -21,32 +21,32 @@ import { useState } from "react";
 
 const navigationItems = [
   {
-    title: "Inicio",
+    title: "Home",
     href: "/",
     icon: Home,
   },
   {
-    title: "Películas",
+    title: "Movies",
     href: "/movies",
     icon: Film,
   },
   {
-    title: "Red Social",
+    title: "Social",
     href: "/social",
     icon: Users,
   },
   {
-    title: "Reseñas",
+    title: "Reviews",
     href: "/reviews",
     icon: BookOpen,
   },
   {
-    title: "Recomendaciones",
+    title: "Explore",
     href: "/recommendations",
     icon: Sparkles,
   },
   {
-    title: "Mi Perfil",
+    title: "My Profile",
     href: "/profile",
     icon: User,
   },
@@ -134,7 +134,7 @@ export function SidebarNav() {
             )}
           >
             <Settings className={cn("h-4 w-4", !collapsed && "mr-2")} />
-            {!collapsed && "Configuración"}
+            {!collapsed && "Settings"}
           </Button>
         </Link>
       </div>
