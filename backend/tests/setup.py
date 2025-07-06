@@ -1,4 +1,5 @@
-from app.main import app, get_session
+from app.main import app
+from app.db.database_setup import get_session
 from sqlmodel import SQLModel, Session, create_engine
 from fastapi.testclient import TestClient
 
