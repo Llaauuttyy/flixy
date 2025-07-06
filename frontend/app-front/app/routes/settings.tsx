@@ -9,6 +9,12 @@ import { Suspense } from "react"
 import PasswordForm from "components/password-form"
 import type { Route } from "./+types/settings"
 
+import { useRef } from "react"
+
+export async function loader({}: Route.LoaderArgs) {
+    // TODO: Get user data from API so it could be shown on the General Settings tab.
+}
+
 export async function action({
         request,
     }: Route.ActionArgs) {
@@ -26,6 +32,28 @@ export async function action({
 
 export default function SettingsPage()
 {
+    const nameRef = useRef<HTMLInputElement>(null)
+    const usernameRef = useRef<HTMLInputElement>(null)
+    const emailRef = useRef<HTMLInputElement>(null)
+    
+    async function updateUserData() {
+        // TODO: Call API to update user data.
+        const name = nameRef.current?.value
+        const username = usernameRef.current?.value
+        const email = emailRef.current?.value
+
+        // var dateToUpdate = new Map<string, string | undefined>()
+
+        // if (name && name !== 'joao') {
+        //     dateToUpdate.set("name", name)
+        // }
+
+        // const nameUpdate = dateToUpdate.get("name")
+        console.log({ name, username, email })
+        // console.log({ nameUpdate })
+
+    }
+
   return (
     <html lang="es">
       <body>
@@ -79,18 +107,18 @@ export default function SettingsPage()
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="username" className="text-foreground font-bold">Name</Label>
-                                    <Input id="username" defaultValue="joao" className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
+                                    <Label htmlFor="name" className="text-foreground font-bold">Name</Label>
+                                    <Input id="name" ref={nameRef} defaultValue="joao" className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="username" className="text-foreground font-bold">Username</Label>
-                                    <Input id="username" defaultValue="user128" className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
+                                    <Input id="username" ref={usernameRef} defaultValue="user128" className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="text-foreground font-bold">Email</Label>
-                                    <Input id="email" type="email" defaultValue="usuario.demo@example.com" className="bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
+                                    <Input id="email" ref={emailRef} type="email" defaultValue="usuario.demo@example.com" className="bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
                                 </div>
-                                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">Save</Button>
+                                <Button onClick={updateUserData} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">Save</Button>
                                 </CardContent>
                             </Card>
                             </TabsContent>
