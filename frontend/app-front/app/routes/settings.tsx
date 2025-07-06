@@ -6,6 +6,23 @@ import { Button } from "../../components/ui/button"
 import { SidebarNav } from "components/ui/sidebar-nav"
 import { HeaderFull } from "components/ui/header-full"
 import { Suspense } from "react"
+import PasswordForm from "components/password-form"
+import type { Route } from "./+types/settings"
+
+export async function action({
+        request,
+    }: Route.ActionArgs) {
+
+    const form = await request.formData();
+
+    console.log("FORM DATA:", form);
+
+    // TODO: Call API to change password.
+
+    // const name = form.get("currentPassword");
+    // const username = form.get("newPassword");
+    // const email = form.get("confirmNewPassword");
+}
 
 export default function SettingsPage()
 {
@@ -63,15 +80,15 @@ export default function SettingsPage()
                                 <CardContent className="space-y-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="username" className="text-foreground font-bold">Name</Label>
-                                    <Input id="username" defaultValue="joao" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
+                                    <Input id="username" defaultValue="joao" className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="username" className="text-foreground font-bold">Username</Label>
-                                    <Input id="username" defaultValue="user128" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
+                                    <Input id="username" defaultValue="user128" className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="text-foreground font-bold">Email</Label>
-                                    <Input id="email" type="email" defaultValue="usuario.demo@example.com" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
+                                    <Input id="email" type="email" defaultValue="usuario.demo@example.com" className="bg-input border-gray-700 text-foreground placeholder:text-muted-foreground" />
                                 </div>
                                 <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">Save</Button>
                                 </CardContent>
@@ -114,19 +131,22 @@ export default function SettingsPage()
                                 </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="current-password" className="text-foreground font-bold">Current password</Label>
-                                    <Input id="current-password" type="password" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="new-password" className="text-foreground font-bold">New password</Label>
-                                    <Input id="new-password" type="password" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirm-password" className="text-foreground font-bold">Repeat new password</Label>
-                                    <Input id="confirm-password" type="password" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
-                                </div>
-                                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">Update</Button>
+                                    <PasswordForm />
+                                    {/* <form className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="current-password" className="text-foreground font-bold">Current password</Label>
+                                            <Input id="current-password" type="password" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="new-password" className="text-foreground font-bold">New password</Label>
+                                            <Input id="new-password" type="password" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="confirm-password" className="text-foreground font-bold">Repeat new password</Label>
+                                            <Input id="confirm-password" type="password" className="bg-input border-border text-foreground placeholder:text-muted-foreground" />
+                                        </div>
+                                        <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">Update</Button>
+                                    </form> */}
                                 </CardContent>
                             </Card>
                             </TabsContent>
