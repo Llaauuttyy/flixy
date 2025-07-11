@@ -5,6 +5,7 @@ import { Bell, Search } from "lucide-react";
 import { useSubmit } from "react-router-dom"
 import { Loader2 } from "lucide-react"
 import { useState } from "react";
+import { redirect } from "react-router";
 
 export function HeaderFull() {
     const submit = useSubmit();
@@ -15,7 +16,8 @@ export function HeaderFull() {
 
         submit(null, {
             method: "post",
-        })
+            action: "/signout",
+        });
     }
 
   return (

@@ -35,38 +35,7 @@ import { useSubmit } from "react-router-dom"
 import { Loader2 } from "lucide-react"
 import { Link, redirect } from "react-router";
 import type { Route } from "./+types/login";
-import { getSession, commitSession, destroySession } from "../session/sessions.server";
 import { HeaderFull } from "../../components/ui/header-full";
-
-
-export async function loader({request}: Route.LoaderArgs) {
-  const session = await getSession(
-      request.headers.get("Cookie")
-  );
-
-  if (session.has("accessToken")) {
-      // Me quedo en /home
-      return null;
-  }
-
-  return redirect("/login", {
-      headers: {
-          "Set-Cookie": await commitSession(session),
-      },
-  })
-}
-
-export async function action({request,}: Route.ActionArgs) {
-  const session = await getSession(
-      request.headers.get("Cookie")
-  );
-
-  return redirect("/login", {
-      headers: {
-          "Set-Cookie": await destroySession(session),
-      },
-  });
-}
 
 export default function SocialPage() {
   const [activeTab, setActiveTab] = useState("feed");
