@@ -1,14 +1,15 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
+  // rutas públicas.
   route("register", "routes/register.tsx"),
   
-  // chequea si ya está logueado
+  // chequea si ya está logueado.
   route("", "routes/auth/logged.tsx", {}, [
     route("login", "routes/login.tsx"),
   ]),
 
-  // layout de rutas protegidas
+  // layout de rutas protegidas.
   route("", "routes/auth/protected.tsx", {}, [
     index("routes/home.tsx"),
     route("movies", "routes/movies.tsx"),
