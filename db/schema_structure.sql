@@ -13,5 +13,17 @@ CREATE TABLE IF NOT EXISTS users (
   PRIMARY KEY (id)
 );
 
-INSERT INTO users (username, name, email, password, created_at, updated_at)
-VALUES ('Juan Gomez', 'jgomez', 'juancito@gmail.com', '123456', NOW(), NOW());
+CREATE TABLE IF NOT EXISTS movies (
+  id INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL,
+  year VARCHAR(255),
+  duration INT,
+  genre VARCHAR(255),
+  certificate VARCHAR(255),
+  description VARCHAR(1024),
+  actors VARCHAR(255),
+  directors VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
