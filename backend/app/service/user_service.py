@@ -9,6 +9,10 @@ class UserService:
         users = db.find_all(User)
         return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email) for user in users]
     
+    def get_user_by_id(self, db: Database, user_id: int) -> UserDTO:
+        user = db.find_by(User, "id", user_id)
+        return UserDTO(id=user.id, name=user.name, username=user.username, email=user.email)
+    
     def update_user_data(self, user_dto: UserUpdateDTO, user_id: int, db: Database) -> UserDTO:
         user_to_update = db.find_by(User, "id", user_id)
 
