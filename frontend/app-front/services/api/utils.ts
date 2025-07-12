@@ -1,11 +1,8 @@
-export type LoginCredentials = {
-    username: FormDataEntryValue | null;
-    password: FormDataEntryValue | null;
-}
+import { getSession } from "~/session/sessions.server";
 
-export type RegistrationData = {
-    name: FormDataEntryValue | null;
-    username: FormDataEntryValue | null;
-    email: FormDataEntryValue | null;
-    password: FormDataEntryValue | null;
-}
+export const getAccessToken = async (
+  request: Request
+): Promise<string | undefined> => {
+  const session = await getSession(request.headers.get("Cookie"));
+  return session.get("accessToken");
+};
