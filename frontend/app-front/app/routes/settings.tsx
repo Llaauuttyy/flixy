@@ -24,16 +24,48 @@ import { useRef } from "react";
 
 import { data } from "react-router";
 import { useLoaderData } from "react-router-dom";
-import { handlePasswordChange } from "services/api/auth";
+import { handlePasswordChange, handleUserDataGet } from "services/api/user-data";
 
-export async function loader({}: Route.LoaderArgs) {
-  // TODO: Get user data from API so it could be shown on the General Settings tab.
+interface UserDataGet {
+  error?: string | null
+  name: string;
+  username: string;
+  email: string;
+}
 
-  return {
-    name: "João",
-    username: "user111",
-    email: "joao@gmail.com",
-  };
+export async function loader({ request }: Route.LoaderArgs) {
+  try {
+    const userDataResponse: UserDataGet = await handleUserDataGet(request);
+    console.log("Got user data successfully");
+
+    return userDataResponse;
+
+  } catch (err: Error | any) {
+    console.log("API GET /user said: ", err.message);
+
+    var userDataError: UserDataGet = {
+      name: "your-name",
+      username: "your-username",
+      email: "your-email",
+    }
+
+    if (err instanceof TypeError) {
+      // return data(
+      //   { error: "Service's not working properly. Please try again later." },
+      //   { status: 500 }
+      // );
+
+      userDataError.error = "Service's not working properly. Please try again later."
+      
+      return userDataError;
+    }
+
+    // return data({ error: err.message }, { status: 400 });
+
+    userDataError.error = err.message;
+
+    return userDataError
+  }
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -60,9 +92,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function SettingsPage() {
-  const currentUserData = useLoaderData() as
-    | { name?: string; username?: string; email?: string }
-    | undefined;
+  const currentUserData: UserDataGet = useLoaderData();
 
   const nameRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
@@ -137,6 +167,7 @@ export default function SettingsPage() {
                               <CardDescription className="text-muted-foreground">
                                 Update profile data and app preferences.
                               </CardDescription>
+                              {currentUserData?.error && (<p className="text-red-500">{currentUserData.error}</p>)}
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <div className="space-y-2">
