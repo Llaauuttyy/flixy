@@ -1,27 +1,27 @@
 // import Image from "next/image"
-import { useState } from "react"
-import { StarRating } from "./star-rating"
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { StarRating } from "./star-rating";
 
 interface MovieCardProps {
   movie: {
-    id: string
-    title: string
-    logoUrl: string
-    initialRating: number
-  }
+    id: string;
+    title: string;
+    logoUrl: string;
+    initialRating: number;
+  };
 }
 
 export function MovieCard({ movie }: MovieCardProps) {
-  const [showRating, setShowRating] = useState(false)
-  const [currentRating, setCurrentRating] = useState(movie.initialRating)
+  const [showRating, setShowRating] = useState(false);
+  const [currentRating, setCurrentRating] = useState(movie.initialRating || 1);
 
   const handleRatingChange = (newRating: number) => {
-    setCurrentRating(newRating)
+    setCurrentRating(newRating);
     // In a real application, you would typically send this rating to a backend.
-    console.log(`Movie "${movie.title}" rated: ${newRating} stars`)
-  }
+    console.log(`Movie "${movie.title}" rated: ${newRating} stars`);
+  };
 
   return (
     <Card
@@ -47,13 +47,21 @@ export function MovieCard({ movie }: MovieCardProps) {
           }`}
         >
           <div>Rate this movie</div>
-          <div><StarRating initialRating={currentRating} onRatingChange={handleRatingChange} size={32} /></div>
-          
-          <Link to={`/movies/${movie.id}`} state={ movie }>
-            <p className="p-5 hover:cursor-pointer hover:underline">Show movie details...</p>
+          <div>
+            <StarRating
+              initialRating={currentRating}
+              onRatingChange={handleRatingChange}
+              size={32}
+            />
+          </div>
+
+          <Link to={`/movies/${movie.id}`} state={movie}>
+            <p className="p-5 hover:cursor-pointer hover:underline">
+              Show movie details...
+            </p>
           </Link>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
