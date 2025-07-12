@@ -31,9 +31,9 @@ services:
       - "${EXT_DB_PORT}:${INT_DB_PORT}"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      # MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TEST_DATABASE_URL: mysql+mysqlconnector://root:root@test-db:3306/flixy_test
     volumes:
       - db_mysql:/var/lib/mysql
 
