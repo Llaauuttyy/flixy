@@ -15,12 +15,15 @@ import { Textarea } from "components/ui/textarea";
 import {
   Activity,
   Bell,
+  BookOpen,
   Film,
   Heart,
   MessageCircle,
   Plus,
   Search,
   Share2,
+  Sparkle,
+  Sparkles,
   Star,
   TrendingUp,
   UserPlus,
@@ -30,53 +33,13 @@ import { Suspense, useState } from "react";
 
 import { useSubmit } from "react-router-dom"
 import { Loader2 } from "lucide-react"
-import { redirect } from "react-router";
+import { Link, redirect } from "react-router";
 import type { Route } from "./+types/login";
-import { getSession, commitSession, destroySession } from "../session/sessions.server";
-
-
-export async function loader({request}: Route.LoaderArgs) {
-  const session = await getSession(
-      request.headers.get("Cookie")
-  );
-
-  if (session.has("accessToken")) {
-      // Me quedo en /home
-      return null;
-  }
-
-  return redirect("/login", {
-      headers: {
-          "Set-Cookie": await commitSession(session),
-      },
-  })
-}
-
-export async function action({request,}: Route.ActionArgs) {
-  const session = await getSession(
-      request.headers.get("Cookie")
-  );
-
-  return redirect("/login", {
-      headers: {
-          "Set-Cookie": await destroySession(session),
-      },
-  });
-}
+import { HeaderFull } from "../../components/ui/header-full";
 
 export default function SocialPage() {
   const [activeTab, setActiveTab] = useState("feed");
 
-  const submit = useSubmit();
-  const [isLoading, setIsLoading] = useState(false);
-
-  function signOut() {
-    setIsLoading(true);
-
-    submit(null, {
-        method: "post",
-    })
-}
   return (
     <html lang="es">
       <body>
@@ -84,47 +47,7 @@ export default function SocialPage() {
           <SidebarNav />
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Top Header */}
-            <header className="bg-gray-900 border-b border-gray-800 px-6 py-4">
-              <div className="flex justify-between items-center">
-                <div className="flex-1 max-w-md">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder="Buscar películas, usuarios, reseñas..."
-                      className="pl-10 bg-gray-800 border-gray-700 text-gray-300 placeholder-gray-500 focus:border-purple-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-4">
-                  <div onClick={signOut} 
-                      className="md:text-pink-600 hover:text-red-600 hover:font-bold hover:cursor-pointer transition-colors flex items-center gap-1 text-sm"
-                      >
-                      {isLoading ? (
-                      <>
-                          <Loader2 className="mr-2 size-4 animate-spin" />
-                          Signing out...
-                          </> 
-                      ) : (
-                      "Sign out" 
-                          )}
-                    </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-gray-300 hover:text-white hover:bg-gray-800"
-                  >
-                    <Bell className="h-5 w-5" />
-                  </Button>
-                  <Avatar>
-                    <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                    <AvatarFallback className="bg-gray-700 text-gray-300">
-                      JD
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-              </div>
-            </header>
+            <HeaderFull />
             <main className="flex-1 overflow-auto">
               <Suspense></Suspense>
               <div className="p-6">
@@ -510,51 +433,24 @@ export default function SocialPage() {
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
                         <CardTitle className="text-lg text-white">
-                          Sugerencias
+                          Do not know what to watch?
                         </CardTitle>
                         <CardDescription className="text-gray-400">
-                          Personas que podrían interesarte
+                          Get personalized movie suggestions based on your taste
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-3">
-                          {[
-                            { name: "Pedro Silva", mutual: 5 },
-                            { name: "Laura Vega", mutual: 3 },
-                            { name: "Diego Morales", mutual: 8 },
-                          ].map((suggestion, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <Avatar className="h-8 w-8">
-                                  <AvatarFallback className="text-xs bg-gray-700 text-gray-300">
-                                    {suggestion.name
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <p className="text-sm font-medium text-white">
-                                    {suggestion.name}
-                                  </p>
-                                  <p className="text-xs text-gray-400">
-                                    {suggestion.mutual} amigos en común
-                                  </p>
-                                </div>
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
-                              >
-                                <UserPlus className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
+                        <Link to='/recommendations'>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            // className="borde r-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                            className="bg-gradient-to-r hover:border-transparent hover:from-purple-700 hover:to-pink-700 hover:text-white"
+                          >
+                            <Sparkles className="h-3 w-3" />
+                            Give it a try!
+                          </Button>
+                        </Link>
                       </CardContent>
                     </Card>
 
@@ -586,6 +482,31 @@ export default function SocialPage() {
                             </Badge>
                           ))}
                         </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Suggested Friends */}
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-white">
+                        So, how was that last movie you watched?
+                        </CardTitle>
+                        <CardDescription className="text-gray-400">
+                          Tell the world about it!
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Link to='/recommendations'>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            // className="borde r-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                            className="bg-gradient-to-r hover:border-transparent hover:from-purple-700 hover:to-pink-700 hover:text-white"
+                          >
+                            <BookOpen className="h-3 w-3" />
+                            Write your thoughts!
+                          </Button>
+                        </Link>
                       </CardContent>
                     </Card>
                   </div>

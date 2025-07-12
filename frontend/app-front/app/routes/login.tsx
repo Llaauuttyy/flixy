@@ -7,24 +7,6 @@ import type { Route } from "./+types/login";
 
 import { handleLogin } from "services/api/auth";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request.headers.get("Cookie"));
-
-  if (session.has("accessToken")) {
-    // Redirect to the home page if they are already signed in.
-    return redirect("/");
-  }
-
-  return data(
-    { error: session.get("error") },
-    {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
-    }
-  );
-}
-
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   const form = await request.formData();
