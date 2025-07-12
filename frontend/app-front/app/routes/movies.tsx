@@ -1,28 +1,44 @@
-import { ArrowLeft } from "lucide-react"
-import { MovieCard } from "components/ui/movie-card"
-import { SidebarNav } from "components/ui/sidebar-nav"
-import { HeaderFull } from "components/ui/header-full"
+import { HeaderFull } from "components/ui/header-full";
+import { MovieCard } from "components/ui/movie-card";
+import { SidebarNav } from "components/ui/sidebar-nav";
+import { useLoaderData } from "react-router-dom";
+import { getMovies } from "services/api/movies";
+import type { Route } from "./+types/movies";
 
-
-interface Movie {
-  id: string
-  title: string
-  logoUrl: string
-  initialRating: number
+interface Page<T> {
+  items: T[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
 }
 
-const movies: Movie[] = [
-  { id: "1", title: "Flixy Originals", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 4 },
-  { id: "2", title: "Space Odyssey", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 3 },
-  { id: "3", title: "The Great Escape", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 5 },
-  { id: "4", title: "Mystery Island", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 2 },
-  { id: "5", title: "Future City", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 4 },
-  { id: "6", title: "Ancient Secrets", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 3 },
-  { id: "7", title: "Deep Sea Dive", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 1 },
-  { id: "8", title: "Mountain Trek", logoUrl: "/placeholder.svg?height=150&width=150", initialRating: 5 },
-]
+interface Movie {
+  id: string;
+  title: string;
+  year: string;
+  duration: number;
+  genre: string;
+  certificate: string;
+  description: string;
+  actors: string;
+  directors: string;
+  logoUrl: string;
+  initialRating: number;
+}
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 40;
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const movies = await getMovies(DEFAULT_PAGE, DEFAULT_PAGE_SIZE, request);
+
+  return movies;
+}
 
 export default function MoviesPage() {
+  const moviesPage: Page<Movie> = useLoaderData();
+
   return (
     <html lang="es">
       <body>
@@ -34,15 +50,13 @@ export default function MoviesPage() {
             {/* Movies Section */}
             <main className="p-6">
               <div className="mb-6">
-                <h1 className="text-3xl font-bold text-white mb-2">
-                  Movies
-                </h1>
+                <h1 className="text-3xl font-bold text-white mb-2">Movies</h1>
                 <p className="text-gray-300">
                   Rate movies you've watched and share your thoughts
                 </p>
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
-                {movies.map((movie) => (
+                {moviesPage.items.map((movie) => (
                   <MovieCard key={movie.id} movie={movie} />
                 ))}
               </div>
@@ -53,5 +67,5 @@ export default function MoviesPage() {
 
       {/* <Outlet /> */}
     </html>
-  )
+  );
 }

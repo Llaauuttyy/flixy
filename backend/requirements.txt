@@ -9,3 +9,4 @@ passlib
 httpx
 pytest-asyncio
 pyjwt
+fastapi-pagination
