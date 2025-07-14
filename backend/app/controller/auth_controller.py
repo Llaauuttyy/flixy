@@ -7,7 +7,7 @@ from app.service.auth_service import AuthService
 from app.dto.auth import PasswordUpdateDTO
 from fastapi import APIRouter, Depends, Request, HTTPException
 
-auth_router = APIRouter(tags=["Auth"])
+auth_router = APIRouter()
 
 AuthServiceDep = Annotated[AuthService, Depends(lambda: AuthService())]
 

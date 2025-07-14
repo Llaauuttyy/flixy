@@ -6,11 +6,11 @@ from app.dto.movie import MovieDTO
 from fastapi import APIRouter, Depends
 from fastapi_pagination import Page, paginate
 
-movie_router = APIRouter(tags=["Movie"])
+movie_router = APIRouter()
 
 MovieServiceDep = Annotated[MovieService, Depends(lambda: MovieService())]
 
-@movie_router.get("")
+@movie_router.get("/movies")
 def get_movies(session: SessionDep, movie_service: MovieServiceDep) -> Page[MovieDTO]:
     movies = movie_service.get_all_movies(Database(session))
     return paginate(movies)
