@@ -1,10 +1,5 @@
-interface UserDataChange {
-    error?: string | null;
-    name?: string | null;
-    username?: string | null;
-    email?: string | null;
-    [key: string]: string | null | undefined;
-  }
+import type { UserDataChange } from "./types/user";
+import type { PasswordData } from "./types";
 
 export async function handleUserDataChange(
     accessToken: string | undefined,
@@ -27,4 +22,27 @@ export async function handleUserDataChange(
     }
 
     return response_json;
+  }
+
+  export async function handlePasswordChange(
+    accessToken: string | undefined,
+    userData: PasswordData,
+  ) {
+
+    const request_body = { old_password: userData.currentPassword, new_password: userData.newPassword };
+  
+    const response = await fetch(import.meta.env.VITE_API_URL_CLIENT + "/password", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(request_body),
+    });
+  
+    const response_json = await response.json();
+  
+    if (!response.ok) {
+      throw new Error(`${response_json.detail}`);
+    }
   }

@@ -11,6 +11,13 @@ export type RegistrationData = {
 };
 
 export type PasswordData = {
-  old_password: FormDataEntryValue | null;
-  new_password: FormDataEntryValue | null;
+  currentPassword: FormDataEntryValue | null;
+  newPassword: FormDataEntryValue | null;
 };
+
+export interface ApiResponse {
+  error?: string | null
+  success?: string | null;
+  [key: string]: string | null | undefined;
+}
+

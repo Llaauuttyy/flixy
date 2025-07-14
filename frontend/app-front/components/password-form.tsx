@@ -9,17 +9,20 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-import { useSubmit } from "react-router-dom";
+import { handlePasswordChange } from "services/api/user-data-client";
+import type { ApiResponse } from "services/api/types";
 
+type PasswordFormProps = {
+  accessToken: string | undefined;
+};
 
 type FormData = z.infer<typeof PasswordFormSchema>;
 
-function PasswordForm() {
+function PasswordForm({ accessToken }: PasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
 
-  const submit = useSubmit();
-  const formRef = useRef<HTMLFormElement>(null);
+  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
 
   const {
     register,
@@ -29,24 +32,43 @@ function PasswordForm() {
     resolver: zodResolver(PasswordFormSchema),
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     setPending(true);
 
-    const formData = new FormData(formRef.current!);
-    formData.append("intent", "update-password");
+    console.log("Updating password...");
 
-    submit(formData, { method: "post" })
+    try {
+      await handlePasswordChange(accessToken, { 
+        currentPassword: data.currentPassword, 
+        newPassword: data.newPassword 
+      });
+      console.log("Password change successfull");
 
-    // formRef.current?.submit();
+      setApiResponse( { success: "Password change successfull" } );
+
+    } catch (err: Error | any) {
+      console.log("API PATCH /password said: ", err.message);
+  
+      if (err instanceof TypeError) {
+        setApiResponse( { error: "Service's not working properly. Please try again later." } );
+      } else {
+        setApiResponse( { error: err.message } );
+      }
+    }
+    setIsLoading(false);
+    setPending(false);
   };
 
   return (
     <div className="space-y-6">
       <div className="space-y-4">
+      {apiResponse?.error && (
+              <p style={{ color: "red" }}>{apiResponse.error}</p>
+            )}
+      {apiResponse?.success && (<p className="text-green-500">{apiResponse.success}</p>)}
         <form
           method="post"
-          ref={formRef}
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
         >

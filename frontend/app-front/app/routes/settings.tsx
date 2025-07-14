@@ -24,29 +24,13 @@ import { useRef } from "react";
 
 import { data } from "react-router";
 import { useLoaderData } from "react-router-dom";
-import { handlePasswordChange, handleUserDataGet } from "services/api/user-data";
+import { handleUserDataGet } from "services/api/user-data";
 
-import { handleUserDataChange } from "services/api/user-data-client";
+import { handlePasswordChange, handleUserDataChange } from "services/api/user-data-client";
 
 import { getAccessToken } from "../../services/api/utils";
 
-interface UserDataGet {
-  error?: string | null
-  name: string;
-  username: string;
-  email: string;
-  accessToken?: string | undefined;
-  [key: string]: string | null | undefined;
-}
-
-interface UserDataChange {
-  error?: string | null;
-  success?: string | null;
-  name?: string | null;
-  username?: string | null;
-  email?: string | null;
-  [key: string]: string | null | undefined;
-}
+import type { UserDataGet, UserDataChange } from "../../services/api/types/user";
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
@@ -73,38 +57,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     userDataError.error = err.message;
     return userDataError
-  }
-}
-
-export async function action({ request }: Route.ActionArgs) {
-  const form = await request.formData();
-
-  console.log("Form data received in action TEST:", form);
-
-  const intent = form.get("intent")
-
-  switch(intent) {
-    case "update-password": {
-      const old_password = form.get("currentPassword");
-      const new_password = form.get("newPassword");
-    
-      try {
-        await handlePasswordChange({ old_password, new_password }, request);
-        console.log("Password change successfull");
-
-      } catch (err: Error | any) {
-        console.log("API PATCH /password said: ", err.message);
-    
-        if (err instanceof TypeError) {
-          return data(
-            { error: "Service's not working properly. Please try again later." },
-            { status: 500 }
-          );
-        }
-    
-        return data({ error: err.message }, { status: 400 });
-      }
-    }
   }
 }
 
@@ -166,6 +118,34 @@ export default function SettingsPage() {
       currentUserDataReactive.error = err.message;
 
       setCurrentUserData({...currentUserDataReactive});
+    }
+  }
+
+  async function updatePassword(formData: { 
+    currentPassword: string; 
+    newPassword: string; 
+    confirmNewPassword: string 
+  }) {
+    console.log("Updating password...");
+
+    try {
+      await handlePasswordChange(currentUserData.accessToken, { 
+        currentPassword: formData.currentPassword, 
+        newPassword: formData.newPassword 
+      });
+      console.log("Password change successfull");
+
+    } catch (err: Error | any) {
+      console.log("API PATCH /password said: ", err.message);
+  
+      if (err instanceof TypeError) {
+        return data(
+          { error: "Service's not working properly. Please try again later." },
+          { status: 500 }
+        );
+      }
+  
+      return data({ error: err.message }, { status: 400 });
     }
   }
 
@@ -343,7 +323,7 @@ export default function SettingsPage() {
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                              <PasswordForm />
+                              <PasswordForm accessToken={currentUserData.accessToken} />
                             </CardContent>
                           </Card>
                         </TabsContent>
