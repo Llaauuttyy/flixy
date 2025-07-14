@@ -12,33 +12,30 @@ import { Label } from "./ui/label";
 import { useSubmit } from "react-router-dom";
 
 
-type FormData = z.infer<typeof PasswordFormSchema>;
+interface UserDataGet {
+  error?: string | null
+  name: string;
+  username: string;
+  email: string;
+  accessToken?: string | undefined;
+  [key: string]: string | null | undefined;
+}
 
-function PasswordForm() {
+function UserDataForm({ userData }: { userData: UserDataGet }) {
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
 
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(PasswordFormSchema),
-  });
-
-  const onSubmit = (data: FormData) => {
+  async function handleSubmit() {
     setIsLoading(true);
     setPending(true);
 
     const formData = new FormData(formRef.current!);
-    formData.append("intent", "update-password");
+    formData.append("intent", "update-user-data");
 
     submit(formData, { method: "post" })
-
-    // formRef.current?.submit();
   };
 
   return (
@@ -47,78 +44,59 @@ function PasswordForm() {
         <form
           method="post"
           ref={formRef}
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit}
           className="space-y-4"
         >
           <div className="space-y-2">
             <div>
               <Label
-                htmlFor="current-password"
+                htmlFor="name"
                 className="text-foreground font-bold"
               >
-                Current password
+                Name
               </Label>
             </div>
             <Input
-              {...register("currentPassword")}
-              id="currentPassword"
-              name="currentPassword"
-              type="password"
-              placeholder="current password"
-              required
+              id="name"
+              name="name"
+              defaultValue={ userData.name }
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
-            {errors.currentPassword && (
-              <p style={{ color: "red" }}>{errors.currentPassword.message}</p>
-            )}
           </div>
 
           <div className="space-y-2">
             <div>
               <Label
-                htmlFor="new-password"
+                htmlFor="username"
                 className="text-foreground font-bold"
               >
-                New password
+                Username
               </Label>
             </div>
             <Input
-              {...register("newPassword")}
-              id="newPassword"
-              name="newPassword"
-              type="password"
-              placeholder="new password"
-              required
+              id="username"
+              name="username"
+              defaultValue={ userData.username }
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
-            {errors.newPassword && (
-              <p style={{ color: "red" }}>{errors.newPassword.message}</p>
-            )}
           </div>
 
           <div className="space-y-2">
             <div>
               <Label
-                htmlFor="confirm-password"
+                htmlFor="email"
                 className="text-foreground font-bold"
               >
-                Repeat new password
+                Email
               </Label>
             </div>
             <Input
-              {...register("confirmNewPassword")}
-              id="confirmNewPassword"
-              name="confirmNewPassword"
-              type="password"
-              placeholder="new password"
-              required
+              id="email"
+              name="email"
+              defaultValue={ userData.email }
+              // required
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
-            {errors.confirmNewPassword && (
-              <p style={{ color: "red" }}>
-                {errors.confirmNewPassword.message}
-              </p>
-            )}
           </div>
 
           <Button
@@ -132,7 +110,7 @@ function PasswordForm() {
                 Updating...
               </>
             ) : (
-              "Update"
+              "Save"
             )}
           </Button>
         </form>
@@ -141,4 +119,4 @@ function PasswordForm() {
   );
 }
 
-export default PasswordForm;
+export default UserDataForm;
