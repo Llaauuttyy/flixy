@@ -1,5 +1,5 @@
-import type { UserDataChange } from "./types/user";
-import type { PasswordData } from "./types";
+import type { UserDataChange } from "../types/user";
+import type { PasswordData } from "../types/user";
 
 export async function handleUserDataChange(
     accessToken: string | undefined,

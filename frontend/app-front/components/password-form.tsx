@@ -9,8 +9,8 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-import { handlePasswordChange } from "services/api/user-data-client";
-import type { ApiResponse } from "services/api/types";
+import { handlePasswordChange } from "services/api/flixy/client/user-data-client";
+import type { ApiResponse } from "services/api/flixy/types/overall";
 
 type PasswordFormProps = {
   accessToken: string | undefined;

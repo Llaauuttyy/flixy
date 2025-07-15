@@ -4,7 +4,7 @@ import { useActionData } from 'react-router-dom';
 
 import type { Route } from "./+types/login";
 
-import { handleRegistration } from "services/api/auth";
+import { handleRegistration } from "services/api/flixy/server/auth";
 import { redirect } from "react-router";
 
 export async function action({

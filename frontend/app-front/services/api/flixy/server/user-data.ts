@@ -1,4 +1,4 @@
-import { getAccessToken } from "./utils";
+import { getAccessToken } from "../../utils";
 
 export async function handleUserDataGet(
     request: Request

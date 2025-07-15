@@ -21,11 +21,11 @@ import {
 import type { Route } from "./+types/settings";
 
 import { useLoaderData } from "react-router-dom";
-import { handleUserDataGet } from "services/api/user-data";
+import { handleUserDataGet } from "services/api/flixy/server/user-data";
 
 import { getAccessToken } from "../../services/api/utils";
 
-import type { UserDataGet } from "../../services/api/types/user";
+import type { UserDataGet } from "../../services/api/flixy/types/user";
 import UserDataForm from "components/user-data-form";
 
 export async function loader({ request }: Route.LoaderArgs) {

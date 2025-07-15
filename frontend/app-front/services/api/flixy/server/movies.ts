@@ -1,4 +1,4 @@
-import { getAccessToken } from "./utils";
+import { getAccessToken } from "../../utils";
 
 export async function getMovies(page: number, size: number, request: Request) {
   const token = await getAccessToken(request);

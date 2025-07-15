@@ -1,4 +1,4 @@
-import type { LoginCredentials, RegistrationData } from "./types";
+import type { LoginCredentials, RegistrationData } from "../types/auth";
 
 export async function handleLogin(credentials: LoginCredentials) {
   const response = await fetch(process.env.VITE_API_URL + "/login", {

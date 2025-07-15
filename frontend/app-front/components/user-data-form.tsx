@@ -6,8 +6,8 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-import type { UserDataChange, UserDataGet } from "services/api/types/user";
-import { handleUserDataChange } from "services/api/user-data-client";
+import type { UserDataChange, UserDataGet } from "services/api/flixy/types/user";
+import { handleUserDataChange } from "services/api//flixy/client/user-data-client";
 
 function UserDataForm({ userData }: { userData: UserDataGet }) {
   const [isLoading, setIsLoading] = useState(false);

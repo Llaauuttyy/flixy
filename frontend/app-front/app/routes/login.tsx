@@ -5,7 +5,7 @@ import LoginForm from "../../components/login-form";
 import { commitSession, getSession } from "../session/sessions.server";
 import type { Route } from "./+types/login";
 
-import { handleLogin } from "services/api/auth";
+import { handleLogin } from "services/api/flixy/server/auth";
 
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
