@@ -20,17 +20,13 @@ import {
 } from "../../components/ui/tabs";
 import type { Route } from "./+types/settings";
 
-import { useRef } from "react";
-
-import { data } from "react-router";
 import { useLoaderData } from "react-router-dom";
 import { handleUserDataGet } from "services/api/user-data";
 
-import { handlePasswordChange, handleUserDataChange } from "services/api/user-data-client";
-
 import { getAccessToken } from "../../services/api/utils";
 
-import type { UserDataGet, UserDataChange } from "../../services/api/types/user";
+import type { UserDataGet } from "../../services/api/types/user";
+import UserDataForm from "components/user-data-form";
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
@@ -62,92 +58,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function SettingsPage() {
   const currentUserData: UserDataGet = useLoaderData();
-  const [currentUserDataReactive, setCurrentUserData] = useState<UserDataChange>(currentUserData);
-
-  const nameRef = useRef<HTMLInputElement>(null);
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-
-  async function updateUserData() {
-    currentUserDataReactive.error = null;
-    currentUserDataReactive.success = null;
-    setCurrentUserData({...currentUserDataReactive});
-
-    const name = nameRef.current?.value;
-    const username = usernameRef.current?.value;
-    const email = emailRef.current?.value;
-
-    console.log({name, username, email});
-    console.log(currentUserDataReactive);
-
-    const updates: { [key: string]: string | undefined } = { name, username, email };
-    const dataToUpdate: UserDataChange = {};
-
-    for (const key in updates) {
-      if (updates[key] && updates[key] !== currentUserDataReactive[key]) {
-        dataToUpdate[key] = updates[key];
-      }
-    }
-
-    if (Object.keys(dataToUpdate).length === 0) {
-      console.log("No changes detected, not calling API.");
-
-      setCurrentUserData({
-        ...currentUserDataReactive, 
-        error: "No changes detected. Please modify at least one field."
-      });
-      return;
-    }
-
-    try {
-      const userDataChangeResponse: UserDataChange = await handleUserDataChange(currentUserData.accessToken, dataToUpdate);
-      console.log("Change user data successfully");
-
-      setCurrentUserData({
-        ...userDataChangeResponse,
-        success: "User data updated successfully."
-      });
-  
-    } catch (err: Error | any) {
-      console.log("API PATCH /user said: ", err.message);
-  
-      if (err instanceof TypeError) {
-        currentUserDataReactive.error = "Service's not working properly. Please try again later."
-      }
-  
-      currentUserDataReactive.error = err.message;
-
-      setCurrentUserData({...currentUserDataReactive});
-    }
-  }
-
-  async function updatePassword(formData: { 
-    currentPassword: string; 
-    newPassword: string; 
-    confirmNewPassword: string 
-  }) {
-    console.log("Updating password...");
-
-    try {
-      await handlePasswordChange(currentUserData.accessToken, { 
-        currentPassword: formData.currentPassword, 
-        newPassword: formData.newPassword 
-      });
-      console.log("Password change successfull");
-
-    } catch (err: Error | any) {
-      console.log("API PATCH /password said: ", err.message);
-  
-      if (err instanceof TypeError) {
-        return data(
-          { error: "Service's not working properly. Please try again later." },
-          { status: 500 }
-        );
-      }
-  
-      return data({ error: err.message }, { status: 400 });
-    }
-  }
 
   return (
     <html lang="es">
@@ -201,60 +111,9 @@ export default function SettingsPage() {
                               <CardDescription className="text-muted-foreground">
                                 Update profile data and app preferences.
                               </CardDescription>
-                              {currentUserDataReactive?.error && (<p className="text-red-500">{currentUserDataReactive.error}</p>)}
                             </CardHeader>
                             <CardContent className="space-y-4">
-                              <div className="space-y-2">
-                                <Label
-                                  htmlFor="name"
-                                  className="text-foreground font-bold"
-                                >
-                                  Name
-                                </Label>
-                                <Input
-                                  id="name"
-                                  ref={nameRef}
-                                  defaultValue={currentUserDataReactive?.name ?? ''}
-                                  className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label
-                                  htmlFor="username"
-                                  className="text-foreground font-bold"
-                                >
-                                  Username
-                                </Label>
-                                <Input
-                                  id="username"
-                                  ref={usernameRef}
-                                  defaultValue={currentUserDataReactive?.username ?? ''}
-                                  className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label
-                                  htmlFor="email"
-                                  className="text-foreground font-bold"
-                                >
-                                  Email
-                                </Label>
-                                <Input
-                                  id="email"
-                                  ref={emailRef}
-                                  type="email"
-                                  defaultValue={currentUserDataReactive?.email ?? ''}
-                                  className="bg-input border-gray-700 text-foreground placeholder:text-muted-foreground"
-                                />
-                              </div>
-                              <Button
-                                onClick={updateUserData}
-                                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                              >
-                                Save
-                              </Button>
-                              {currentUserDataReactive?.success && (<p className="text-green-500">{currentUserDataReactive.success}</p>)}
-                              {/* <UserDataForm userData={currentUserDataReactive} /> */}
+                              <UserDataForm userData={currentUserData} />
                             </CardContent>
                           </Card>
                         </TabsContent>

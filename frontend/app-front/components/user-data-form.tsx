@@ -1,50 +1,89 @@
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-// import { redirect } from "react-router";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Loader2 } from "lucide-react";
-import { z } from "zod";
-import { PasswordFormSchema } from "../lib/definitions";
+
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-import { useSubmit } from "react-router-dom";
-
-
-interface UserDataGet {
-  error?: string | null
-  name: string;
-  username: string;
-  email: string;
-  accessToken?: string | undefined;
-  [key: string]: string | null | undefined;
-}
+import type { UserDataChange, UserDataGet } from "services/api/types/user";
+import { handleUserDataChange } from "services/api/user-data-client";
 
 function UserDataForm({ userData }: { userData: UserDataGet }) {
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
 
-  const submit = useSubmit();
-  const formRef = useRef<HTMLFormElement>(null);
+  const [currentUserDataReactive, setCurrentUserData] = useState<UserDataChange>(userData);
 
-  async function handleSubmit() {
+  const nameRef = useRef<HTMLInputElement>(null);
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+
+  async function updateUserData(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
     setIsLoading(true);
     setPending(true);
 
-    const formData = new FormData(formRef.current!);
-    formData.append("intent", "update-user-data");
+    currentUserDataReactive.error = null;
+    currentUserDataReactive.success = null;
+    setCurrentUserData({...currentUserDataReactive});
 
-    submit(formData, { method: "post" })
-  };
+    const name = nameRef.current?.value;
+    const username = usernameRef.current?.value;
+    const email = emailRef.current?.value;
+
+    const updates: { [key: string]: string | undefined } = { name, username, email };
+    const dataToUpdate: UserDataChange = {};
+
+    for (const key in updates) {
+      if (updates[key] && updates[key] !== currentUserDataReactive[key]) {
+        dataToUpdate[key] = updates[key];
+      }
+    }
+
+    if (Object.keys(dataToUpdate).length === 0) {
+      console.log("No changes detected, not calling API.");
+
+      setCurrentUserData({
+        ...currentUserDataReactive, 
+        error: "No changes detected. Please modify at least one field."
+      });
+    } else {
+      try {
+        const userDataChangeResponse: UserDataChange = await handleUserDataChange(userData.accessToken, dataToUpdate);
+        console.log("Change user data successfully");
+  
+        setCurrentUserData({
+          ...userDataChangeResponse,
+          success: "User data updated successfully."
+        });
+    
+      } catch (err: Error | any) {
+        console.log("API PATCH /user said: ", err.message);
+    
+        if (err instanceof TypeError) {
+          currentUserDataReactive.error = "Service's not working properly. Please try again later."
+        }
+    
+        currentUserDataReactive.error = err.message;
+  
+        setCurrentUserData({...currentUserDataReactive});
+      }
+    }
+
+    setIsLoading(false);
+    setPending(false);
+  }
 
   return (
     <div className="space-y-6">
       <div className="space-y-4">
+      {currentUserDataReactive?.error && (<p className="text-red-500">{currentUserDataReactive.error}</p>)}
+      {currentUserDataReactive?.success && (<p className="text-green-500">{currentUserDataReactive.success}</p>)}
         <form
           method="post"
-          ref={formRef}
-          onSubmit={handleSubmit}
+          onSubmit={updateUserData}
           className="space-y-4"
         >
           <div className="space-y-2">
@@ -59,7 +98,8 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
             <Input
               id="name"
               name="name"
-              defaultValue={ userData.name }
+              ref={nameRef}
+              defaultValue={currentUserDataReactive?.name ?? ''}
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
           </div>
@@ -76,7 +116,8 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
             <Input
               id="username"
               name="username"
-              defaultValue={ userData.username }
+              ref={usernameRef}
+              defaultValue={currentUserDataReactive?.username ?? ''}
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
           </div>
@@ -93,8 +134,8 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
             <Input
               id="email"
               name="email"
-              defaultValue={ userData.email }
-              // required
+              ref={emailRef}
+              defaultValue={currentUserDataReactive?.email ?? ''}
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
           </div>
