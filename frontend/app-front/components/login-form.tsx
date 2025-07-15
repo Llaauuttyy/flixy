@@ -1,36 +1,40 @@
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
-import { Checkbox } from "./ui/checkbox"
-import { Loader2, Github, Mail } from "lucide-react"
-import { Link, useActionData } from 'react-router-dom';
+import { Github, Loader2, Mail } from "lucide-react";
+import { useState } from "react";
+import { Link, useActionData } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 export default function LoginForm() {
   const actionData = useActionData();
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false)
+      setIsLoading(false);
       // Here you would normally redirect to dashboard or handle errors
-    }, 1500)
-  }
+    }, 1500);
+  };
 
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <h2 className="text-2xl font-bold text-white">Sign in to your account</h2>
-        <p className="text-gray-400 text-sm">Enter your credentials below to access your account</p>
+        <h2 className="text-2xl font-bold text-white">
+          Sign in to your account
+        </h2>
+        <p className="text-gray-400 text-sm">
+          Enter your credentials below to access your account
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -58,7 +62,9 @@ export default function LoginForm() {
             <span className="w-full border-t border-gray-700"></span>
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="bg-gray-800 px-2 text-gray-400">or continue with</span>
+            <span className="bg-gray-800 px-2 text-gray-400">
+              or continue with
+            </span>
           </div>
         </div>
 
@@ -85,7 +91,10 @@ export default function LoginForm() {
               <Label htmlFor="password" className="text-gray-300">
                 Password
               </Label>
-              <Link to="#" className="text-sm text-purple-400 hover:text-purple-300">
+              <Link
+                to="#"
+                className="text-sm text-purple-400 hover:text-purple-300"
+              >
                 Forgot password?
               </Link>
             </div>
@@ -114,7 +123,9 @@ export default function LoginForm() {
             </label>
           </div>
 
-          {actionData?.error && (<p className="text-red-500">{actionData.error}</p>)}
+          {actionData?.error && (
+            <p className="text-red-500">{actionData.error}</p>
+          )}
 
           <Button
             type="submit"
@@ -136,8 +147,8 @@ export default function LoginForm() {
       <div className="text-center">
         <p className="text-gray-400 text-sm">
           Don't have an account?{" "}
-          <Link 
-            to="/register" 
+          <Link
+            to="/register"
             className="text-purple-400 hover:text-purple-300 font-medium"
           >
             Sign up
@@ -145,5 +156,5 @@ export default function LoginForm() {
         </p>
       </div>
     </div>
-  )
+  );
 }

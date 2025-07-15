@@ -12,9 +12,7 @@ import {
   Users,
 } from "lucide-react";
 // import Link from "next/link";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-
+import { Link, useLocation } from "react-router-dom";
 
 // import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -57,7 +55,6 @@ export function SidebarNav() {
   // const pathname = usePathname();
   const location = useLocation();
   const pathname = location.pathname;
-
 
   return (
     <div

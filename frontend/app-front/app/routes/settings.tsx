@@ -1,7 +1,7 @@
 import PasswordForm from "components/password-form";
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import {
   Tabs,
@@ -25,8 +24,8 @@ import { handleUserDataGet } from "services/api/flixy/server/user-data";
 
 import { getAccessToken } from "../../services/api/utils";
 
-import type { UserDataGet } from "../../services/api/flixy/types/user";
 import UserDataForm from "components/user-data-form";
+import type { UserDataGet } from "../../services/api/flixy/types/user";
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
@@ -36,7 +35,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     userDataResponse.accessToken = await getAccessToken(request);
 
     return userDataResponse;
-
   } catch (err: Error | any) {
     console.log("API GET /user said: ", err.message);
 
@@ -44,15 +42,16 @@ export async function loader({ request }: Route.LoaderArgs) {
       name: "your-name",
       username: "your-username",
       email: "your-email",
-    }
+    };
 
     if (err instanceof TypeError) {
-      userDataError.error = "Service's not working properly. Please try again later."
+      userDataError.error =
+        "Service's not working properly. Please try again later.";
       return userDataError;
     }
 
     userDataError.error = err.message;
-    return userDataError
+    return userDataError;
   }
 }
 
@@ -182,7 +181,9 @@ export default function SettingsPage() {
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                              <PasswordForm accessToken={currentUserData.accessToken} />
+                              <PasswordForm
+                                accessToken={currentUserData.accessToken}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>

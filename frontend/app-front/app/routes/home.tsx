@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
+import { Avatar, AvatarFallback } from "components/ui/avatar";
 import { Badge } from "components/ui/badge";
 import { Button } from "components/ui/button";
 import {
@@ -8,21 +8,17 @@ import {
   CardHeader,
   CardTitle,
 } from "components/ui/card";
-import { Input } from "components/ui/input";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "components/ui/tabs";
 import { Textarea } from "components/ui/textarea";
 import {
   Activity,
-  Bell,
   BookOpen,
   Film,
   Heart,
   MessageCircle,
   Plus,
-  Search,
   Share2,
-  Sparkle,
   Sparkles,
   Star,
   TrendingUp,
@@ -31,10 +27,7 @@ import {
 } from "lucide-react";
 import { Suspense, useState } from "react";
 
-import { useSubmit } from "react-router-dom"
-import { Loader2 } from "lucide-react"
-import { Link, redirect } from "react-router";
-import type { Route } from "./+types/login";
+import { Link } from "react-router";
 import { HeaderFull } from "../../components/ui/header-full";
 
 export default function SocialPage() {
@@ -440,7 +433,7 @@ export default function SocialPage() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <Link to='/recommendations'>
+                        <Link to="/recommendations">
                           <Button
                             variant="outline"
                             size="sm"
@@ -489,14 +482,14 @@ export default function SocialPage() {
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
                         <CardTitle className="text-lg text-white">
-                        So, how was that last movie you watched?
+                          So, how was that last movie you watched?
                         </CardTitle>
                         <CardDescription className="text-gray-400">
                           Tell the world about it!
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <Link to='/recommendations'>
+                        <Link to="/recommendations">
                           <Button
                             variant="outline"
                             size="sm"

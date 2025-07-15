@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 // import { redirect } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,21 +39,22 @@ function PasswordForm({ accessToken }: PasswordFormProps) {
     console.log("Updating password...");
 
     try {
-      await handlePasswordChange(accessToken, { 
-        currentPassword: data.currentPassword, 
-        newPassword: data.newPassword 
+      await handlePasswordChange(accessToken, {
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
       });
       console.log("Password change successfull");
 
-      setApiResponse( { success: "Password change successfull" } );
-
+      setApiResponse({ success: "Password change successfull" });
     } catch (err: Error | any) {
       console.log("API PATCH /password said: ", err.message);
-  
+
       if (err instanceof TypeError) {
-        setApiResponse( { error: "Service's not working properly. Please try again later." } );
+        setApiResponse({
+          error: "Service's not working properly. Please try again later.",
+        });
       } else {
-        setApiResponse( { error: err.message } );
+        setApiResponse({ error: err.message });
       }
     }
     setIsLoading(false);
@@ -63,10 +64,12 @@ function PasswordForm({ accessToken }: PasswordFormProps) {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-      {apiResponse?.error && (
-              <p style={{ color: "red" }}>{apiResponse.error}</p>
-            )}
-      {apiResponse?.success && (<p className="text-green-500">{apiResponse.success}</p>)}
+        {apiResponse?.error && (
+          <p style={{ color: "red" }}>{apiResponse.error}</p>
+        )}
+        {apiResponse?.success && (
+          <p className="text-green-500">{apiResponse.success}</p>
+        )}
         <form
           method="post"
           onSubmit={handleSubmit(onSubmit)}
