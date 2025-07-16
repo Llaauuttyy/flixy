@@ -60,11 +60,11 @@ export function SidebarNav() {
     <div
       className={cn(
         "bg-gray-900 border-r border-gray-800 transition-all duration-300 flex flex-col",
-        collapsed ? "w-16" : "w-64"
+        collapsed ? "w-18" : "w-64"
       )}
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-800">
+      <div className="p-5 border-b border-gray-800">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center space-x-2">

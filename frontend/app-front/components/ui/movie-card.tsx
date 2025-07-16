@@ -8,6 +8,13 @@ interface MovieCardProps {
   movie: {
     id: string;
     title: string;
+    year: string;
+    duration: number;
+    genre: string;
+    certificate: string;
+    description: string;
+    actors: string;
+    directors: string;
     logoUrl: string;
     initialRating: number;
   };
