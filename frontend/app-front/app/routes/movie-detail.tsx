@@ -75,8 +75,37 @@ export default function MovieDetail() {
     }
   };
 
-  // const location = useLocation()
-  // const movie = location.state?.movie
+  // TODO: Pedir a través de endpoint o usarlo en un componente.
+  const location = useLocation();
+  const movie = location.state;
+
+  // Solo a modo de prueba -- TODO: Cambiar tipos de datos.
+  const getDataFromMovie = (data: string): string => {
+    if (data.length > 2) {
+      return data.replace(/\[|\]|'/g, "");
+    } else {
+      return "No data available";
+    }
+  };
+
+  const getDurationFromMovie = (minutes_str: string): string => {
+    let minutes = parseInt(minutes_str, 10);
+
+    let hours = Math.floor(minutes / 60);
+    let remainingMinutes = minutes % 60;
+
+    let duration: string = ``;
+
+    if (hours) {
+      duration += `${hours}h`;
+    }
+
+    if (remainingMinutes) {
+      duration += ` ${remainingMinutes}m`;
+    }
+
+    return duration;
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
