@@ -15,7 +15,7 @@ interface MovieCardProps {
 
 export function MovieCard({ movie }: MovieCardProps) {
   const [showRating, setShowRating] = useState(false);
-  const [currentRating, setCurrentRating] = useState(movie.initialRating || 1);
+  const [currentRating, setCurrentRating] = useState(movie.initialRating || 0);
 
   const handleRatingChange = (newRating: number) => {
     setCurrentRating(newRating);
@@ -55,7 +55,7 @@ export function MovieCard({ movie }: MovieCardProps) {
             />
           </div>
 
-          <Link to={`/movies/${movie.id}`} state={movie}>
+          <Link to={`/movies/${movie.id}`} state={{ movie }}>
             <p className="p-5 hover:cursor-pointer hover:underline">
               Show movie details...
             </p>
