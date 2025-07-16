@@ -1,5 +1,4 @@
-import type { LoginCredentials, PasswordData, RegistrationData } from "./types";
-import { getAccessToken } from "./utils";
+import type { LoginCredentials, RegistrationData } from "../types/auth";
 
 export async function handleLogin(credentials: LoginCredentials) {
   const response = await fetch(process.env.VITE_API_URL + "/login", {
@@ -35,26 +34,4 @@ export async function handleRegistration(userData: RegistrationData) {
   }
 
   return response_json.id;
-}
-
-export async function handlePasswordChange(
-  userData: PasswordData,
-  request: Request
-) {
-  const token = await getAccessToken(request);
-
-  const response = await fetch(process.env.VITE_API_URL + "/password", {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(userData),
-  });
-
-  const response_json = await response.json();
-
-  if (!response.ok) {
-    throw new Error(`${response_json.detail}`);
-  }
 }

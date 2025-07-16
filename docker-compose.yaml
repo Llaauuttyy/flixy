@@ -14,6 +14,7 @@ services:
 
   back:
     build: ./backend
+    env_file: .env
     depends_on:
       - db
     ports:

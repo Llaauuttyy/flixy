@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import {
   Tabs,
@@ -20,70 +19,44 @@ import {
 } from "../../components/ui/tabs";
 import type { Route } from "./+types/settings";
 
-import { useRef } from "react";
-
-import { data } from "react-router";
 import { useLoaderData } from "react-router-dom";
-import { handlePasswordChange } from "services/api/auth";
+import { handleUserDataGet } from "services/api/flixy/server/user-data";
 
-export async function loader({}: Route.LoaderArgs) {
-  // TODO: Get user data from API so it could be shown on the General Settings tab.
+import { getAccessToken } from "../../services/api/utils";
 
-  return {
-    name: "João",
-    username: "user111",
-    email: "joao@gmail.com",
-  };
-}
+import UserDataForm from "components/user-data-form";
+import type { UserDataGet } from "../../services/api/flixy/types/user";
 
-export async function action({ request }: Route.ActionArgs) {
-  const form = await request.formData();
-
-  const old_password = form.get("currentPassword");
-  const new_password = form.get("newPassword");
-
+export async function loader({ request }: Route.LoaderArgs) {
   try {
-    await handlePasswordChange({ old_password, new_password }, request);
-    console.log("Password change successfull");
+    const userDataResponse: UserDataGet = await handleUserDataGet(request);
+    console.log("Got user data successfully");
+
+    userDataResponse.accessToken = await getAccessToken(request);
+
+    return userDataResponse;
   } catch (err: Error | any) {
-    console.log("API PATCH /password said: ", err.message);
+    console.log("API GET /user said: ", err.message);
+
+    var userDataError: UserDataGet = {
+      name: "your-name",
+      username: "your-username",
+      email: "your-email",
+    };
 
     if (err instanceof TypeError) {
-      return data(
-        { error: "Service's not working properly. Please try again later." },
-        { status: 500 }
-      );
+      userDataError.error =
+        "Service's not working properly. Please try again later.";
+      return userDataError;
     }
 
-    return data({ error: err.message }, { status: 400 });
+    userDataError.error = err.message;
+    return userDataError;
   }
 }
 
 export default function SettingsPage() {
-  const currentUserData = useLoaderData() as
-    | { name?: string; username?: string; email?: string }
-    | undefined;
-
-  const nameRef = useRef<HTMLInputElement>(null);
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-
-  async function updateUserData() {
-    // TODO: Call API to update user data.
-    const name = nameRef.current?.value;
-    const username = usernameRef.current?.value;
-    const email = emailRef.current?.value;
-
-    // var dateToUpdate = new Map<string, string | undefined>()
-
-    // if (name && name !== 'joao') {
-    //     dateToUpdate.set("name", name)
-    // }
-
-    // const nameUpdate = dateToUpdate.get("name")
-    console.log({ name, username, email });
-    // console.log({ nameUpdate })
-  }
+  const currentUserData: UserDataGet = useLoaderData();
 
   return (
     <html lang="es">
@@ -139,55 +112,7 @@ export default function SettingsPage() {
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                              <div className="space-y-2">
-                                <Label
-                                  htmlFor="name"
-                                  className="text-foreground font-bold"
-                                >
-                                  Name
-                                </Label>
-                                <Input
-                                  id="name"
-                                  ref={nameRef}
-                                  defaultValue={currentUserData?.name}
-                                  className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label
-                                  htmlFor="username"
-                                  className="text-foreground font-bold"
-                                >
-                                  Username
-                                </Label>
-                                <Input
-                                  id="username"
-                                  ref={usernameRef}
-                                  defaultValue={currentUserData?.username}
-                                  className="focus-visible:ring-purple-500 bg-input border-gray-700 text-foreground placeholder:text-muted-foreground"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label
-                                  htmlFor="email"
-                                  className="text-foreground font-bold"
-                                >
-                                  Email
-                                </Label>
-                                <Input
-                                  id="email"
-                                  ref={emailRef}
-                                  type="email"
-                                  defaultValue={currentUserData?.email}
-                                  className="bg-input border-gray-700 text-foreground placeholder:text-muted-foreground"
-                                />
-                              </div>
-                              <Button
-                                onClick={updateUserData}
-                                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                              >
-                                Save
-                              </Button>
+                              <UserDataForm userData={currentUserData} />
                             </CardContent>
                           </Card>
                         </TabsContent>
@@ -256,7 +181,9 @@ export default function SettingsPage() {
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                              <PasswordForm />
+                              <PasswordForm
+                                accessToken={currentUserData.accessToken}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>

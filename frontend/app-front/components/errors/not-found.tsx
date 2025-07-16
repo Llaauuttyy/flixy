@@ -13,22 +13,22 @@ export default function NotFound() {
       <main className="flex-1 container mx-auto flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-10">
         <div className="w-full md:w-5/8 space-y-6 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            Oops! <br/>
-            It seems {" "}
+            Oops! <br />
+            It seems{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
-               Flixy 
-            </span>
-            {" "} got it wrong...
+              Flixy
+            </span>{" "}
+            got it wrong...
           </h1>
           <p className="text-gray-400 text-lg max-w-md mx-auto md:mx-0">
-            It doesn't look like the place to be hanging out.<br/>
+            It doesn't look like the place to be hanging out.
+            <br />
             <Link to="/" className="text-purple-400 hover:text-purple-300">
-                Go back home
+              Go back home
             </Link>
             , instead!
           </p>
         </div>
-
       </main>
 
       <footer className="container mx-auto py-6 px-4 text-center border-t border-gray-800">

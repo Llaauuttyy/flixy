@@ -10,7 +10,7 @@ movie_router = APIRouter()
 
 MovieServiceDep = Annotated[MovieService, Depends(lambda: MovieService())]
 
-@movie_router.get("")
-def get_users(session: SessionDep, movie_service: MovieServiceDep) -> Page[MovieDTO]:
+@movie_router.get("/movies")
+def get_movies(session: SessionDep, movie_service: MovieServiceDep) -> Page[MovieDTO]:
     movies = movie_service.get_all_movies(Database(session))
     return paginate(movies)
