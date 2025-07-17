@@ -16,7 +16,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const mockReviews = [
@@ -48,19 +48,35 @@ const mockReviews = [
   },
 ];
 
+interface Movie {
+  id: string;
+  title: string;
+  year: string;
+  duration: number;
+  genre: string;
+  certificate: string;
+  description: string;
+  actors: string;
+  directors: string;
+  logoUrl: string;
+  initialRating: number;
+  averageRating: number;
+  totalRatings: number;
+}
+
 export default function MovieDetail() {
   const location = useLocation();
-  // const [movie, setMovie] = useState({});
+  const [movie, setMovie] = useState<Movie>({} as Movie);
   const [userRating, setUserRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [opinion, setOpinion] = useState("");
   const [isInWatchlist, setIsInWatchlist] = useState(false);
 
-  // useEffect(() => {
-  //   if (location.state.movie) {
-  //     setMovie(location.state.movie);
-  //   }
-  // }, [location.state]);
+  useEffect(() => {
+    if (location.state.movie) {
+      setMovie(location.state.movie);
+    }
+  }, [location.state]);
 
   const handleRatingClick = (rating: number) => {
     setUserRating(rating);
@@ -77,7 +93,6 @@ export default function MovieDetail() {
 
   // TODO: Pedir a través de endpoint o usarlo en un componente.
   // const location = useLocation();
-  const movie = location.state;
 
   // Solo a modo de prueba -- TODO: Cambiar tipos de datos.
   const getDataFromMovie = (data: string): string => {
@@ -88,9 +103,7 @@ export default function MovieDetail() {
     }
   };
 
-  const getDurationFromMovie = (minutes_str: string): string => {
-    let minutes = parseInt(minutes_str, 10);
-
+  const getDurationFromMovie = (minutes: number): string => {
     let hours = Math.floor(minutes / 60);
     let remainingMinutes = minutes % 60;
 
@@ -157,7 +170,7 @@ export default function MovieDetail() {
           <div className="lg:col-span-1">
             <div className="sticky top-24">
               <img
-                src={movie.image || "/placeholder.svg"}
+                src={movie.logoUrl || "/placeholder.svg"}
                 alt={movie.title}
                 width={400}
                 height={600}
@@ -178,7 +191,7 @@ export default function MovieDetail() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  <span>{movie.duration}</span>
+                  <span>{getDurationFromMovie(movie.duration)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Award className="w-4 h-4" />
@@ -288,7 +301,7 @@ export default function MovieDetail() {
                   </div>
                   {userRating > 0 && (
                     <p className="text-sm text-slate-400 mt-2">
-                      Tu calificación: {userRating}/10
+                      Tu calificación: {userRating}/5
                     </p>
                   )}
                 </div>
