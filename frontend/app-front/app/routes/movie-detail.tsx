@@ -16,7 +16,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const mockReviews = [
@@ -50,17 +50,17 @@ const mockReviews = [
 
 export default function MovieDetail() {
   const location = useLocation();
-  const [movie, setMovie] = useState({});
+  // const [movie, setMovie] = useState({});
   const [userRating, setUserRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [opinion, setOpinion] = useState("");
   const [isInWatchlist, setIsInWatchlist] = useState(false);
 
-  useEffect(() => {
-    if (location.state.movie) {
-      setMovie(location.state.movie);
-    }
-  }, [location.state]);
+  // useEffect(() => {
+  //   if (location.state.movie) {
+  //     setMovie(location.state.movie);
+  //   }
+  // }, [location.state]);
 
   const handleRatingClick = (rating: number) => {
     setUserRating(rating);
@@ -76,7 +76,7 @@ export default function MovieDetail() {
   };
 
   // TODO: Pedir a través de endpoint o usarlo en un componente.
-  const location = useLocation();
+  // const location = useLocation();
   const movie = location.state;
 
   // Solo a modo de prueba -- TODO: Cambiar tipos de datos.
@@ -188,7 +188,7 @@ export default function MovieDetail() {
 
               {/* Genres */}
               <div className="flex flex-wrap gap-2 mb-6">
-                {movie.genre?.split(",").map((g) => (
+                {movie.genre?.split(",").map((g: any) => (
                   <Badge
                     variant="secondary"
                     className="bg-slate-800 text-slate-300"
