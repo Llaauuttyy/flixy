@@ -1,12 +1,14 @@
-FROM node:18-alpine
+FROM node:20.18.0
 
-WORKDIR /app
+WORKDIR /front
 
-COPY package.json package-lock.json ./
+COPY frontend/app-front/package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY frontend/app-front/ .
+
+RUN npm run build
 
 EXPOSE 3000
 

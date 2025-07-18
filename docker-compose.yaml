@@ -1,18 +1,28 @@
 services:
   front:
-    build: ./frontend/app-front
+    build:
+      context: .
+      dockerfile: frontend/app-front/Dockerfile
+    env_file: .env
     ports:
       - "${EXT_FRONT_PORT}:${INT_FRONT_PORT}"
     volumes:
-      - ./frontend/app-front:/app
-      - /app/node_modules
+      - ./frontend/app-front:/front
+      - /front/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
 
   back:
     build: ./backend
+    env_file: .env
+    depends_on:
+      - db
     ports:
       - "${EXT_BACK_PORT}:${INT_BACK_PORT}"
+    environment:
+      DB_HOST: ${DB_HOST}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_PORT: ${INT_DB_PORT}
     volumes:
       - ./backend:/code
 
@@ -22,11 +32,20 @@ services:
       - "${EXT_DB_PORT}:${INT_DB_PORT}"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      # MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TEST_DATABASE_URL: mysql+mysqlconnector://root:root@test-db:3306/flixy_test
     volumes:
       - db_mysql:/var/lib/mysql
-  
+
+  test-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: flixy_test
+    ports:
+      - "3307:3306"
+
 volumes:
   db_mysql:

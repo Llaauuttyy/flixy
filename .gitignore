@@ -3,7 +3,16 @@
 
 # Workspace
 .qodo
+.vscode
+
+# Front
+.npmrc
+package-lock.json
 
 # Backend
 /backend/.venv
-/backend/app/__pycache__
+**/__pycache__/
+*.pyc
+
+# Tests
+.pytest_cache
