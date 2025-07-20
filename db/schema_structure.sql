@@ -30,3 +30,15 @@ CREATE TABLE movies (
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE ratings (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  movie_id int NOT NULL,
+  user_rating int NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
+);
