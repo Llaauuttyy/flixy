@@ -4,24 +4,31 @@ import { useState } from "react";
 
 interface StarRatingProps {
   initialRating: number;
-  onRatingChange?: (rating: number) => void;
+  // onRatingChange?: (rating: number) => void;
+  movieId: number;
   size?: number;
   interactive?: boolean;
 }
 
 export function StarRating({
   initialRating,
-  onRatingChange,
+  movieId,
   size = 24,
   interactive = true,
 }: StarRatingProps) {
   const [currentRating, setCurrentRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
 
+  // const handleRatingChange = (newRating: number) => {
+  //   setCurrentRating(newRating);
+  //   console.log(`Movie "${movieId}" rated: ${newRating} stars`);
+  // };
+
   const handleClick = (rating: number) => {
     if (interactive) {
       setCurrentRating(rating);
-      onRatingChange?.(rating);
+      console.log(`Movie "${movieId}" rated: ${rating} stars`);
+      // onRatingChange?.(rating);
     }
   };
 

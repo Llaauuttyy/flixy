@@ -15,6 +15,7 @@ import { Separator } from "../../components/ui/separator";
 import type { Route } from "./+types/movie-detail";
 
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
+import { StarRating } from "components/ui/star-rating";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type { MovieDataGet } from "../../services/api/flixy/types/movie";
 
@@ -189,6 +190,14 @@ export default function MovieDetail() {
                       {genre.trim()}
                     </Badge>
                   ))}
+              </div>
+
+              <div>
+                <StarRating
+                  initialRating={0}
+                  movieId={Number(currentMovieData.id)}
+                  size={24}
+                />
               </div>
 
               <p className="text-lg leading-relaxed text-[#E0E0E0]">

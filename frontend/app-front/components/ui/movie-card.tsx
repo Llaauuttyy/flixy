@@ -25,12 +25,12 @@ export function MovieCard({ movie }: MovieCardProps) {
   // TODO: Crear endpoint para setear el rating del usuario.
   const userRating = 0;
   const [showRating, setShowRating] = useState(false);
-  const [currentRating, setCurrentRating] = useState(userRating);
+  // const [currentRating, setCurrentRating] = useState(userRating);
 
-  const handleRatingChange = (newRating: number) => {
-    setCurrentRating(newRating);
-    console.log(`Movie "${movie.title}" rated: ${newRating} stars`);
-  };
+  // const handleRatingChange = (newRating: number) => {
+  //   setCurrentRating(newRating);
+  //   console.log(`Movie "${movie.title}" rated: ${newRating} stars`);
+  // };
 
   return (
     <Card
@@ -62,8 +62,8 @@ export function MovieCard({ movie }: MovieCardProps) {
           <div>Rate this movie</div>
           <div>
             <StarRating
-              initialRating={currentRating}
-              onRatingChange={handleRatingChange}
+              initialRating={userRating}
+              movieId={movie.id}
               size={32}
             />
           </div>
