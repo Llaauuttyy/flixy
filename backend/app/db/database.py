@@ -1,4 +1,5 @@
 from sqlmodel import select
+from sqlalchemy import and_
 
 class Database:
     def __init__(self, db_session):
@@ -22,3 +23,8 @@ class Database:
     def exists_by(self, model, field_name, value):
         statement = select(model).where(getattr(model, field_name) == value)
         return self.db_session.exec(statement).first() is not None
+    
+    def find_by_multiple(self, model, **filters):
+        conditions = [getattr(model, field) == value for field, value in filters.items()]
+        statement = select(model).where(and_(*conditions))
+        return self.db_session.exec(statement).first()

@@ -1,4 +1,5 @@
-from sqlmodel import Field, SQLModel
+from typing import List
+from sqlmodel import Field, SQLModel, Relationship
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
@@ -8,3 +9,5 @@ class User(SQLModel, table=True):
     username: str = Field(index=True, unique=True)
     email: str
     password: str
+
+    ratings: List["Rating"] = Relationship(back_populates="user")

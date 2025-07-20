@@ -1,4 +1,5 @@
-from sqlmodel import Field, SQLModel
+from typing import List, Optional
+from sqlmodel import Field, SQLModel, Relationship
 
 class Movie(SQLModel, table=True):
     __tablename__ = "movies"
@@ -15,3 +16,5 @@ class Movie(SQLModel, table=True):
     writers: str
     plot: str
     logo_url: str
+
+    ratings: List["Rating"] = Relationship(back_populates="movie")
