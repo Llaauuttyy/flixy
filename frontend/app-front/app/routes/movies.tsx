@@ -14,17 +14,18 @@ interface Page<T> {
 }
 
 interface Movie {
-  id: string;
+  id: number;
   title: string;
-  year: string;
+  year: number;
+  imdb_rating: number;
+  genres: string;
+  countries: string;
   duration: number;
-  genre: string;
-  certificate: string;
-  description: string;
-  actors: string;
+  cast: string;
   directors: string;
-  logoUrl: string;
-  initialRating: number;
+  writers: string;
+  plot: string;
+  logo_url: string;
 }
 
 const DEFAULT_PAGE = 1;

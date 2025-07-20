@@ -22,15 +22,6 @@ export default function MovieDetail() {
   const location = useLocation();
   const movie = location.state;
 
-  // Solo a modo de prueba -- TODO: Cambiar tipos de datos.
-  const getDataFromMovie = (data: string): string => {
-    if (data.length > 2) {
-      return data.replace(/\[|\]|'/g, "");
-    } else {
-      return "No data available";
-    }
-  };
-
   const getDurationFromMovie = (minutes_str: string): string => {
     let minutes = parseInt(minutes_str, 10);
 
@@ -62,8 +53,12 @@ export default function MovieDetail() {
             {/* Movie Poster */}
             <div className="md:col-span-1 flex justify-center">
               <img
-                src=""
-                alt="Movie Poster"
+                src={movie.logo_url}
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.onerror = null;
+                  target.src = "./poster-not-found.jpg";
+                }}
                 className="w-[400px] h-[600px] rounded-lg shadow-lg object-cover bg-black"
               />
             </div>
@@ -89,13 +84,27 @@ export default function MovieDetail() {
                 />
                 <div className="flex items-center gap-1">
                   <Star className="w-5 h-5 fill-[#FFD700] text-[#FFD700]" />
-                  <span className="text-lg font-semibold">0.0</span>
-                  <span className="text-sm">/10</span>
+                  <span className="text-lg font-semibold">
+                    {movie.imdb_rating}
+                  </span>
+                  <span className="text-sm">/10</span>{" "}
+                  <Badge className="ml-2 bg-yellow-400 text-black font-bold rounded-sm px-1.5 py-0.5">
+                    IMDb
+                  </Badge>
+                </div>
+                <Separator
+                  orientation="vertical"
+                  className="h-6 bg-[#202135]"
+                />
+                <div className="flex items-center gap-1">
+                  <span className="text-lg">
+                    {movie.countries.split(",")[0]}
+                  </span>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {movie.genre.split(",").map((genre: string, index: number) => (
+                {movie.genres.split(",").map((genre: string, index: number) => (
                   <Badge
                     key={index}
                     className="bg-[#202135] text-[#E0E0E0] hover:bg-[#202135]/80"
@@ -106,7 +115,7 @@ export default function MovieDetail() {
               </div>
 
               <p className="text-lg leading-relaxed text-[#E0E0E0]">
-                {movie.description}
+                {movie.plot}
               </p>
 
               <div className="flex gap-4">
@@ -135,7 +144,8 @@ export default function MovieDetail() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-lg text-[#A0A0A0]">
-                      {getDataFromMovie(movie.directors)}
+                      {movie.directors}
+                      {/* {movie.directors} */}
                     </p>
                   </CardContent>
                 </Card>
@@ -146,7 +156,7 @@ export default function MovieDetail() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-lg text-[#A0A0A0]">No data available</p>
+                    <p className="text-lg text-[#A0A0A0]">{movie.writers}</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
@@ -156,9 +166,7 @@ export default function MovieDetail() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-lg text-[#A0A0A0]">
-                      {getDataFromMovie(movie.actors)}
-                    </p>
+                    <p className="text-lg text-[#A0A0A0]">{movie.cast}</p>
                   </CardContent>
                 </Card>
               </div>

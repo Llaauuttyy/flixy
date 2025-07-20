@@ -1,32 +1,34 @@
 // import Image from "next/image"
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { Card, CardContent, CardTitle } from "./card";
 import { StarRating } from "./star-rating";
 
 interface MovieCardProps {
   movie: {
-    id: string;
+    id: number;
     title: string;
-    year: string;
+    year: number;
+    imdb_rating: number;
+    genres: string;
+    countries: string;
     duration: number;
-    genre: string;
-    certificate: string;
-    description: string;
-    actors: string;
+    cast: string;
     directors: string;
-    logoUrl: string;
-    initialRating: number;
+    writers: string;
+    plot: string;
+    logo_url: string;
   };
 }
 
 export function MovieCard({ movie }: MovieCardProps) {
+  // TODO: Crear endpoint para setear el rating del usuario.
+  const userRating = 0;
   const [showRating, setShowRating] = useState(false);
-  const [currentRating, setCurrentRating] = useState(movie.initialRating || 1);
+  const [currentRating, setCurrentRating] = useState(userRating);
 
   const handleRatingChange = (newRating: number) => {
     setCurrentRating(newRating);
-    // In a real application, you would typically send this rating to a backend.
     console.log(`Movie "${movie.title}" rated: ${newRating} stars`);
   };
 
@@ -36,16 +38,17 @@ export function MovieCard({ movie }: MovieCardProps) {
       onMouseEnter={() => setShowRating(true)}
       onMouseLeave={() => setShowRating(false)}
     >
-      <CardHeader className="p-0 pb-4 text-center">
-        <CardTitle className="text-white text-lg">{movie.title}</CardTitle>
-      </CardHeader>
-      <CardContent className="relative w-full h-full flex items-center justify-center p-0">
+      <CardContent>
         <img
-          src={movie.logoUrl || "/placeholder.svg"}
-          alt={`${movie.title} logo`}
+          src={movie.logo_url}
+          onError={(e) => {
+            const target = e.currentTarget;
+            target.onerror = null;
+            target.src = "./poster-not-found.jpg";
+          }}
           width={150}
           height={150}
-          className="object-contain transition-all duration-300 group-hover:blur-sm group-hover:opacity-100"
+          className="absolute top-0 left-0 w-full h-full object-cover transition-all duration-300 group-hover:blur-sm group-hover:opacity-100"
         />
         {/* Rating overlay */}
         <div
@@ -53,6 +56,9 @@ export function MovieCard({ movie }: MovieCardProps) {
             showRating ? "opacity-90" : "opacity-0 pointer-events-none"
           }`}
         >
+          <CardTitle className="text-white text-lg p-5">
+            {movie.title}
+          </CardTitle>
           <div>Rate this movie</div>
           <div>
             <StarRating
