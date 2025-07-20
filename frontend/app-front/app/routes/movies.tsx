@@ -3,6 +3,7 @@ import { MovieCard } from "components/ui/movie-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { useLoaderData } from "react-router-dom";
 import { getMovies } from "services/api/flixy/server/movies";
+import { getAccessToken } from "services/api/utils";
 import type { Route } from "./+types/movies";
 
 interface Page<T> {
@@ -16,6 +17,7 @@ interface Page<T> {
 interface MoviesData {
   movies: Page<Movie>;
   error?: string | undefined;
+  access_token: string | undefined;
 }
 
 interface Movie {
@@ -31,6 +33,7 @@ interface Movie {
   writers: string;
   plot: string;
   logo_url: string;
+  user_rating: number | null;
 }
 
 const DEFAULT_PAGE = 1;
@@ -44,6 +47,8 @@ export async function loader({ request }: Route.LoaderArgs) {
       DEFAULT_PAGE_SIZE,
       request
     );
+    moviesData.access_token = await getAccessToken(request);
+
     return moviesData;
   } catch (err: Error | any) {
     console.log("API GET /movies said: ", err.message);
@@ -96,7 +101,11 @@ export default function MoviesPage() {
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
                 {moviesData.movies.items.map((movie) => (
-                  <MovieCard key={movie.id} movie={movie} />
+                  <MovieCard
+                    key={movie.id}
+                    movie={movie}
+                    accessToken={moviesData.access_token}
+                  />
                 ))}
               </div>
             </main>

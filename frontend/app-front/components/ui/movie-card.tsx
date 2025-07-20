@@ -18,12 +18,14 @@ interface MovieCardProps {
     writers: string;
     plot: string;
     logo_url: string;
+    user_rating: number | null;
   };
+  accessToken: string | undefined;
 }
 
-export function MovieCard({ movie }: MovieCardProps) {
+export function MovieCard({ movie, accessToken }: MovieCardProps) {
   // TODO: Crear endpoint para setear el rating del usuario.
-  const userRating = 0;
+  const userRating = movie.user_rating || 0;
   const [showRating, setShowRating] = useState(false);
   // const [currentRating, setCurrentRating] = useState(userRating);
 
@@ -60,10 +62,12 @@ export function MovieCard({ movie }: MovieCardProps) {
             {movie.title}
           </CardTitle>
           <div>Rate this movie</div>
+
           <div>
             <StarRating
               initialRating={userRating}
               movieId={movie.id}
+              accessToken={accessToken}
               size={32}
             />
           </div>

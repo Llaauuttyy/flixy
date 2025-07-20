@@ -17,6 +17,7 @@ import type { Route } from "./+types/movie-detail";
 
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { StarRating } from "components/ui/star-rating";
+import { getAccessToken } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type { MovieDataGet } from "../../services/api/flixy/types/movie";
 
@@ -36,7 +37,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 
   try {
-    return await getMovieData(request, movieId);
+    movieData = await getMovieData(request, movieId);
+    movieData.accessToken = await getAccessToken(request);
+
+    return movieData;
   } catch (err: Error | any) {
     console.log("API GET /movie/:movieId said: ", err.message);
 
@@ -195,8 +199,9 @@ export default function MovieDetail() {
 
               <div>
                 <StarRating
-                  initialRating={0}
+                  initialRating={Number(currentMovieData.user_rating) || 0}
                   movieId={Number(currentMovieData.id)}
+                  accessToken={String(currentMovieData.accessToken)}
                   size={24}
                 />
               </div>

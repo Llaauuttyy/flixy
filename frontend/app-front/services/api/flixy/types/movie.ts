@@ -12,5 +12,12 @@ export interface MovieDataGet {
   writers: string | undefined;
   plot: string | undefined;
   logo_url: string | undefined;
+  access_token?: string | undefined;
+  [key: string | number]: string | number | null | undefined;
+}
+
+export interface MovieSetRating {
+  id: number;
+  rating: number;
   [key: string | number]: string | number | null | undefined;
 }

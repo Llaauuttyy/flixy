@@ -2,10 +2,13 @@ import { cn } from "lib/utils";
 import { Star } from "lucide-react";
 import { useState } from "react";
 
+import { setMovieRating } from "services/api/flixy/client/movies";
+import type { MovieSetRating } from "services/api/flixy/types/movie";
 interface StarRatingProps {
   initialRating: number;
   // onRatingChange?: (rating: number) => void;
   movieId: number;
+  accessToken: string | undefined;
   size?: number;
   interactive?: boolean;
 }
@@ -13,22 +16,24 @@ interface StarRatingProps {
 export function StarRating({
   initialRating,
   movieId,
+  accessToken,
   size = 24,
   interactive = true,
 }: StarRatingProps) {
   const [currentRating, setCurrentRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
 
-  // const handleRatingChange = (newRating: number) => {
-  //   setCurrentRating(newRating);
-  //   console.log(`Movie "${movieId}" rated: ${newRating} stars`);
-  // };
-
-  const handleClick = (rating: number) => {
+  const handleClick = async (rating: number) => {
     if (interactive) {
-      setCurrentRating(rating);
       console.log(`Movie "${movieId}" rated: ${rating} stars`);
-      // onRatingChange?.(rating);
+      setCurrentRating(rating);
+
+      let newRating: MovieSetRating = {
+        id: movieId,
+        rating: rating,
+      };
+
+      await setMovieRating(accessToken, newRating);
     }
   };
 
