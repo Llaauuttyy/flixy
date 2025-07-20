@@ -28,3 +28,20 @@ class Database:
         conditions = [getattr(model, field) == value for field, value in filters.items()]
         statement = select(model).where(and_(*conditions))
         return self.db_session.exec(statement).first()
+    
+    def left_join(
+        self,
+        left_model,
+        right_model,
+        join_condition,
+        filters: list = None
+    ):
+        statement = (
+            select(left_model, right_model)
+            .join(right_model, join_condition, isouter=True)
+        )
+
+        if filters:
+            statement = statement.where(and_(*filters))
+
+        return self.db_session.exec(statement).all()

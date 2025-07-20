@@ -25,3 +25,7 @@ class MovieRatingDTO(BaseModel):
     user_id: int
     movie_id: int
     user_rating: int
+
+class MovieGetResponse(BaseModel):
+    movie: MovieDTO
+    rating: Optional[MovieRatingDTO] = None
