@@ -13,6 +13,11 @@ interface Page<T> {
   pages: number;
 }
 
+interface MoviesData {
+  movies: Page<Movie>;
+  error?: string | undefined;
+}
+
 interface Movie {
   id: number;
   title: string;
@@ -32,13 +37,46 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 40;
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const movies = await getMovies(DEFAULT_PAGE, DEFAULT_PAGE_SIZE, request);
+  let moviesData: MoviesData = {} as MoviesData;
+  try {
+    moviesData.movies = await getMovies(
+      DEFAULT_PAGE,
+      DEFAULT_PAGE_SIZE,
+      request
+    );
+    return moviesData;
+  } catch (err: Error | any) {
+    console.log("API GET /movies said: ", err.message);
 
-  return movies;
+    if (err instanceof TypeError) {
+      moviesData.error =
+        "Service's not working properly. Please try again later.";
+      return moviesData;
+    }
+
+    moviesData.error = err.message;
+    return moviesData;
+  }
 }
 
 export default function MoviesPage() {
-  const moviesPage: Page<Movie> = useLoaderData();
+  const moviesData: MoviesData = useLoaderData();
+
+  if (moviesData.error) {
+    return (
+      <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
+        <SidebarNav />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <HeaderFull />
+
+          <main className="overflow-auto mx-auto py-6 px-6 md:px-6">
+            <p className="text-gray-400 mb-6">{moviesData.error}</p>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <html lang="es">
@@ -57,7 +95,7 @@ export default function MoviesPage() {
                 </p>
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
-                {moviesPage.items.map((movie) => (
+                {moviesData.movies.items.map((movie) => (
                   <MovieCard key={movie.id} movie={movie} />
                 ))}
               </div>

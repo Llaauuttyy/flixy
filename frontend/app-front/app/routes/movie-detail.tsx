@@ -1,5 +1,5 @@
 import { Play, Plus, Star } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
@@ -12,15 +12,44 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
+import type { Route } from "./+types/movie-detail";
 
-import { useLocation } from "react-router-dom";
+import { getMovieData } from "../../services/api/flixy/server/movies";
+import type { MovieDataGet } from "../../services/api/flixy/types/movie";
+
+export async function loader({ request, params }: Route.LoaderArgs) {
+  let movieData: MovieDataGet = {} as MovieDataGet;
+
+  const movieId = params.movieId;
+
+  if (
+    !movieId ||
+    movieId.trim() === "" ||
+    isNaN(Number(movieId)) ||
+    Number(movieId) < 1
+  ) {
+    movieData.error = "Invalid movie ID";
+    return movieData;
+  }
+
+  try {
+    return await getMovieData(request, movieId);
+  } catch (err: Error | any) {
+    console.log("API GET /movie/:movieId said: ", err.message);
+
+    if (err instanceof TypeError) {
+      movieData.error =
+        "Service's not working properly. Please try again later.";
+      return movieData;
+    }
+
+    movieData.error = err.message;
+    return movieData;
+  }
+}
 
 export default function MovieDetail() {
-  const { movieId } = useParams();
-
-  // TODO: Pedir a través de endpoint o usarlo en un componente.
-  const location = useLocation();
-  const movie = location.state;
+  let currentMovieData: MovieDataGet = useLoaderData();
 
   const getDurationFromMovie = (minutes_str: string): string => {
     let minutes = parseInt(minutes_str, 10);
@@ -41,6 +70,22 @@ export default function MovieDetail() {
     return duration;
   };
 
+  if (currentMovieData.error) {
+    return (
+      <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
+        <SidebarNav />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <HeaderFull />
+
+          <main className="overflow-auto mx-auto py-6 px-6 md:px-6">
+            <p className="text-gray-400 mb-6">{currentMovieData.error}</p>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
       <SidebarNav />
@@ -53,11 +98,11 @@ export default function MovieDetail() {
             {/* Movie Poster */}
             <div className="md:col-span-1 flex justify-center">
               <img
-                src={movie.logo_url}
+                src={currentMovieData.logo_url}
                 onError={(e) => {
                   const target = e.currentTarget;
                   target.onerror = null;
-                  target.src = "./poster-not-found.jpg";
+                  target.src = "../poster-not-found.jpg";
                 }}
                 className="w-[400px] h-[600px] rounded-lg shadow-lg object-cover bg-black"
               />
@@ -66,17 +111,17 @@ export default function MovieDetail() {
             {/* Movie Details */}
             <div className="md:col-span-2 space-y-6">
               <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-                {movie.title}
+                {currentMovieData.title}
               </h1>
 
               <div className="flex items-center gap-4 text-[#A0A0A0]">
-                <span className="text-lg"> {movie.year} </span>
+                <span className="text-lg"> {currentMovieData.year} </span>
                 <Separator
                   orientation="vertical"
                   className="h-6 bg-[#202135]"
                 />
                 <span className="text-lg">
-                  {getDurationFromMovie(movie.duration)}
+                  {getDurationFromMovie(String(currentMovieData.duration))}
                 </span>
                 <Separator
                   orientation="vertical"
@@ -85,7 +130,7 @@ export default function MovieDetail() {
                 <div className="flex items-center gap-1">
                   <Star className="w-5 h-5 fill-[#FFD700] text-[#FFD700]" />
                   <span className="text-lg font-semibold">
-                    {movie.imdb_rating}
+                    {currentMovieData.imdb_rating}
                   </span>
                   <span className="text-sm">/10</span>{" "}
                   <Badge className="ml-2 bg-yellow-400 text-black font-bold rounded-sm px-1.5 py-0.5">
@@ -98,24 +143,26 @@ export default function MovieDetail() {
                 />
                 <div className="flex items-center gap-1">
                   <span className="text-lg">
-                    {movie.countries.split(",")[0]}
+                    {String(currentMovieData.countries).split(",")[0]}
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {movie.genres.split(",").map((genre: string, index: number) => (
-                  <Badge
-                    key={index}
-                    className="bg-[#202135] text-[#E0E0E0] hover:bg-[#202135]/80"
-                  >
-                    {genre.trim()}
-                  </Badge>
-                ))}
+                {String(currentMovieData.genres)
+                  .split(",")
+                  .map((genre: string, index: number) => (
+                    <Badge
+                      key={index}
+                      className="bg-[#202135] text-[#E0E0E0] hover:bg-[#202135]/80"
+                    >
+                      {genre.trim()}
+                    </Badge>
+                  ))}
               </div>
 
               <p className="text-lg leading-relaxed text-[#E0E0E0]">
-                {movie.plot}
+                {currentMovieData.plot}
               </p>
 
               <div className="flex gap-4">
@@ -144,8 +191,8 @@ export default function MovieDetail() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-lg text-[#A0A0A0]">
-                      {movie.directors}
-                      {/* {movie.directors} */}
+                      {currentMovieData.directors}
+                      {/* {currentMovieData.directors} */}
                     </p>
                   </CardContent>
                 </Card>
@@ -156,7 +203,9 @@ export default function MovieDetail() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-lg text-[#A0A0A0]">{movie.writers}</p>
+                    <p className="text-lg text-[#A0A0A0]">
+                      {currentMovieData.writers}
+                    </p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
@@ -166,7 +215,9 @@ export default function MovieDetail() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-lg text-[#A0A0A0]">{movie.cast}</p>
+                    <p className="text-lg text-[#A0A0A0]">
+                      {currentMovieData.cast}
+                    </p>
                   </CardContent>
                 </Card>
               </div>
