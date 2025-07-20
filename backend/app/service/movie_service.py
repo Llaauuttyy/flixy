@@ -11,11 +11,14 @@ class MovieService:
                 id=movie.id,
                 title=movie.title,
                 year=movie.year,
+                imdb_rating=movie.imdb_rating,
+                genres=movie.genres,
+                countries=movie.countries,
                 duration=movie.duration,
-                genre=movie.genre,
-                certificate=movie.certificate,
-                description=movie.description,
-                actors=movie.actors,
-                directors=movie.directors
+                cast=movie.cast,
+                directors=movie.directors,
+                writers=movie.writers,
+                plot=movie.plot,
+                logo_url=movie.logo_url,
             ) for movie in movies
         ]

@@ -5,10 +5,13 @@ class Movie(SQLModel, table=True):
 
     id: int = Field(default=None, primary_key=True)
     title: str
-    year: str
+    year: int
+    imdb_rating: float
+    genres: str
+    countries: str
     duration: int
-    genre: str
-    certificate: str
-    description: str
-    actors: str
+    cast: str
     directors: str
+    writers: str
+    plot: str
+    logo_url: str
