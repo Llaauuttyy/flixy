@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
+import { ReviewCard } from "../../components/ui/review-card";
 import { Separator } from "../../components/ui/separator";
 import type { Route } from "./+types/movie-detail";
 
@@ -263,7 +264,8 @@ export default function MovieDetail() {
 
               <Separator className="bg-[#202135]" />
 
-              {/* Reviews Section */}
+              <ReviewCard title={String(currentMovieData.title)} />
+
               <div>
                 <h2 className="text-2xl font-semibold mb-6">
                   Reviews from flixies
