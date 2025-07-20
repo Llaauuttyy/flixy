@@ -1,4 +1,4 @@
-import { Play, Plus, Star } from "lucide-react";
+import { MessageCircle, Play, Plus, Star, ThumbsUp } from "lucide-react";
 import { useLoaderData } from "react-router-dom";
 
 import { HeaderFull } from "components/ui/header-full";
@@ -14,6 +14,7 @@ import {
 import { Separator } from "../../components/ui/separator";
 import type { Route } from "./+types/movie-detail";
 
+import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type { MovieDataGet } from "../../services/api/flixy/types/movie";
 
@@ -50,6 +51,35 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export default function MovieDetail() {
   let currentMovieData: MovieDataGet = useLoaderData();
+
+  const mockReviews = [
+    {
+      id: 1,
+      user: {
+        name: "María González",
+        avatar: "/placeholder.svg?height=40&width=40",
+        initials: "MG",
+      },
+      rating: 5,
+      comment:
+        "Una obra maestra cinematográfica. Nolan vuelve a sorprender con su narrativa no lineal y las actuaciones son excepcionales.",
+      timeAgo: "hace 2 horas",
+      likes: 24,
+    },
+    {
+      id: 2,
+      user: {
+        name: "Carlos Ruiz",
+        avatar: "/placeholder.svg?height=40&width=40",
+        initials: "CR",
+      },
+      rating: 4,
+      comment:
+        "Excelente película biográfica. Cillian Murphy está brillante como Oppenheimer.",
+      timeAgo: "hace 1 día",
+      likes: 15,
+    },
+  ];
 
   const getDurationFromMovie = (minutes_str: string): string => {
     let minutes = parseInt(minutes_str, 10);
@@ -104,7 +134,7 @@ export default function MovieDetail() {
                   target.onerror = null;
                   target.src = "../poster-not-found.jpg";
                 }}
-                className="w-[400px] h-[600px] rounded-lg shadow-lg object-cover bg-black"
+                className="sticky top-1 w-[400px] h-[600px] rounded-lg shadow-lg object-cover bg-black"
               />
             </div>
 
@@ -211,7 +241,7 @@ export default function MovieDetail() {
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
                   <CardHeader>
                     <CardTitle className="text-xl font-semibold">
-                      Stars
+                      Cast
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -220,6 +250,68 @@ export default function MovieDetail() {
                     </p>
                   </CardContent>
                 </Card>
+              </div>
+
+              <Separator className="bg-[#202135]" />
+
+              {/* Reviews Section */}
+              <div>
+                <h2 className="text-2xl font-semibold mb-6">
+                  Reviews from flixies
+                </h2>
+                <div className="space-y-4">
+                  {mockReviews.map((review) => (
+                    <Card
+                      key={review.id}
+                      className="bg-slate-800/50 border-slate-700"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <Avatar>
+                            <AvatarImage
+                              src={
+                                review.user.avatar ||
+                                "/placeholder.svg?height=32&width=32"
+                              }
+                            />
+                            <AvatarFallback className="bg-slate-700 text-white">
+                              {review.user.initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="font-medium">
+                                {review.user.name}
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                <span className="text-sm font-medium">
+                                  {review.rating}
+                                </span>
+                              </div>
+                              <span className="text-sm text-slate-400">
+                                {review.timeAgo}
+                              </span>
+                            </div>
+                            <p className="text-slate-300 mb-3">
+                              {review.comment}
+                            </p>
+                            <div className="flex items-center gap-4">
+                              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                                <ThumbsUp className="w-4 h-4" />
+                                <span className="text-sm">{review.likes}</span>
+                              </button>
+                              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                                <MessageCircle className="w-4 h-4" />
+                                <span className="text-sm">Comment</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
