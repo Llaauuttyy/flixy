@@ -20,6 +20,7 @@ import { StarRating } from "components/ui/star-rating";
 import { getAccessToken } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type { MovieDataGet } from "../../services/api/flixy/types/movie";
+import type { ApiResponse } from "../../services/api/flixy/types/overall";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   let movieData: MovieDataGet = {} as MovieDataGet;
@@ -36,27 +37,31 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     return movieData;
   }
 
+  let apiResponse: ApiResponse = {};
+
   try {
     movieData = await getMovieData(request, movieId);
-    movieData.accessToken = await getAccessToken(request);
+    apiResponse.accessToken = await getAccessToken(request);
+    apiResponse.data = movieData;
 
-    return movieData;
+    return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /movie/:movieId said: ", err.message);
 
     if (err instanceof TypeError) {
-      movieData.error =
+      apiResponse.error =
         "Service's not working properly. Please try again later.";
-      return movieData;
+      return apiResponse;
     }
 
-    movieData.error = err.message;
-    return movieData;
+    apiResponse.error = err.message;
+    return apiResponse;
   }
 }
 
 export default function MovieDetail() {
-  let currentMovieData: MovieDataGet = useLoaderData();
+  let apiResponse: ApiResponse = useLoaderData();
+  let currentMovieData: MovieDataGet = apiResponse.data || {};
 
   const mockReviews = [
     {
@@ -106,7 +111,7 @@ export default function MovieDetail() {
     return duration;
   };
 
-  if (currentMovieData.error) {
+  if (apiResponse.error) {
     return (
       <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
         <SidebarNav />
@@ -115,7 +120,7 @@ export default function MovieDetail() {
           <HeaderFull />
 
           <main className="overflow-auto mx-auto py-6 px-6 md:px-6">
-            <p className="text-gray-400 mb-6">{currentMovieData.error}</p>
+            <p className="text-gray-400 mb-6">{apiResponse.error}</p>
           </main>
         </div>
       </div>
@@ -201,7 +206,7 @@ export default function MovieDetail() {
                 <StarRating
                   initialRating={Number(currentMovieData.user_rating) || 0}
                   movieId={Number(currentMovieData.id)}
-                  accessToken={String(currentMovieData.accessToken)}
+                  accessToken={String(apiResponse.accessToken)}
                   size={24}
                 />
               </div>

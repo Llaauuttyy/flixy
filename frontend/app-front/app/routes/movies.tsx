@@ -4,6 +4,7 @@ import { SidebarNav } from "components/ui/sidebar-nav";
 import { useLoaderData } from "react-router-dom";
 import { getMovies } from "services/api/flixy/server/movies";
 import { getAccessToken } from "services/api/utils";
+import type { ApiResponse } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
 
 interface Page<T> {
@@ -16,8 +17,6 @@ interface Page<T> {
 
 interface MoviesData {
   movies: Page<Movie>;
-  error?: string | undefined;
-  access_token: string | undefined;
 }
 
 interface Movie {
@@ -40,34 +39,40 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 40;
 
 export async function loader({ request }: Route.LoaderArgs) {
+  let apiResponse: ApiResponse = {};
+
   let moviesData: MoviesData = {} as MoviesData;
+
   try {
     moviesData.movies = await getMovies(
       DEFAULT_PAGE,
       DEFAULT_PAGE_SIZE,
       request
     );
-    moviesData.access_token = await getAccessToken(request);
 
-    return moviesData;
+    apiResponse.accessToken = await getAccessToken(request);
+
+    apiResponse.data = moviesData;
+    return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /movies said: ", err.message);
 
     if (err instanceof TypeError) {
-      moviesData.error =
+      apiResponse.error =
         "Service's not working properly. Please try again later.";
-      return moviesData;
+      return apiResponse;
     }
 
-    moviesData.error = err.message;
-    return moviesData;
+    apiResponse.error = err.message;
+    return apiResponse;
   }
 }
 
 export default function MoviesPage() {
-  const moviesData: MoviesData = useLoaderData();
+  const apiResponse: ApiResponse = useLoaderData();
+  const moviesData: MoviesData = apiResponse.data;
 
-  if (moviesData.error) {
+  if (apiResponse.error) {
     return (
       <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
         <SidebarNav />
@@ -76,7 +81,7 @@ export default function MoviesPage() {
           <HeaderFull />
 
           <main className="overflow-auto mx-auto py-6 px-6 md:px-6">
-            <p className="text-gray-400 mb-6">{moviesData.error}</p>
+            <p className="text-gray-400 mb-6">{apiResponse.error}</p>
           </main>
         </div>
       </div>
@@ -104,7 +109,7 @@ export default function MoviesPage() {
                   <MovieCard
                     key={movie.id}
                     movie={movie}
-                    accessToken={moviesData.access_token}
+                    accessToken={String(apiResponse.accessToken)}
                   />
                 ))}
               </div>

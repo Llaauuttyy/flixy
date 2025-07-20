@@ -1,4 +1,3 @@
-// import Image from "next/image"
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardTitle } from "./card";
@@ -24,15 +23,8 @@ interface MovieCardProps {
 }
 
 export function MovieCard({ movie, accessToken }: MovieCardProps) {
-  // TODO: Crear endpoint para setear el rating del usuario.
   const userRating = movie.user_rating || 0;
   const [showRating, setShowRating] = useState(false);
-  // const [currentRating, setCurrentRating] = useState(userRating);
-
-  // const handleRatingChange = (newRating: number) => {
-  //   setCurrentRating(newRating);
-  //   console.log(`Movie "${movie.title}" rated: ${newRating} stars`);
-  // };
 
   return (
     <Card
