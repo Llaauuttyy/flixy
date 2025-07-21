@@ -3,6 +3,8 @@ import { MovieCard } from "components/ui/movie-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { useLoaderData } from "react-router-dom";
 import { getMovies } from "services/api/flixy/server/movies";
+import { getAccessToken } from "services/api/utils";
+import type { ApiResponse } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
 
 interface Page<T> {
@@ -13,31 +15,78 @@ interface Page<T> {
   pages: number;
 }
 
+interface MoviesData {
+  movies: Page<Movie>;
+}
+
 interface Movie {
-  id: string;
+  id: number;
   title: string;
-  year: string;
+  year: number;
+  imdb_rating: number;
+  genres: string;
+  countries: string;
   duration: number;
-  genre: string;
-  certificate: string;
-  description: string;
-  actors: string;
+  cast: string;
   directors: string;
-  logoUrl: string;
-  initialRating: number;
+  writers: string;
+  plot: string;
+  logo_url: string;
+  user_rating: number | null;
 }
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 40;
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const movies = await getMovies(DEFAULT_PAGE, DEFAULT_PAGE_SIZE, request);
+  let apiResponse: ApiResponse = {};
 
-  return movies;
+  let moviesData: MoviesData = {} as MoviesData;
+
+  try {
+    moviesData.movies = await getMovies(
+      DEFAULT_PAGE,
+      DEFAULT_PAGE_SIZE,
+      request
+    );
+
+    apiResponse.accessToken = await getAccessToken(request);
+
+    apiResponse.data = moviesData;
+    return apiResponse;
+  } catch (err: Error | any) {
+    console.log("API GET /movies said: ", err.message);
+
+    if (err instanceof TypeError) {
+      apiResponse.error =
+        "Service's not working properly. Please try again later.";
+      return apiResponse;
+    }
+
+    apiResponse.error = err.message;
+    return apiResponse;
+  }
 }
 
 export default function MoviesPage() {
-  const moviesPage: Page<Movie> = useLoaderData();
+  const apiResponse: ApiResponse = useLoaderData();
+  const moviesData: MoviesData = apiResponse.data;
+
+  if (apiResponse.error) {
+    return (
+      <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
+        <SidebarNav />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <HeaderFull />
+
+          <main className="overflow-auto mx-auto py-6 px-6 md:px-6">
+            <p className="text-gray-400 mb-6">{apiResponse.error}</p>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <html lang="es">
@@ -56,8 +105,12 @@ export default function MoviesPage() {
                 </p>
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
-                {moviesPage.items.map((movie) => (
-                  <MovieCard key={movie.id} movie={movie} />
+                {moviesData.movies.items.map((movie) => (
+                  <MovieCard
+                    key={movie.id}
+                    movie={movie}
+                    accessToken={String(apiResponse.accessToken)}
+                  />
                 ))}
               </div>
             </main>

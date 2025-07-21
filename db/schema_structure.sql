@@ -13,17 +13,33 @@ CREATE TABLE IF NOT EXISTS users (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS movies (
-  id INT NOT NULL AUTO_INCREMENT,
-  title VARCHAR(255) NOT NULL,
-  year VARCHAR(255),
-  duration INT,
-  genre VARCHAR(255),
-  certificate VARCHAR(255),
-  description VARCHAR(1024),
-  actors VARCHAR(255),
-  directors VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+CREATE TABLE movies (
+  id int NOT NULL AUTO_INCREMENT,
+  title varchar(128) NOT NULL,
+  year int NOT NULL,
+  imdb_rating float NOT NULL,
+  genres varchar(255) NOT NULL,
+  countries varchar(128) NOT NULL,
+  duration int NOT NULL,
+  cast varchar(512) NOT NULL,
+  directors varchar(512) NOT NULL,
+  writers varchar(512) NOT NULL,
+  plot varchar(2048) NOT NULL,
+  logo_url varchar(512) NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
+);
+
+CREATE TABLE ratings (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  movie_id int NOT NULL,
+  user_rating int NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
+  UNIQUE(user_id, movie_id)
 );

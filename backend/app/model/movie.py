@@ -1,14 +1,20 @@
-from sqlmodel import Field, SQLModel
+from typing import List, Optional
+from sqlmodel import Field, SQLModel, Relationship
 
 class Movie(SQLModel, table=True):
     __tablename__ = "movies"
 
     id: int = Field(default=None, primary_key=True)
     title: str
-    year: str
+    year: int
+    imdb_rating: float
+    genres: str
+    countries: str
     duration: int
-    genre: str
-    certificate: str
-    description: str
-    actors: str
+    cast: str
     directors: str
+    writers: str
+    plot: str
+    logo_url: str
+
+    ratings: List["Rating"] = Relationship(back_populates="movie")
