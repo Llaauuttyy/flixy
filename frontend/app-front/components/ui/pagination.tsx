@@ -1,3 +1,7 @@
+import { cn } from "lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "./button";
+
 interface Page<T> {
   items: T[];
   total: number;
@@ -24,14 +28,22 @@ const ArrowButton = ({
   onClick: () => void;
 }) => {
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={onClick}
       disabled={
         direction === "left" ? currentPage === 1 : currentPage === pages
       }
+      className="h-9 w-9 p-0 text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
+      aria-label={`Página ${direction === "left" ? "anterior" : "siguiente"}`}
     >
-      {direction === "left" ? "<" : ">"}
-    </button>
+      {direction === "left" ? (
+        <ChevronLeft className="h-4 w-4" />
+      ) : (
+        <ChevronRight className="h-4 w-4" />
+      )}
+    </Button>
   );
 };
 
@@ -44,8 +56,8 @@ const PageButton = ({
   currentPage: number;
   onPageChange: (page: number) => void;
 }) => {
-  return (
-    <button
+  {
+    /* <button
       style={{
         padding: "5px 10px",
         borderRadius: "5px",
@@ -56,7 +68,27 @@ const PageButton = ({
       onClick={() => onPageChange(page)}
     >
       {page}
-    </button>
+    </button> */
+  }
+  const isCurrentPage = page === currentPage;
+
+  return (
+    <Button
+      key={page}
+      variant={isCurrentPage ? "default" : "ghost"}
+      size="sm"
+      onClick={() => onPageChange(page)}
+      className={cn(
+        "h-9 w-9 p-0",
+        isCurrentPage
+          ? "ring-offset-background transition-colors hover:text-white hover:bg-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+          : "text-slate-400 hover:text-white hover:bg-slate-800"
+      )}
+      aria-label={`Página ${page}`}
+      aria-current={isCurrentPage ? "page" : undefined}
+    >
+      {page}
+    </Button>
   );
 };
 
