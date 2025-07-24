@@ -1,7 +1,8 @@
 import { HeaderFull } from "components/ui/header-full";
 import { MovieCard } from "components/ui/movie-card";
+import { Pagination } from "components/ui/pagination";
 import { SidebarNav } from "components/ui/sidebar-nav";
-import { useLoaderData } from "react-router-dom";
+import { useFetcher, useLoaderData } from "react-router-dom";
 import { getMovies } from "services/api/flixy/server/movies";
 import { getAccessToken } from "services/api/utils";
 import type { ApiResponse } from "../../services/api/flixy/types/overall";
@@ -39,16 +40,15 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 40;
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const page = parseInt(url.searchParams.get("page") ?? `${DEFAULT_PAGE}`, 10);
+
   let apiResponse: ApiResponse = {};
 
   let moviesData: MoviesData = {} as MoviesData;
 
   try {
-    moviesData.movies = await getMovies(
-      DEFAULT_PAGE,
-      DEFAULT_PAGE_SIZE,
-      request
-    );
+    moviesData.movies = await getMovies(page, DEFAULT_PAGE_SIZE, request);
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -70,7 +70,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function MoviesPage() {
   const apiResponse: ApiResponse = useLoaderData();
-  const moviesData: MoviesData = apiResponse.data;
+  const fetcher = useFetcher();
+
+  const moviesData: MoviesData = fetcher.data?.data ?? apiResponse.data;
+  console.log("Movies data:", moviesData);
 
   if (apiResponse.error) {
     return (
@@ -104,15 +107,23 @@ export default function MoviesPage() {
                   Rate movies you've watched and share your thoughts
                 </p>
               </div>
-              <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
-                {moviesData.movies.items.map((movie) => (
-                  <MovieCard
-                    key={movie.id}
-                    movie={movie}
-                    accessToken={String(apiResponse.accessToken)}
-                  />
-                ))}
-              </div>
+              <Pagination
+                itemsPage={moviesData.movies}
+                onPageChange={(page: number) => {
+                  console.log("Changing page to:", page);
+                  fetcher.load(`/movies?page=${page}`);
+                }}
+              >
+                <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
+                  {moviesData.movies.items.map((movie) => (
+                    <MovieCard
+                      key={movie.id}
+                      movie={movie}
+                      accessToken={String(apiResponse.accessToken)}
+                    />
+                  ))}
+                </div>
+              </Pagination>
             </main>
           </div>
         </div>
