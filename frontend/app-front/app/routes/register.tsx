@@ -3,6 +3,7 @@ import RegisterForm from "../../components/register-form";
 
 import type { Route } from "./+types/login";
 
+import { useTranslation } from "react-i18next";
 import { redirect } from "react-router";
 import { handleRegistration } from "services/api/flixy/server/auth";
 
@@ -37,6 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Register() {
   const actionData = useActionData() as { error?: string } | undefined;
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
@@ -69,7 +71,7 @@ export default function Register() {
 
       <footer className="container mx-auto py-6 px-4 text-center border-t border-gray-800">
         <p className="text-gray-500 text-sm">
-          © {new Date().getFullYear()} Flixy. All rights reserved.
+          © {new Date().getFullYear()} Flixy. {t("general.rights_reserved")}
         </p>
       </footer>
     </div>

@@ -1,0 +1,45 @@
+export const enTranslation = {
+  general: {
+    rights_reserved: "All rights reserved.",
+  },
+  header: {
+    sign_out: "Sign out",
+  },
+  login: {
+    welcome_title: "Welcome back to",
+    welcome_description:
+      "Sign in to access your profile and continue your journey with us.",
+    welcome_item_uptime: "Uptime",
+    welcome_item_secure_access: "Secure Access",
+    welcome_item_support: "24/7 Support",
+    sign_in_title: "Sign in to your account",
+    sign_in_description: "Enter your credentials below to access your account",
+    username: "Username",
+    password: "Password",
+    forgot_password: "Forgot password?",
+    sign_in_button_loading: "Signing in...",
+    sign_in_button: "Sign In",
+    dont_have_account: "Don't have an account?",
+    sign_up: "Sign Up",
+    create_account: "Create an account",
+  },
+  register: {
+    sign_up_title: "Create your account",
+    name: "Name",
+    username: "Username",
+    email: "Email",
+    password: "Password",
+    confirm_password: "Confirm Password",
+    sign_up_button_loading: "Registering...",
+    sign_up_button: "Register",
+  },
+  sidebar_nav: {
+    home: "Home",
+    movies: "Movies",
+    social: "Social",
+    reviews: "Reviews",
+    explore: "Explore",
+    profile: "My Profile",
+    settings: "Settings",
+  },
+};

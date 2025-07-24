@@ -1,6 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 export default function NotFound() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
       <header className="container mx-auto py-6 px-4 flex justify-between items-center">
@@ -33,7 +36,7 @@ export default function NotFound() {
 
       <footer className="container mx-auto py-6 px-4 text-center border-t border-gray-800">
         <p className="text-gray-500 text-sm">
-          © {new Date().getFullYear()} Flixy. All rights reserved.
+          © {new Date().getFullYear()} Flixy. {t("general.rights_reserved")}
         </p>
       </footer>
     </div>

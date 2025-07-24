@@ -3,11 +3,13 @@ import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
 import { Bell, Loader2, Search } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSubmit } from "react-router-dom";
 
 export function HeaderFull() {
   const submit = useSubmit();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   function signOut() {
     setIsLoading(true);
@@ -42,7 +44,7 @@ export function HeaderFull() {
                 Signing out...
               </>
             ) : (
-              "Sign out"
+              t("header.sign_out")
             )}
           </div>
           <Button
