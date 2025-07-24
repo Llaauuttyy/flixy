@@ -13,9 +13,16 @@ class Database:
     def rollback(self):
         self.db_session.rollback()
 
-    def find_all(self, model):
-        return self.db_session.query(model).all()
-    
+    def find_all(self, model, condition=None, options=None):
+        query_expression = select(model)
+        if condition is not None:
+            query_expression = query_expression.where(condition)
+
+        if options:
+            query_expression = query_expression.options(*options)
+
+        return self.db_session.exec(query_expression).all()
+
     def find_by(self, model, field_name, value):
         statement = select(model).where(getattr(model, field_name) == value)
         return self.db_session.exec(statement).first()

@@ -9,3 +9,5 @@ OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR = "Old and new passwords are the same."
 PASSWORD_VALIDATION_ERROR = "Password must have: uppercase, lowercase, number and special character."
 
 MOVIE_NOT_FOUND = "Movie not found by id."
+
+REVIEWS_NOT_FOUND = "Reviews not found for this movie."
