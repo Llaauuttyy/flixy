@@ -43,3 +43,17 @@ CREATE TABLE ratings (
   FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
   UNIQUE(user_id, movie_id)
 );
+
+CREATE TABLE reviews (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  movie_id int NOT NULL,
+  text varchar(1024) NOT NULL,
+  watch_date timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
+  UNIQUE(user_id, movie_id)
+);
