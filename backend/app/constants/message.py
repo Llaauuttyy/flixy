@@ -14,3 +14,4 @@ MOVIE_NOT_FOUND = "Movie not found by id."
 # Review
 REVIEWS_NOT_FOUND = "Reviews not found for this movie."
 FUTURE_TRAVELER = "Date cannot be in the future."
+INSULTING_REVIEW = "Your review contains insulting content. Try to express yourself and be nice at the same time. It is not that hard!"

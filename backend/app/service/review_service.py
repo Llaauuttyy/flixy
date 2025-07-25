@@ -3,11 +3,12 @@ from app.model.review import Review
 from app.db.database import Database
 from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO, ReviewDTO
 from sqlalchemy.exc import IntegrityError
-from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEWS_NOT_FOUND
+from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEWS_NOT_FOUND, INSULTING_REVIEW
 from sqlalchemy.orm import selectinload
 from sqlalchemy import and_
 from typing import Tuple, List, Optional
 from datetime import datetime as datetime
+from app.external.moderation_assistant import Moderator
 
 class ReviewService:
     def set_up_review_singular_dto(self, review: Review) -> ReviewGetSingularDTO:
@@ -44,6 +45,9 @@ class ReviewService:
     
     def create_review(self, db: Database, review_dto: ReviewCreationDTO, user_id: int) -> ReviewDTO:
         try:
+            if Moderator().is_review_insulting(review_dto.text):
+                raise HTTPException(status_code=422, detail=INSULTING_REVIEW)
+            
             if review_dto.watch_date.replace(tzinfo=None) > datetime.now():
                 raise HTTPException(status_code=422, detail=FUTURE_TRAVELER)
             
