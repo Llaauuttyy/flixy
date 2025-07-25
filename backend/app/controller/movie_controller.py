@@ -26,7 +26,7 @@ def get_movie(session: SessionDep, request: Request, movie_service: MovieService
         raise HTTPException(status_code=404, detail=str(e))
     
 @movie_router.post("/movie/rate")
-def get_movie(session: SessionDep, request: Request, movie_rate_dto: MovieRateDTO, movie_service: MovieServiceDep) -> MovieRatingDTO:
+def rate_movie(session: SessionDep, request: Request, movie_rate_dto: MovieRateDTO, movie_service: MovieServiceDep) -> MovieRatingDTO:
     user_id = request.state.user_id
     try:
         rating = movie_service.set_movie_rating(Database(session), movie_rate_dto, user_id)

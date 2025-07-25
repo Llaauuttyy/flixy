@@ -1,12 +1,13 @@
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
-from app.dto.review import ReviewGetSingularDTO
+from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO, ReviewDTO
 from sqlalchemy.exc import IntegrityError
-from app.constants.message import REVIEWS_NOT_FOUND
+from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEWS_NOT_FOUND
 from sqlalchemy.orm import selectinload
 from sqlalchemy import and_
 from typing import Tuple, List, Optional
+from datetime import datetime as datetime
 
 class ReviewService:
     def set_up_review_singular_dto(self, review: Review) -> ReviewGetSingularDTO:
@@ -40,3 +41,44 @@ class ReviewService:
             reviews = reviews_singular
 
         return (current_user_review, reviews)
+    
+    def create_review(self, db: Database, review_dto: ReviewCreationDTO, user_id: int) -> ReviewDTO:
+        try:
+            if review_dto.watch_date.replace(tzinfo=None) > datetime.now():
+                raise HTTPException(status_code=422, detail=FUTURE_TRAVELER)
+            
+            existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)
+            if existing_review:
+                existing_review.text = review_dto.text
+                existing_review.watch_date = review_dto.watch_date
+                db.save(existing_review)
+                review = existing_review
+            else:
+                new_review = Review(
+                    user_id=user_id,
+                    movie_id=review_dto.movie_id,
+                    text=review_dto.text,
+                    watch_date=review_dto.watch_date,
+                )
+                db.save(new_review)
+                review = new_review
+
+            return ReviewDTO(
+                id=review.id,
+                user_id=review.user_id,
+                movie_id=review.movie_id,
+                text=review.text,
+                watch_date=review.watch_date
+            )
+
+        except IntegrityError as e:
+            db.rollback()
+
+            if "foreign key constraint" in str(e).lower():
+                raise HTTPException(status_code=404, detail=MOVIE_NOT_FOUND)
+            else:
+                raise HTTPException(status_code=400, detail=str(e))
+
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))

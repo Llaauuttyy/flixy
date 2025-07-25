@@ -25,3 +25,11 @@ def get_reviews(session: SessionDep, request: Request, review_service: ReviewSer
     except HTTPException as http_exc:
         raise HTTPException(status_code=http_exc.status_code, detail=http_exc.detail)
 
+@review_router.post("/review")
+def create_review(session: SessionDep, request: Request, review_dto: ReviewCreationDTO, review_service: ReviewServiceDep) -> ReviewDTO:
+    user_id = request.state.user_id
+    try:
+        review = review_service.create_review(Database(session), review_dto, user_id)
+        return review
+    except Exception as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))

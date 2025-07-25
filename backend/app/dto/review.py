@@ -11,7 +11,7 @@ class ReviewDTO(BaseModel):
     watch_date: datetime
 
 class ReviewCreationDTO(BaseModel):
-    id: int
+    movie_id: int
     text: str
     watch_date: datetime
 
