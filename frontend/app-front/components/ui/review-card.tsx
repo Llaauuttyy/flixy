@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "./button";
 import { Card, CardContent } from "./card";
 import { Textarea } from "./textarea";
@@ -9,6 +10,7 @@ interface ReviewCardProps {
 
 export function ReviewCard({ title }: ReviewCardProps) {
   const [review, setReview] = useState("");
+  const { t } = useTranslation();
 
   function handleSubmitReview(
     event: React.MouseEvent<HTMLButtonElement>
@@ -22,12 +24,13 @@ export function ReviewCard({ title }: ReviewCardProps) {
         {/* Opinion Textarea */}
         <div className="mb-6">
           <p className="text-slate-300 mb-3">
-            Have you watched{" "}
-            <span className="text-purple-400 font-semibold">{title}</span>?
-            Share your thoughts...
+            {t("review_card.have_watched")}{" "}
+            <span className="text-purple-400 font-semibold">{title}</span>
+            {"? "}
+            {t("review_card.share_thoughts")}
           </p>
           <Textarea
-            placeholder="What did you think of the movie?"
+            placeholder={t("review_card.review_placeholder")}
             onChange={(e) => setReview(e.target.value)}
             className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 min-h-[120px]"
           />
@@ -38,7 +41,7 @@ export function ReviewCard({ title }: ReviewCardProps) {
           // disabled={!userRating || !opinion.trim()}
           className="bg-pink-600 hover:bg-pink-700 disabled:opacity-50"
         >
-          Publish review
+          {t("review_card.review_button")}
         </Button>
       </CardContent>
     </Card>

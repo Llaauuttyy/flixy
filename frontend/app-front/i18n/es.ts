@@ -4,6 +4,8 @@ export const esTranslation = {
   },
   header: {
     sign_out: "Cerrar sesión",
+    signing_out: "Cerrando sesión...",
+    search_placeholder: "Buscar películas, usuarios, reseñas...",
   },
   login: {
     welcome_title: "Bienvenido de nuevo a",
@@ -42,5 +44,64 @@ export const esTranslation = {
     explore: "Explorar",
     profile: "Mi Perfil",
     settings: "Configuración",
+  },
+  movies: {
+    title: "Películas",
+    subtitle:
+      "Califica las películas que has visto y comparte tus pensamientos",
+  },
+  movie_card: {
+    rate_movie: "Califica esta película",
+    show_details: "Ver más detalles...",
+  },
+  movie_detail: {
+    directors: "Directores",
+    writers: "Guionistas",
+    cast: "Elenco",
+    reviews_title: "Reseñas de los flixis",
+  },
+  not_found: {
+    title_oops: "¡Uy!",
+    it_seems: "Parece que",
+    got_it_wrong: "se ha equivocado...",
+    description_begin: "No parece un buen lugar para pasar el rato.",
+    description_end: "que hay contenido esperándote.",
+    link_home: "Regresa al inicio",
+  },
+  review_card: {
+    have_watched: "¿Has visto",
+    share_thoughts: "Comparte tus pensamientos...",
+    review_placeholder: "¿Qué opinas de la película?",
+    review_button: "Publicar reseña",
+  },
+  settings: {
+    title: "Configuración",
+    description: "Actualiza tus datos personales o contraseña.",
+    general: {
+      tab: "General",
+      title: "Configuración General",
+      description:
+        "Actualiza los datos de perfil y las preferencias de la aplicación.",
+      name: "Nombre",
+      username: "Nombre de usuario",
+      email: "Correo electrónico",
+      updating: "Actualizando...",
+      update: "Actualizar",
+    },
+    data: {
+      tab: "Datos",
+      title: "Gestión de Datos",
+      description: "Visualiza y gestiona tus datos personales.",
+    },
+    password: {
+      tab: "Cambiar Contraseña",
+      title: "Cambiar Contraseña",
+      description: "Actualiza tu contraseña para mantener tu cuenta segura.",
+      current_password: "Current Password",
+      new_password: "New Password",
+      confirm_new_password: "Confirm New Password",
+      updating: "Actualizando...",
+      update: "Actualizar",
+    },
   },
 };

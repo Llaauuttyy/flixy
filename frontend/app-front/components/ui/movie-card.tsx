@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardTitle } from "./card";
 import { StarRating } from "./star-rating";
@@ -25,6 +26,7 @@ interface MovieCardProps {
 export function MovieCard({ movie, accessToken }: MovieCardProps) {
   const userRating = movie.user_rating || 0;
   const [showRating, setShowRating] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <Card
@@ -50,10 +52,10 @@ export function MovieCard({ movie, accessToken }: MovieCardProps) {
             showRating ? "opacity-90" : "opacity-0 pointer-events-none"
           }`}
         >
-          <CardTitle className="text-white text-lg p-5">
+          <CardTitle className="text-white text-lg p-5 text-center">
             {movie.title}
           </CardTitle>
-          <div>Rate this movie</div>
+          <div>{t("movie_card.rate_movie")}</div>
 
           <div>
             <StarRating
@@ -65,8 +67,8 @@ export function MovieCard({ movie, accessToken }: MovieCardProps) {
           </div>
 
           <Link to={`/movies/${movie.id}`} state={movie}>
-            <p className="p-5 hover:cursor-pointer hover:underline">
-              Show movie details...
+            <p className="p-5 hover:cursor-pointer hover:underline text-center">
+              {t("movie_card.show_details")}
             </p>
           </Link>
         </div>

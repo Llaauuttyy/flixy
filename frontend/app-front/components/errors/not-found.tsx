@@ -16,20 +16,20 @@ export default function NotFound() {
       <main className="flex-1 container mx-auto flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-10">
         <div className="w-full md:w-5/8 space-y-6 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            Oops! <br />
-            It seems{" "}
+            {t("not_found.title_oops")} <br />
+            {t("not_found.it_seems")}{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
               Flixy
             </span>{" "}
-            got it wrong...
+            {t("not_found.got_it_wrong")}
           </h1>
           <p className="text-gray-400 text-lg max-w-md mx-auto md:mx-0">
-            It doesn't look like the place to be hanging out.
+            {t("not_found.description_begin")}
             <br />
             <Link to="/" className="text-purple-400 hover:text-purple-300">
-              Go back home
+              {t("not_found.link_home")}
             </Link>
-            , instead!
+            , {t("not_found.description_end")}
           </p>
         </div>
       </main>

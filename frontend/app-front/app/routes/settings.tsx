@@ -25,6 +25,7 @@ import { handleUserDataGet } from "services/api/flixy/server/user-data";
 import { getAccessToken } from "../../services/api/utils";
 
 import UserDataForm from "components/user-data-form";
+import { useTranslation } from "react-i18next";
 import type { UserDataGet } from "../../services/api/flixy/types/user";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -57,6 +58,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function SettingsPage() {
   const currentUserData: UserDataGet = useLoaderData();
+  const { t } = useTranslation();
 
   return (
     <html lang="es">
@@ -72,11 +74,9 @@ export default function SettingsPage() {
                 {/* Header */}
                 <div className="mb-6">
                   <h1 className="text-3xl font-bold text-white mb-2">
-                    Settings
+                    {t("settings.title")}
                   </h1>
-                  <p className="text-gray-300">
-                    Update your personal data or password.
-                  </p>
+                  <p className="text-gray-300">{t("settings.description")}</p>
                   <div className="w-full flex justify-center mt-10">
                     <div className="w-full max-w-3xl">
                       <Tabs defaultValue="ajustes" className="w-full">
@@ -85,19 +85,19 @@ export default function SettingsPage() {
                             value="ajustes"
                             className="text-gray-300 data-[state=active]:bg-gray-700 data-[state=active]:text-white"
                           >
-                            Settings
+                            {t("settings.general.tab")}
                           </TabsTrigger>
                           <TabsTrigger
                             value="datos"
                             className="text-gray-300 data-[state=active]:bg-gray-700 data-[state=active]:text-white"
                           >
-                            Data
+                            {t("settings.data.tab")}
                           </TabsTrigger>
                           <TabsTrigger
                             value="contrasena"
                             className="text-gray-300 data-[state=active]:bg-gray-700 data-[state=active]:text-white"
                           >
-                            Update password
+                            {t("settings.password.tab")}
                           </TabsTrigger>
                         </TabsList>
 
@@ -105,10 +105,10 @@ export default function SettingsPage() {
                           <Card className="bg-gray-800 border-gray-700">
                             <CardHeader>
                               <CardTitle className="text-foreground">
-                                General Settings
+                                {t("settings.general.title")}
                               </CardTitle>
                               <CardDescription className="text-muted-foreground">
-                                Update profile data and app preferences.
+                                {t("settings.general.description")}
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -121,10 +121,10 @@ export default function SettingsPage() {
                           <Card className="bg-gray-800 border-gray-700">
                             <CardHeader>
                               <CardTitle className="text-foreground">
-                                Data Management
+                                {t("settings.data.title")}
                               </CardTitle>
                               <CardDescription className="text-muted-foreground">
-                                Visualize and manage your personal data.
+                                {t("settings.data.description")}
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -173,11 +173,10 @@ export default function SettingsPage() {
                           <Card className="bg-gray-800 border-gray-700">
                             <CardHeader>
                               <CardTitle className="text-foreground">
-                                Change Password
+                                {t("settings.password.title")}
                               </CardTitle>
                               <CardDescription className="text-muted-foreground">
-                                Update your password to keep your account
-                                secure.
+                                {t("settings.password.description")}
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">

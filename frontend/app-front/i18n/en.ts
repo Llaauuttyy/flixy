@@ -4,6 +4,8 @@ export const enTranslation = {
   },
   header: {
     sign_out: "Sign out",
+    signing_out: "Signing out...",
+    search_placeholder: "Search movies, users, reviews...",
   },
   login: {
     welcome_title: "Welcome back to",
@@ -41,5 +43,62 @@ export const enTranslation = {
     explore: "Explore",
     profile: "My Profile",
     settings: "Settings",
+  },
+  movies: {
+    title: "Movies",
+    subtitle: "Rate movies you've watched and share your thoughts",
+  },
+  movie_card: {
+    rate_movie: "Rate this movie",
+    show_details: "Show movie details...",
+  },
+  movie_detail: {
+    directors: "Directors",
+    writers: "Writers",
+    cast: "Cast",
+    reviews_title: "Reviews from flixies",
+  },
+  not_found: {
+    title_oops: "Oops!",
+    it_seems: "It seems",
+    got_it_wrong: "got it wrong...",
+    description_begin: "It doesn't look like the place to be hanging out.",
+    description_end: "instead!",
+    link_home: "Go back home",
+  },
+  review_card: {
+    have_watched: "Have you watched",
+    share_thoughts: "Share your thoughts...",
+    review_placeholder: "What did you think of the movie?",
+    review_button: "Publish review",
+  },
+  settings: {
+    title: "Settings",
+    description: "Update your personal data or password.",
+    general: {
+      tab: "General",
+      title: "General Settings",
+      description: "Update profile data and app preferences.",
+      name: "Name",
+      username: "Username",
+      email: "Email",
+      updating: "Updating...",
+      update: "Update",
+    },
+    data: {
+      tab: "Data",
+      title: "Data Management",
+      description: "Visualize and manage your personal data.",
+    },
+    password: {
+      tab: "Change Password",
+      title: "Change Password",
+      description: "Update your password to keep your account secure.",
+      current_password: "Current Password",
+      new_password: "New Password",
+      confirm_new_password: "Confirm New Password",
+      updating: "Updating...",
+      update: "Update",
+    },
   },
 };
