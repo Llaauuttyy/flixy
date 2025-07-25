@@ -45,11 +45,11 @@ class ReviewService:
     
     def create_review(self, db: Database, review_dto: ReviewCreationDTO, user_id: int) -> ReviewDTO:
         try:
-            if Moderator().is_review_insulting(review_dto.text):
-                raise HTTPException(status_code=422, detail=INSULTING_REVIEW)
-            
             if review_dto.watch_date.replace(tzinfo=None) > datetime.now():
                 raise HTTPException(status_code=422, detail=FUTURE_TRAVELER)
+            
+            if Moderator().is_review_insulting(review_dto.text):
+                raise HTTPException(status_code=422, detail=INSULTING_REVIEW)
             
             existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)
             if existing_review:
