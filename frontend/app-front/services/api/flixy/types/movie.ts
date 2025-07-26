@@ -1,3 +1,5 @@
+import type { ReviewsData } from "./review";
+
 export interface MovieDataGet {
   error?: string | undefined;
   id: number | undefined;
@@ -20,4 +22,10 @@ export interface MovieSetRating {
   id: number;
   rating: number;
   [key: string | number]: string | number | null | undefined;
+}
+
+export interface MovieOverallData {
+  movie: MovieDataGet;
+  reviews: ReviewsData;
+  [key: string]: null | undefined | MovieDataGet | ReviewsData;
 }

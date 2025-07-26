@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { MessageCircle, ThumbsUp } from "lucide-react";
-import type { ReviewGetData } from "services/api/flixy/types/review";
+import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { Card, CardContent } from "./card";
 
 interface ReviewCardProps {
-  userReview: ReviewGetData;
+  userReview: ReviewDataGet;
 }
 
 export function ReviewCard({ userReview }: ReviewCardProps) {

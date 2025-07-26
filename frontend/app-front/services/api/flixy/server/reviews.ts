@@ -1,0 +1,26 @@
+import { getAccessToken } from "../../utils";
+
+export async function getReviewsData(
+  request: Request,
+  movie_id: string | undefined
+) {
+  const token = await getAccessToken(request);
+
+  const response = await fetch(
+    process.env.VITE_API_URL + `/review/${movie_id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  console.log();
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}

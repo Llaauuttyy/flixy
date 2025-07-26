@@ -3,7 +3,7 @@ import { handleReviewCreation } from "services/api/flixy/client/reviews";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 import type {
   ReviewCreation,
-  ReviewGetData,
+  ReviewDataGet,
 } from "services/api/flixy/types/review";
 import { ReviewCard } from "../../components/ui/review-card";
 import { Button } from "./button";
@@ -14,7 +14,7 @@ interface ReviewCardProps {
   accessToken: string;
   movieId: number;
   title: string;
-  userReview: ReviewGetData | null;
+  userReview: ReviewDataGet | null;
 }
 
 export function ReviewInput({
@@ -48,7 +48,7 @@ export function ReviewInput({
     let apiResponse: ApiResponse = {};
 
     try {
-      let newUserReview: ReviewGetData = await handleReviewCreation(
+      let newUserReview: ReviewDataGet = await handleReviewCreation(
         accessToken,
         reviewData
       );
