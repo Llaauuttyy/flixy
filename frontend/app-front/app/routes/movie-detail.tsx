@@ -19,13 +19,21 @@ import type { Route } from "./+types/movie-detail";
 import { StarRating } from "components/ui/star-rating";
 import { getAccessToken } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
-import type { MovieDataGet } from "../../services/api/flixy/types/movie";
+import type {
+  MovieDataGet,
+  MovieOverallData,
+} from "../../services/api/flixy/types/movie";
 import type { ApiResponse } from "../../services/api/flixy/types/overall";
 
-import type { ReviewGetData } from "services/api/flixy/types/review";
+import { getReviewsData } from "services/api/flixy/server/reviews";
+import type {
+  ReviewDataGet,
+  ReviewsData,
+} from "services/api/flixy/types/review";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   let movieData: MovieDataGet = {} as MovieDataGet;
+  let reviewsData: ReviewsData = {} as ReviewsData;
 
   const movieId = params.movieId;
 
@@ -43,8 +51,15 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   try {
     movieData = await getMovieData(request, movieId);
+    reviewsData = await getReviewsData(request, movieId);
+
     apiResponse.accessToken = await getAccessToken(request);
-    apiResponse.data = movieData;
+
+    let overallData: MovieOverallData = {
+      movie: movieData,
+      reviews: reviewsData,
+    };
+    apiResponse.data = overallData;
 
     return apiResponse;
   } catch (err: Error | any) {
@@ -63,48 +78,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export default function MovieDetail() {
   let apiResponse: ApiResponse = useLoaderData();
-  let currentMovieData: MovieDataGet = apiResponse.data || {};
 
-  // let currentReview: ReviewGetData = {
-  //   movie_id: Number(currentMovieData.id),
-  //   text: "Buena peli",
-  //   watch_date: new Date(),
-  //   user_name: "Usuario",
-  // };
-  let currentReview = null;
-
-  const mockReviews: ReviewGetData[] = [
-    {
-      user_name: "Carla M.",
-      movie_id: 1,
-      text: "Una obra maestra visual. Me encantó la fotografía y cómo se construyó el suspenso.",
-      watch_date: new Date("2024-12-18"),
-    },
-    {
-      user_name: "Tomás R.",
-      movie_id: 1,
-      text: "Interesante propuesta, aunque sentí que el ritmo cayó en la mitad. Igual la volvería a ver.",
-      watch_date: new Date("2025-01-04"),
-    },
-    {
-      user_name: "Valen P.",
-      movie_id: 1,
-      text: "No me convenció tanto la historia, pero la banda sonora fue increíble.",
-      watch_date: new Date("2025-03-22"),
-    },
-    {
-      user_name: "Martina G.",
-      movie_id: 1,
-      text: "Me dejó pensando por días. Ese final fue completamente inesperado.",
-      watch_date: new Date("2025-06-15"),
-    },
-    {
-      user_name: "Ezequiel D.",
-      movie_id: 1,
-      text: "La actuación principal fue lo mejor. Muy recomendada para quienes disfrutan del drama psicológico.",
-      watch_date: new Date("2025-07-01"),
-    },
-  ];
+  let currentMovieData: MovieDataGet = apiResponse.data.movie || {};
+  let userReview: ReviewDataGet = apiResponse.data.reviews.user_review || null;
+  let currentReviews: ReviewDataGet[] =
+    apiResponse.data.reviews.reviews.items || {};
 
   const getDurationFromMovie = (minutes_str: string): string => {
     let minutes = parseInt(minutes_str, 10);
@@ -168,7 +146,6 @@ export default function MovieDetail() {
               <h1 className="text-4xl md:text-5xl font-bold leading-tight">
                 {currentMovieData.title}
               </h1>
-
               <div className="flex items-center gap-4 text-[#A0A0A0]">
                 <span className="text-lg"> {currentMovieData.year} </span>
                 <Separator
@@ -202,7 +179,6 @@ export default function MovieDetail() {
                   </span>
                 </div>
               </div>
-
               <div className="flex flex-wrap gap-2">
                 {String(currentMovieData.genres)
                   .split(",")
@@ -215,7 +191,6 @@ export default function MovieDetail() {
                     </Badge>
                   ))}
               </div>
-
               <div>
                 <StarRating
                   initialRating={Number(currentMovieData.user_rating) || 0}
@@ -224,11 +199,9 @@ export default function MovieDetail() {
                   size={24}
                 />
               </div>
-
               <p className="text-lg leading-relaxed text-[#E0E0E0]">
                 {currentMovieData.plot}
               </p>
-
               <div className="flex gap-4">
                 <Button className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:from-[#8B5CF6]/90 hover:to-[#EC4899]/90 text-white px-6 py-3 rounded-md text-lg font-semibold">
                   <Play className="w-5 h-5 mr-2" />
@@ -242,9 +215,7 @@ export default function MovieDetail() {
                   Add to Watchlist
                 </Button>
               </div>
-
               <Separator className="bg-[#202135]" />
-
               {/* Cast & Crew */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
@@ -256,7 +227,6 @@ export default function MovieDetail() {
                   <CardContent>
                     <p className="text-lg text-[#A0A0A0]">
                       {currentMovieData.directors}
-                      {/* {currentMovieData.directors} */}
                     </p>
                   </CardContent>
                 </Card>
@@ -285,25 +255,28 @@ export default function MovieDetail() {
                   </CardContent>
                 </Card>
               </div>
-
               <Separator className="bg-[#202135]" />
-
               <ReviewInput
                 accessToken={String(apiResponse.accessToken)}
                 movieId={Number(currentMovieData.id)}
                 title={String(currentMovieData.title)}
-                userReview={currentReview}
+                userReview={userReview}
               />
-
               <div>
                 <h2 className="text-2xl font-semibold mb-6">
                   Reviews from flixies
                 </h2>
-                <div className="space-y-4">
-                  {mockReviews.map((review) => (
-                    <ReviewCard userReview={review} />
-                  ))}
-                </div>
+                {currentReviews.length !== 0 ? (
+                  <div className="space-y-4">
+                    {currentReviews.map((review) => (
+                      <ReviewCard userReview={review} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-400 mb-6">
+                    No reviews so far. Be the first!
+                  </p>
+                )}
               </div>
             </div>
           </div>
