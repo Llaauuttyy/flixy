@@ -1,4 +1,4 @@
-import { MessageCircle, Play, Plus, Star, ThumbsUp } from "lucide-react";
+import { Play, Plus, Star } from "lucide-react";
 import { useLoaderData } from "react-router-dom";
 
 import { HeaderFull } from "components/ui/header-full";
@@ -12,15 +12,17 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { ReviewCard } from "../../components/ui/review-card";
+import { ReviewInput } from "../../components/ui/review-input";
 import { Separator } from "../../components/ui/separator";
 import type { Route } from "./+types/movie-detail";
 
-import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { StarRating } from "components/ui/star-rating";
 import { getAccessToken } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type { MovieDataGet } from "../../services/api/flixy/types/movie";
 import type { ApiResponse } from "../../services/api/flixy/types/overall";
+
+import type { ReviewGetData } from "services/api/flixy/types/review";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   let movieData: MovieDataGet = {} as MovieDataGet;
@@ -63,32 +65,44 @@ export default function MovieDetail() {
   let apiResponse: ApiResponse = useLoaderData();
   let currentMovieData: MovieDataGet = apiResponse.data || {};
 
-  const mockReviews = [
+  // let currentReview: ReviewGetData = {
+  //   movie_id: Number(currentMovieData.id),
+  //   text: "Buena peli",
+  //   watch_date: new Date(),
+  //   user_name: "Usuario",
+  // };
+  let currentReview = null;
+
+  const mockReviews: ReviewGetData[] = [
     {
-      id: 1,
-      user: {
-        name: "María González",
-        avatar: "/placeholder.svg?height=40&width=40",
-        initials: "MG",
-      },
-      rating: 5,
-      comment:
-        "Una obra maestra cinematográfica. Nolan vuelve a sorprender con su narrativa no lineal y las actuaciones son excepcionales.",
-      timeAgo: "hace 2 horas",
-      likes: 24,
+      user_name: "Carla M.",
+      movie_id: 1,
+      text: "Una obra maestra visual. Me encantó la fotografía y cómo se construyó el suspenso.",
+      watch_date: new Date("2024-12-18"),
     },
     {
-      id: 2,
-      user: {
-        name: "Carlos Ruiz",
-        avatar: "/placeholder.svg?height=40&width=40",
-        initials: "CR",
-      },
-      rating: 4,
-      comment:
-        "Excelente película biográfica. Cillian Murphy está brillante como Oppenheimer.",
-      timeAgo: "hace 1 día",
-      likes: 15,
+      user_name: "Tomás R.",
+      movie_id: 1,
+      text: "Interesante propuesta, aunque sentí que el ritmo cayó en la mitad. Igual la volvería a ver.",
+      watch_date: new Date("2025-01-04"),
+    },
+    {
+      user_name: "Valen P.",
+      movie_id: 1,
+      text: "No me convenció tanto la historia, pero la banda sonora fue increíble.",
+      watch_date: new Date("2025-03-22"),
+    },
+    {
+      user_name: "Martina G.",
+      movie_id: 1,
+      text: "Me dejó pensando por días. Ese final fue completamente inesperado.",
+      watch_date: new Date("2025-06-15"),
+    },
+    {
+      user_name: "Ezequiel D.",
+      movie_id: 1,
+      text: "La actuación principal fue lo mejor. Muy recomendada para quienes disfrutan del drama psicológico.",
+      watch_date: new Date("2025-07-01"),
     },
   ];
 
@@ -274,9 +288,11 @@ export default function MovieDetail() {
 
               <Separator className="bg-[#202135]" />
 
-              <ReviewCard
-                movie_id={Number(currentMovieData.id)}
+              <ReviewInput
+                accessToken={String(apiResponse.accessToken)}
+                movieId={Number(currentMovieData.id)}
                 title={String(currentMovieData.title)}
+                userReview={currentReview}
               />
 
               <div>
@@ -285,55 +301,7 @@ export default function MovieDetail() {
                 </h2>
                 <div className="space-y-4">
                   {mockReviews.map((review) => (
-                    <Card
-                      key={review.id}
-                      className="bg-slate-800/50 border-slate-700"
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <Avatar>
-                            <AvatarImage
-                              src={
-                                review.user.avatar ||
-                                "/placeholder.svg?height=32&width=32"
-                              }
-                            />
-                            <AvatarFallback className="bg-slate-700 text-white">
-                              {review.user.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className="font-medium">
-                                {review.user.name}
-                              </span>
-                              <div className="flex items-center gap-1">
-                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm font-medium">
-                                  {review.rating}
-                                </span>
-                              </div>
-                              <span className="text-sm text-slate-400">
-                                {review.timeAgo}
-                              </span>
-                            </div>
-                            <p className="text-slate-300 mb-3">
-                              {review.comment}
-                            </p>
-                            <div className="flex items-center gap-4">
-                              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                                <ThumbsUp className="w-4 h-4" />
-                                <span className="text-sm">{review.likes}</span>
-                              </button>
-                              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                                <MessageCircle className="w-4 h-4" />
-                                <span className="text-sm">Comment</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <ReviewCard userReview={review} />
                   ))}
                 </div>
               </div>
