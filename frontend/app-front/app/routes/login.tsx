@@ -5,6 +5,9 @@ import LoginForm from "../../components/login-form";
 import { commitSession, getSession } from "../session/sessions.server";
 import type { Route } from "./+types/login";
 
+import { Select } from "components/ui/select";
+import i18n, { getLanguageIcon, getLanguageLabel } from "i18n/i18n";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { handleLogin } from "services/api/flixy/server/auth";
 
@@ -21,8 +24,6 @@ export async function action({ request }: Route.ActionArgs) {
       password,
     });
     console.log("Login successful:", access_token);
-
-    // TODO: Guardar token en localstorage?
 
     session.set("accessToken", access_token);
 
@@ -47,6 +48,10 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Login() {
   const { t } = useTranslation();
+  const [language, setLanguage] = useState(i18n.language || "en");
+  const availableLanguages = i18n.options.resources
+    ? Object.keys(i18n.options.resources)
+    : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
@@ -105,10 +110,26 @@ export default function Login() {
         </div>
       </main>
 
-      <footer className="container mx-auto py-6 px-4 text-center border-t border-gray-800">
-        <p className="text-gray-500 text-sm">
-          © {new Date().getFullYear()} Flixy. {t("general.rights_reserved")}
-        </p>
+      <footer className="container mx-auto py-6 px-4 border-t border-gray-800 flex items-center justify-between relative">
+        <div className="flex items-center justify-between w-full relative">
+          <p className="text-gray-500 text-sm mx-auto">
+            © {new Date().getFullYear()} Flixy. {t("general.rights_reserved")}
+          </p>
+          <Select
+            className="absolute right-0"
+            options={availableLanguages.map((lang) => ({
+              value: lang,
+              label: getLanguageLabel(lang),
+              iconUrl: getLanguageIcon(lang),
+            }))}
+            selected={language}
+            onChange={(value) => {
+              setLanguage(value);
+              i18n.changeLanguage(value);
+            }}
+            openDirection="up"
+          />
+        </div>
       </footer>
     </div>
   );
