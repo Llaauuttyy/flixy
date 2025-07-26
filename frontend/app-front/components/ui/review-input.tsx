@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { handleReviewCreation } from "services/api/flixy/client/reviews";
 import type { ApiResponse } from "services/api/flixy/types/overall";
@@ -27,6 +28,7 @@ export function ReviewInput({
   const [review, setReview] = useState("");
   const [caracters, setCaracters] = useState(0);
   const [hasReachedLimit, setHasReachedLimit] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [currentReview, setCurrentReview] = useState(userReview);
 
@@ -37,6 +39,8 @@ export function ReviewInput({
   const handleSubmitReview = async () => {
     console.log("Submitting review:", review);
     console.log("Movie ID:", movieId);
+
+    setIsLoading(true);
 
     const reviewData: ReviewCreation = {
       movie_id: movieId,
@@ -66,6 +70,8 @@ export function ReviewInput({
       apiResponse.error = err.message;
       setApiResponse(apiResponse);
     }
+
+    setIsLoading(false);
   };
 
   const updateReview = (review: string): void => {
@@ -128,10 +134,17 @@ export function ReviewInput({
 
         <Button
           onClick={handleSubmitReview}
-          disabled={hasReachedLimit || caracters <= 0}
+          disabled={hasReachedLimit || caracters <= 0 || isLoading}
           className="bg-pink-600 hover:bg-pink-700 disabled:opacity-50"
         >
-          Publish review
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              Analyzing review...
+            </>
+          ) : (
+            "Publish review"
+          )}
         </Button>
 
         {apiResponse?.error && (
