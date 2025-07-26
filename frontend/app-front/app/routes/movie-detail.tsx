@@ -274,7 +274,10 @@ export default function MovieDetail() {
 
               <Separator className="bg-[#202135]" />
 
-              <ReviewCard title={String(currentMovieData.title)} />
+              <ReviewCard
+                movie_id={Number(currentMovieData.id)}
+                title={String(currentMovieData.title)}
+              />
 
               <div>
                 <h2 className="text-2xl font-semibold mb-6">
