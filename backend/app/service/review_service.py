@@ -1,3 +1,4 @@
+from app.model.user import User
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
@@ -27,7 +28,7 @@ class ReviewService:
         reviews = db.find_all(Review, and_(Review.movie_id == movie_id, Review.user_id != user_id), [selectinload(Review.user)])
 
         if not current_user_review and not reviews:
-            raise HTTPException(status_code=404, detail=REVIEWS_NOT_FOUND)
+            return (None, [])
 
         if current_user_review:
             current_user_review = self.set_up_review_singular_dto(current_user_review)
@@ -43,13 +44,13 @@ class ReviewService:
 
         return (current_user_review, reviews)
     
-    def create_review(self, db: Database, review_dto: ReviewCreationDTO, user_id: int) -> ReviewDTO:
+    def create_review(self, db: Database, review_dto: ReviewCreationDTO, user_id: int) -> ReviewGetSingularDTO:
         try:
             if review_dto.watch_date.replace(tzinfo=None) > datetime.now():
-                raise HTTPException(status_code=422, detail=FUTURE_TRAVELER)
+                raise Exception(FUTURE_TRAVELER)
             
             if Moderator().is_review_insulting(review_dto.text):
-                raise HTTPException(status_code=422, detail=INSULTING_REVIEW)
+                raise Exception(INSULTING_REVIEW)
             
             existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)
             if existing_review:
@@ -67,12 +68,15 @@ class ReviewService:
                 db.save(new_review)
                 review = new_review
 
-            return ReviewDTO(
+            user = db.find_by(User, "id", review.user_id)
+
+            return ReviewGetSingularDTO(
                 id=review.id,
                 user_id=review.user_id,
                 movie_id=review.movie_id,
                 text=review.text,
-                watch_date=review.watch_date
+                watch_date=review.watch_date,
+                user_name = user.name
             )
 
         except IntegrityError as e:
