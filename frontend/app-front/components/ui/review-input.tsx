@@ -154,7 +154,7 @@ export function ReviewInput({
           {isEditing ? (
             <Button
               onClick={handleCancelReview}
-              className="ml-2 bg-red-600 hover:bg-red-500 disabled:opacity-50"
+              className="ml-2 bg-red-600 hover:bg-red-700 disabled:opacity-50"
             >
               Cancel
             </Button>
