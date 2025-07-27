@@ -9,6 +9,7 @@ class ReviewDTO(BaseModel):
     movie_id: int
     text: str
     watch_date: datetime
+    updated_at: datetime
 
 class ReviewCreationDTO(BaseModel):
     movie_id: int
