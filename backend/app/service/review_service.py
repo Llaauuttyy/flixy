@@ -19,6 +19,7 @@ class ReviewService:
             movie_id=review.movie_id,
             text=review.text,
             watch_date=review.watch_date,
+            updated_at=review.updated_at,
             user_name=review.user.name
         )
 
@@ -76,6 +77,7 @@ class ReviewService:
                 movie_id=review.movie_id,
                 text=review.text,
                 watch_date=review.watch_date,
+                updated_at=review.updated_at,
                 user_name = user.name
             )
 

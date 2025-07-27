@@ -1,13 +1,43 @@
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
-import { MessageCircle, ThumbsUp } from "lucide-react";
+import { Badge } from "components/ui/badge";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import { MessageCircle, MonitorPlay, ThumbsUp } from "lucide-react";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { Card, CardContent } from "./card";
+
+dayjs.extend(utc);
 
 interface ReviewCardProps {
   userReview: ReviewDataGet;
 }
 
 export function ReviewCard({ userReview }: ReviewCardProps) {
+  function getReviewTime(reviewDate: Date): string {
+    const currentDate = new Date();
+    const timeDiff = currentDate.getTime() - new Date(reviewDate).getTime();
+    const seconds = Math.floor(timeDiff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(months / 12);
+
+    if (years > 0) {
+      return `${years} year${years > 1 ? "s" : ""} ago`;
+    } else if (months > 0) {
+      return `${months} month${months > 1 ? "s" : ""} ago`;
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""} ago`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    } else {
+      return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
+    }
+  }
+
   return (
     <Card className="bg-slate-800/50 border-slate-700">
       <CardContent className="p-6">
@@ -21,7 +51,17 @@ export function ReviewCard({ userReview }: ReviewCardProps) {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <span className="font-medium">{userReview.user_name}</span>
-              <span className="text-sm text-slate-400">{"hace 1 hora"}</span>
+              <span className="text-sm text-slate-400">
+                {getReviewTime(
+                  dayjs.utc(userReview.updated_at).local().toDate()
+                )}
+              </span>
+              <Badge variant="secondary" className="bg-gray-700 text-gray-300">
+                <MonitorPlay className="pr-2" size={24} />{" "}
+                {getReviewTime(
+                  dayjs.utc(userReview.watch_date).local().toDate()
+                )}
+              </Badge>
             </div>
             <p className="text-slate-300 mb-3">{userReview.text}</p>
             <div className="flex items-center gap-4">

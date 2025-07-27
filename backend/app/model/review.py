@@ -13,6 +13,8 @@ class Review(SQLModel, table=True):
     movie_id: int = Field(foreign_key="movies.id")
     text: str
     watch_date: datetime
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
 
     user: Optional[User] = Relationship(back_populates="reviews")
     movie: Optional[Movie] = Relationship(back_populates="reviews")
