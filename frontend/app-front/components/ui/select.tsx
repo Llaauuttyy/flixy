@@ -58,7 +58,7 @@ export const Select: React.FC<SelectProps> = ({
       {open && (
         <ul
           className={cn(
-            "absolute z-10 w-full border rounded shadow-lg max-h-60 overflow-auto",
+            "absolute z-10 w-full border rounded shadow-lg max-h-60 overflow-auto bg-gray-800",
             openDirection === "up" ? "bottom-full mb-1" : "mt-1 top-full"
           )}
         >
@@ -70,7 +70,7 @@ export const Select: React.FC<SelectProps> = ({
                 setOpen(false);
               }}
               className={cn(
-                "flex items-center gap-2 px-3 py-2 bg-var(--color-gray-950) hover:bg-gray-800 cursor-pointer",
+                "flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 cursor-pointer",
                 option.value === selected && "opacity-50"
               )}
             >

@@ -82,6 +82,7 @@ export const esTranslation = {
       title: "Configuración General",
       description:
         "Actualiza los datos de perfil y las preferencias de la aplicación.",
+      change_language: "Cambiar idioma",
       name: "Nombre",
       username: "Nombre de usuario",
       email: "Correo electrónico",

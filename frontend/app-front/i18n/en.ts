@@ -79,6 +79,7 @@ export const enTranslation = {
       tab: "General",
       title: "General Settings",
       description: "Update profile data and app preferences.",
+      change_language: "Change Language",
       name: "Name",
       username: "Username",
       email: "Email",

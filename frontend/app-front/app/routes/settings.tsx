@@ -1,7 +1,7 @@
 import PasswordForm from "components/password-form";
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -24,7 +24,9 @@ import { handleUserDataGet } from "services/api/flixy/server/user-data";
 
 import { getAccessToken } from "../../services/api/utils";
 
+import { Select } from "components/ui/select";
 import UserDataForm from "components/user-data-form";
+import i18n, { getLanguageIcon, getLanguageLabel } from "i18n/i18n";
 import { useTranslation } from "react-i18next";
 import type { UserDataGet } from "../../services/api/flixy/types/user";
 
@@ -59,6 +61,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function SettingsPage() {
   const currentUserData: UserDataGet = useLoaderData();
   const { t } = useTranslation();
+  const [language, setLanguage] = useState(i18n.language || "en");
+  const availableLanguages = i18n.options.resources
+    ? Object.keys(i18n.options.resources)
+    : [];
 
   return (
     <html lang="es">
@@ -112,6 +118,23 @@ export default function SettingsPage() {
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
+                              <div>
+                                <Label className="text-foreground font-bold">
+                                  {t("settings.general.change_language")}
+                                </Label>
+                              </div>
+                              <Select
+                                options={availableLanguages.map((lang) => ({
+                                  value: lang,
+                                  label: getLanguageLabel(lang),
+                                  iconUrl: getLanguageIcon(lang),
+                                }))}
+                                selected={language}
+                                onChange={(value) => {
+                                  setLanguage(value);
+                                  i18n.changeLanguage(value);
+                                }}
+                              />
                               <UserDataForm userData={currentUserData} />
                             </CardContent>
                           </Card>
