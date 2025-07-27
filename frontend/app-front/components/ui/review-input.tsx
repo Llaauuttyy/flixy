@@ -50,6 +50,7 @@ export function ReviewInput({
 
   const handleEditReview = () => {
     setIsEditing(true);
+    setReview(String(currentReview?.text));
     setCaracters(String(currentReview?.text).length);
   };
 
@@ -243,7 +244,6 @@ export function ReviewInput({
       <div>
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold mb-6">Your Review</h2>
-          {/* TODO: Agregar boton para editar review */}
           <Button
             onClick={handleEditReview}
             className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
