@@ -6,16 +6,8 @@ import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { getMovies } from "services/api/flixy/server/movies";
 import { getAccessToken } from "services/api/utils";
-import type { ApiResponse } from "../../services/api/flixy/types/overall";
+import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
-
-interface Page<T> {
-  items: T[];
-  total: number;
-  page: number;
-  size: number;
-  pages: number;
-}
 
 interface MoviesData {
   movies: Page<Movie>;

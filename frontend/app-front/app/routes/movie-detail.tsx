@@ -1,5 +1,5 @@
-import { MessageCircle, Play, Plus, Star, ThumbsUp } from "lucide-react";
-import { useLoaderData } from "react-router-dom";
+import { Play, Plus, Star } from "lucide-react";
+import { useFetcher, useLoaderData } from "react-router-dom";
 
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
@@ -12,19 +12,33 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { ReviewCard } from "../../components/ui/review-card";
+import { ReviewInput } from "../../components/ui/review-input";
 import { Separator } from "../../components/ui/separator";
 import type { Route } from "./+types/movie-detail";
 
-import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { StarRating } from "components/ui/star-rating";
 import { useTranslation } from "react-i18next";
 import { getAccessToken } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
-import type { MovieDataGet } from "../../services/api/flixy/types/movie";
-import type { ApiResponse } from "../../services/api/flixy/types/overall";
+import type {
+  MovieDataGet,
+  MovieOverallData,
+} from "../../services/api/flixy/types/movie";
+import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
+
+import { Pagination } from "components/ui/pagination";
+import { getReviewsData } from "services/api/flixy/server/reviews";
+import type {
+  ReviewDataGet,
+  ReviewsData,
+} from "services/api/flixy/types/review";
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 3;
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   let movieData: MovieDataGet = {} as MovieDataGet;
+  let reviewsData: ReviewsData = {} as ReviewsData;
 
   const movieId = params.movieId;
 
@@ -40,10 +54,25 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   let apiResponse: ApiResponse = {};
 
+  const url = new URL(request.url);
+  const page = parseInt(url.searchParams.get("page") ?? `${DEFAULT_PAGE}`, 10);
+
   try {
     movieData = await getMovieData(request, movieId);
+    reviewsData = await getReviewsData(
+      page,
+      DEFAULT_PAGE_SIZE,
+      movieId,
+      request
+    );
+
     apiResponse.accessToken = await getAccessToken(request);
-    apiResponse.data = movieData;
+
+    let overallData: MovieOverallData = {
+      movie: movieData,
+      reviews: reviewsData,
+    };
+    apiResponse.data = overallData;
 
     return apiResponse;
   } catch (err: Error | any) {
@@ -63,36 +92,18 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export default function MovieDetail() {
   let apiResponse: ApiResponse = useLoaderData();
   const { t } = useTranslation();
-  let currentMovieData: MovieDataGet = apiResponse.data || {};
+  const fetcher = useFetcher();
 
-  const mockReviews = [
-    {
-      id: 1,
-      user: {
-        name: "María González",
-        avatar: "/placeholder.svg?height=40&width=40",
-        initials: "MG",
-      },
-      rating: 5,
-      comment:
-        "Una obra maestra cinematográfica. Nolan vuelve a sorprender con su narrativa no lineal y las actuaciones son excepcionales.",
-      timeAgo: "hace 2 horas",
-      likes: 24,
-    },
-    {
-      id: 2,
-      user: {
-        name: "Carlos Ruiz",
-        avatar: "/placeholder.svg?height=40&width=40",
-        initials: "CR",
-      },
-      rating: 4,
-      comment:
-        "Excelente película biográfica. Cillian Murphy está brillante como Oppenheimer.",
-      timeAgo: "hace 1 día",
-      likes: 15,
-    },
-  ];
+  let currentMovieData: MovieDataGet = apiResponse.data.movie || {};
+  let userReview: ReviewDataGet = apiResponse.data.reviews.user_review || null;
+  // let currentReviews: ReviewDataGet[] =
+  // apiResponse.data.reviews.reviews.items || {};
+
+  let currentReviews: Page<ReviewDataGet> =
+    fetcher.data?.data.reviews.reviews ??
+    (apiResponse.data.reviews.reviews || {});
+
+  console.log("Current reviews data:", currentReviews);
 
   const getDurationFromMovie = (minutes_str: string): string => {
     let minutes = parseInt(minutes_str, 10);
@@ -156,7 +167,6 @@ export default function MovieDetail() {
               <h1 className="text-4xl md:text-5xl font-bold leading-tight">
                 {currentMovieData.title}
               </h1>
-
               <div className="flex items-center gap-4 text-[#A0A0A0]">
                 <span className="text-lg"> {currentMovieData.year} </span>
                 <Separator
@@ -190,7 +200,6 @@ export default function MovieDetail() {
                   </span>
                 </div>
               </div>
-
               <div className="flex flex-wrap gap-2">
                 {String(currentMovieData.genres)
                   .split(",")
@@ -203,7 +212,6 @@ export default function MovieDetail() {
                     </Badge>
                   ))}
               </div>
-
               <div>
                 <StarRating
                   initialRating={Number(currentMovieData.user_rating) || 0}
@@ -212,11 +220,9 @@ export default function MovieDetail() {
                   size={24}
                 />
               </div>
-
               <p className="text-lg leading-relaxed text-[#E0E0E0]">
                 {currentMovieData.plot}
               </p>
-
               <div className="flex gap-4">
                 <Button className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:from-[#8B5CF6]/90 hover:to-[#EC4899]/90 text-white px-6 py-3 rounded-md text-lg font-semibold">
                   <Play className="w-5 h-5 mr-2" />
@@ -230,9 +236,7 @@ export default function MovieDetail() {
                   Add to Watchlist
                 </Button>
               </div>
-
               <Separator className="bg-[#202135]" />
-
               {/* Cast & Crew */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
@@ -272,68 +276,38 @@ export default function MovieDetail() {
                   </CardContent>
                 </Card>
               </div>
-
               <Separator className="bg-[#202135]" />
-
-              <ReviewCard title={String(currentMovieData.title)} />
-
+              <ReviewInput
+                accessToken={String(apiResponse.accessToken)}
+                movieId={Number(currentMovieData.id)}
+                title={String(currentMovieData.title)}
+                userReview={userReview}
+              />
               <div>
                 <h2 className="text-2xl font-semibold mb-6">
                   {t("movie_detail.reviews_title")}
                 </h2>
-                <div className="space-y-4">
-                  {mockReviews.map((review) => (
-                    <Card
-                      key={review.id}
-                      className="bg-slate-800/50 border-slate-700"
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <Avatar>
-                            <AvatarImage
-                              src={
-                                review.user.avatar ||
-                                "/placeholder.svg?height=32&width=32"
-                              }
-                            />
-                            <AvatarFallback className="bg-slate-700 text-white">
-                              {review.user.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className="font-medium">
-                                {review.user.name}
-                              </span>
-                              <div className="flex items-center gap-1">
-                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm font-medium">
-                                  {review.rating}
-                                </span>
-                              </div>
-                              <span className="text-sm text-slate-400">
-                                {review.timeAgo}
-                              </span>
-                            </div>
-                            <p className="text-slate-300 mb-3">
-                              {review.comment}
-                            </p>
-                            <div className="flex items-center gap-4">
-                              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                                <ThumbsUp className="w-4 h-4" />
-                                <span className="text-sm">{review.likes}</span>
-                              </button>
-                              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                                <MessageCircle className="w-4 h-4" />
-                                <span className="text-sm">Comment</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                {currentReviews.items && currentReviews.items.length !== 0 ? (
+                  <Pagination
+                    itemsPage={currentReviews}
+                    onPageChange={(page: number) => {
+                      console.log("Changing page to:", page);
+                      fetcher.load(
+                        `/movies/${currentMovieData.id}?page=${page}`
+                      );
+                    }}
+                  >
+                    <div className="space-y-4">
+                      {currentReviews.items.map((review) => (
+                        <ReviewCard userReview={review} />
+                      ))}
+                    </div>
+                  </Pagination>
+                ) : (
+                  <p className="text-gray-400 mb-6">
+                    {t("review_card.no_reviews")}
+                  </p>
+                )}
               </div>
             </div>
           </div>

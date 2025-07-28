@@ -124,8 +124,9 @@ export const Pagination = <T,>({
         aria-label="Pagination"
         style={{
           marginTop: "20px",
+          gap: "7px",
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "center",
         }}
       >
         <ArrowButton

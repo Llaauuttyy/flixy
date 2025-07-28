@@ -2,6 +2,9 @@ export const enTranslation = {
   general: {
     rights_reserved: "All rights reserved.",
   },
+  exceptions: {
+    service_error: "Service's not working properly. Please try again later.",
+  },
   header: {
     sign_out: "Sign out",
     signing_out: "Signing out...",
@@ -57,6 +60,7 @@ export const enTranslation = {
     writers: "Writers",
     cast: "Cast",
     reviews_title: "Reviews from flixies",
+    review_user: "Your review",
   },
   not_found: {
     title_oops: "Oops!",
@@ -67,10 +71,17 @@ export const enTranslation = {
     link_home: "Go back home",
   },
   review_card: {
+    comment_button: "Comment",
+    no_reviews: "No reviews so far. Be the first!",
+  },
+  review_input: {
     have_watched: "Have you watched",
     share_thoughts: "Share your thoughts...",
+    watch_date_input: "Choose watch date",
     review_placeholder: "What did you think of the movie?",
     review_button: "Publish review",
+    review_analizying: "Analyzing review...",
+    cancel_button: "Cancel",
   },
   settings: {
     title: "Settings",

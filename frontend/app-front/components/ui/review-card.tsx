@@ -1,48 +1,65 @@
-import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
+import { Badge } from "components/ui/badge";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
+import { MessageCircle, MonitorPlay, ThumbsUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "./button";
+import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { Card, CardContent } from "./card";
-import { Textarea } from "./textarea";
+
+import "dayjs/locale/en";
+import "dayjs/locale/es";
+import i18n from "i18n/i18n";
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 interface ReviewCardProps {
-  title: string;
+  userReview: ReviewDataGet;
 }
 
-export function ReviewCard({ title }: ReviewCardProps) {
-  const [review, setReview] = useState("");
+export function ReviewCard({ userReview }: ReviewCardProps) {
   const { t } = useTranslation();
 
-  function handleSubmitReview(
-    event: React.MouseEvent<HTMLButtonElement>
-  ): void {
-    throw new Error("Function not implemented.");
-  }
+  dayjs.locale(i18n.language || "en");
 
   return (
     <Card className="bg-slate-800/50 border-slate-700">
       <CardContent className="p-6">
-        {/* Opinion Textarea */}
-        <div className="mb-6">
-          <p className="text-slate-300 mb-3">
-            {t("review_card.have_watched")}{" "}
-            <span className="text-purple-400 font-semibold">{title}</span>
-            {"? "}
-            {t("review_card.share_thoughts")}
-          </p>
-          <Textarea
-            placeholder={t("review_card.review_placeholder")}
-            onChange={(e) => setReview(e.target.value)}
-            className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 min-h-[120px]"
-          />
+        <div className="flex items-start gap-4">
+          <Avatar>
+            <AvatarImage src={"/placeholder.svg?height=32&width=32"} />
+            <AvatarFallback className="bg-slate-700 text-white">
+              {"JS"}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="font-medium">{userReview.user_name}</span>
+              <span className="text-sm text-slate-400">
+                {dayjs.utc(userReview.updated_at).fromNow()}
+              </span>
+              <Badge variant="secondary" className="bg-gray-700 text-gray-300">
+                <MonitorPlay className="pr-2" size={24} />{" "}
+                {dayjs.utc(userReview.watch_date).fromNow()}
+              </Badge>
+            </div>
+            <p className="text-slate-300 mb-3">{userReview.text}</p>
+            <div className="flex items-center gap-4">
+              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                <ThumbsUp className="w-4 h-4" />
+                <span className="text-sm">{0}</span>
+              </button>
+              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-sm">
+                  {t("review_card.comment_button")}
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
-
-        <Button
-          onClick={handleSubmitReview}
-          // disabled={!userRating || !opinion.trim()}
-          className="bg-pink-600 hover:bg-pink-700 disabled:opacity-50"
-        >
-          {t("review_card.review_button")}
-        </Button>
       </CardContent>
     </Card>
   );
