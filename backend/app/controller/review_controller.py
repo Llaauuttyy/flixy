@@ -33,3 +33,11 @@ def create_review(session: SessionDep, request: Request, review_dto: ReviewCreat
         return review
     except Exception as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+    
+@review_router.delete("/review/{review_id}")
+def delete_review(session: SessionDep, request: Request, review_service: ReviewServiceDep, review_id: int = Path(..., title="review id", ge=1)):
+    user_id = request.state.user_id
+    try:
+        return review_service.delete_review(Database(session), user_id, review_id)
+    except Exception as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))
