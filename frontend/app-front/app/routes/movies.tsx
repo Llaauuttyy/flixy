@@ -2,6 +2,7 @@ import { HeaderFull } from "components/ui/header-full";
 import { MovieCard } from "components/ui/movie-card";
 import { Pagination } from "components/ui/pagination";
 import { SidebarNav } from "components/ui/sidebar-nav";
+import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { getMovies } from "services/api/flixy/server/movies";
 import { getAccessToken } from "services/api/utils";
@@ -63,6 +64,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function MoviesPage() {
   const apiResponse: ApiResponse = useLoaderData();
   const fetcher = useFetcher();
+  const { t } = useTranslation();
 
   const moviesData: MoviesData = fetcher.data?.data ?? apiResponse.data;
   console.log("Movies data:", moviesData);
@@ -94,15 +96,14 @@ export default function MoviesPage() {
             {/* Movies Section */}
             <main className="p-6">
               <div className="mb-6">
-                <h1 className="text-3xl font-bold text-white mb-2">Movies</h1>
-                <p className="text-gray-300">
-                  Rate movies you've watched and share your thoughts
-                </p>
+                <h1 className="text-3xl font-bold text-white mb-2">
+                  {t("movies.title")}
+                </h1>
+                <p className="text-gray-300">{t("movies.subtitle")}</p>
               </div>
               <Pagination
                 itemsPage={moviesData.movies}
                 onPageChange={(page: number) => {
-                  console.log("Changing page to:", page);
                   fetcher.load(`/movies?page=${page}`);
                 }}
               >

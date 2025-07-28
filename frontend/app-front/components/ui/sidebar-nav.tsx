@@ -16,35 +16,36 @@ import { Link, useLocation } from "react-router-dom";
 
 // import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const navigationItems = [
   {
-    title: "Home",
+    title: "sidebar_nav.home",
     href: "/",
     icon: Home,
   },
   {
-    title: "Movies",
+    title: "sidebar_nav.movies",
     href: "/movies",
     icon: Film,
   },
   {
-    title: "Social",
+    title: "sidebar_nav.social",
     href: "/social",
     icon: Users,
   },
   {
-    title: "Reviews",
+    title: "sidebar_nav.reviews",
     href: "/reviews",
     icon: BookOpen,
   },
   {
-    title: "Explore",
+    title: "sidebar_nav.explore",
     href: "/recommendations",
     icon: Sparkles,
   },
   {
-    title: "My Profile",
+    title: "sidebar_nav.profile",
     href: "/profile",
     icon: User,
   },
@@ -55,6 +56,7 @@ export function SidebarNav() {
   // const pathname = usePathname();
   const location = useLocation();
   const pathname = location.pathname;
+  const { t } = useTranslation();
 
   return (
     <div
@@ -112,7 +114,7 @@ export function SidebarNav() {
                   )}
                 >
                   <Icon className={cn("h-4 w-4", !collapsed && "mr-2")} />
-                  {!collapsed && item.title}
+                  {!collapsed && t(item.title)}
                 </Button>
               </Link>
             );
@@ -131,7 +133,7 @@ export function SidebarNav() {
             )}
           >
             <Settings className={cn("h-4 w-4", !collapsed && "mr-2")} />
-            {!collapsed && "Settings"}
+            {!collapsed && t("sidebar_nav.settings")}
           </Button>
         </Link>
       </div>

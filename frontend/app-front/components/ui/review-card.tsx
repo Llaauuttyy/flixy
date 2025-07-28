@@ -3,6 +3,8 @@ import { Badge } from "components/ui/badge";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { MessageCircle, MonitorPlay, ThumbsUp } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { Card, CardContent } from "./card";
 
@@ -13,6 +15,9 @@ interface ReviewCardProps {
 }
 
 export function ReviewCard({ userReview }: ReviewCardProps) {
+  const [review, setReview] = useState("");
+  const { t } = useTranslation();
+  
   function getReviewTime(reviewDate: Date): string {
     const currentDate = new Date();
     const timeDiff = currentDate.getTime() - new Date(reviewDate).getTime();
