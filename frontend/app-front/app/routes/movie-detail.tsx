@@ -17,6 +17,7 @@ import type { Route } from "./+types/movie-detail";
 
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { StarRating } from "components/ui/star-rating";
+import { useTranslation } from "react-i18next";
 import { getAccessToken } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type { MovieDataGet } from "../../services/api/flixy/types/movie";
@@ -61,6 +62,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export default function MovieDetail() {
   let apiResponse: ApiResponse = useLoaderData();
+  const { t } = useTranslation();
   let currentMovieData: MovieDataGet = apiResponse.data || {};
 
   const mockReviews = [
@@ -236,20 +238,19 @@ export default function MovieDetail() {
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
                   <CardHeader>
                     <CardTitle className="text-xl font-semibold">
-                      Director
+                      {t("movie_detail.directors")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-lg text-[#A0A0A0]">
                       {currentMovieData.directors}
-                      {/* {currentMovieData.directors} */}
                     </p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
                   <CardHeader>
                     <CardTitle className="text-xl font-semibold">
-                      Writers
+                      {t("movie_detail.writers")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -261,7 +262,7 @@ export default function MovieDetail() {
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
                   <CardHeader>
                     <CardTitle className="text-xl font-semibold">
-                      Cast
+                      {t("movie_detail.cast")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -278,7 +279,7 @@ export default function MovieDetail() {
 
               <div>
                 <h2 className="text-2xl font-semibold mb-6">
-                  Reviews from flixies
+                  {t("movie_detail.reviews_title")}
                 </h2>
                 <div className="space-y-4">
                   {mockReviews.map((review) => (

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 // import { redirect } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { SignupFormSchema } from "../lib/definitions";
 import { Button } from "./ui/button";
@@ -16,6 +17,7 @@ function RegisterForm() {
   // Estados reactivos que re-renderizan el componente al actualizarse.
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
+  const { t } = useTranslation();
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -37,7 +39,9 @@ function RegisterForm() {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <h2 className="text-2xl font-bold text-white">Create Account</h2>
+        <h2 className="text-2xl font-bold text-white">
+          {t("register.sign_up_title")}
+        </h2>
       </div>
 
       <div className="space-y-4">
@@ -59,7 +63,7 @@ function RegisterForm() {
           <div className="space-y-2">
             <div>
               <Label htmlFor="name" className="text-gray-300">
-                Name
+                {t("register.name")}
               </Label>
             </div>
             <Input
@@ -67,7 +71,7 @@ function RegisterForm() {
               id="name"
               name="name"
               type="name"
-              placeholder="name"
+              placeholder={t("register.name")}
               required
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
@@ -79,7 +83,7 @@ function RegisterForm() {
           <div className="space-y-2">
             <div>
               <Label htmlFor="username" className="text-gray-300">
-                Username
+                {t("register.username")}
               </Label>
             </div>
             <Input
@@ -87,7 +91,7 @@ function RegisterForm() {
               id="username"
               name="username"
               type="username"
-              placeholder="username"
+              placeholder={t("register.username")}
               required
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
@@ -99,7 +103,7 @@ function RegisterForm() {
           <div className="space-y-2">
             <div>
               <Label htmlFor="email" className="text-gray-300">
-                Email
+                {t("register.email")}
               </Label>
             </div>
             <Input
@@ -120,7 +124,7 @@ function RegisterForm() {
             <div className="flex items-center justify-between">
               <div>
                 <Label htmlFor="password" className="text-gray-300">
-                  Password
+                  {t("register.password")}
                 </Label>
               </div>
             </div>
@@ -129,7 +133,7 @@ function RegisterForm() {
               id="password"
               name="password"
               type="password"
-              placeholder="password"
+              placeholder={t("register.password")}
               required
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
@@ -144,7 +148,7 @@ function RegisterForm() {
               id="password"
               name="confirmPassword"
               type="password"
-              placeholder="confirm password"
+              placeholder={t("register.confirm_password")}
               required
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
             />
@@ -161,10 +165,10 @@ function RegisterForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Registering...
+                {t("register.sign_up_button_loading")}
               </>
             ) : (
-              "Sign up"
+              t("register.sign_up_button")
             )}
           </Button>
         </form>
