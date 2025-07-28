@@ -2,6 +2,10 @@ export const esTranslation = {
   general: {
     rights_reserved: "Todos los derechos reservados.",
   },
+  exceptions: {
+    service_error:
+      "El servicio no se encuentra funcionando. Intente nuevamente más tarde.",
+  },
   header: {
     sign_out: "Cerrar sesión",
     signing_out: "Cerrando sesión...",
@@ -59,6 +63,7 @@ export const esTranslation = {
     writers: "Guionistas",
     cast: "Elenco",
     reviews_title: "Reseñas de los flixis",
+    review_user: "Tu reseña",
   },
   not_found: {
     title_oops: "¡Uy!",
@@ -69,10 +74,17 @@ export const esTranslation = {
     link_home: "Regresa al inicio",
   },
   review_card: {
-    have_watched: "¿Has visto",
+    comment_button: "Comentar",
+    no_reviews: "Todavía no hay reseñas. Podés ser el primero!",
+  },
+  review_input: {
+    have_watched: "¿Has visto la película",
     share_thoughts: "Comparte tus pensamientos...",
+    watch_date_input: "Elige la fecha de visualización",
     review_placeholder: "¿Qué opinas de la película?",
     review_button: "Publicar reseña",
+    review_analizying: "Analizando reseña...",
+    cancel_button: "Cancelar",
   },
   settings: {
     title: "Configuración",

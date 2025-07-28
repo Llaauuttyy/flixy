@@ -305,7 +305,7 @@ export default function MovieDetail() {
                   </Pagination>
                 ) : (
                   <p className="text-gray-400 mb-6">
-                    No reviews so far. Be the first!
+                    {t("review_card.no_reviews")}
                   </p>
                 )}
               </div>
