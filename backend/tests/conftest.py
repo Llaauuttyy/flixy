@@ -7,22 +7,15 @@ from .setup import test_engine
 from app.db.database_setup import get_session
 from app.main import app
 from .setup import client
-
-@pytest.fixture(scope="module", autouse=True)
-def register_and_login_test_user():
-    login_form = {
-        "username": "test_user_1",
-        "password": "User.1234"
-    }
-    login_response = client.post("/login", json=login_form)
-    access_token = login_response.json()["access_token"]
-    client.headers = {"Authorization": f"Bearer {access_token}"}
+from .utils import register_and_login_test_user
 
 @pytest.fixture(scope="session", autouse=True)
 def clean_database():
     # Antes de todos los tests
     with Session(test_engine) as session:
         add_tests_data(session)
+        register_and_login_test_user(client)
+        
 
     yield
     
@@ -32,10 +25,7 @@ def clean_database():
         session.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
 
         for table in reversed(SQLModel.metadata.sorted_tables):
-            session.execute(table.delete())
-
-        for table in SQLModel.metadata.sorted_tables:
-            session.execute(text(f"ALTER TABLE {table.name} AUTO_INCREMENT = 1;"))
+            session.execute(text(f"TRUNCATE TABLE `{table.name}`;"))
 
         session.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
         session.commit()
