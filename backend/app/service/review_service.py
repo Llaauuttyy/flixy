@@ -2,9 +2,9 @@ from app.model.user import User
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
-from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO, ReviewDTO
+from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO
 from sqlalchemy.exc import IntegrityError
-from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEW_DELETE_FROM_ANOTHER_USER, REVIEWS_NOT_FOUND, INSULTING_REVIEW
+from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEW_NOT_FOUND, INSULTING_REVIEW
 from sqlalchemy.orm import selectinload
 from sqlalchemy import and_
 from typing import Tuple, List, Optional
@@ -95,12 +95,12 @@ class ReviewService:
 
     def delete_review(self, db: Database, user_id: int, review_id: int):
         try:
-            review = db.find_by(Review, "id", review_id)
+            review_to_delete = db.find_by_multiple(Review, id=review_id, user_id=user_id)
 
-            if review.user_id != user_id:
-                raise Exception(REVIEW_DELETE_FROM_ANOTHER_USER)
+            if not review_to_delete:
+                raise Exception(REVIEW_NOT_FOUND)
 
-            db.delete(review)
+            db.delete(review_to_delete)
         except IntegrityError as e:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
