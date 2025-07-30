@@ -3,11 +3,13 @@ import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
 import { Bell, Loader2, Search } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSubmit } from "react-router-dom";
 
 export function HeaderFull() {
   const submit = useSubmit();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   function signOut() {
     setIsLoading(true);
@@ -25,7 +27,7 @@ export function HeaderFull() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Buscar películas, usuarios, reseñas..."
+              placeholder={t("header.search_placeholder")}
               className="pl-10 bg-gray-800 border-gray-700 text-gray-300 placeholder-gray-500 focus:border-purple-500"
             />
           </div>
@@ -39,10 +41,10 @@ export function HeaderFull() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Signing out...
+                {t("header.signing_out")}...
               </>
             ) : (
-              "Sign out"
+              t("header.sign_out")
             )}
           </div>
           <Button

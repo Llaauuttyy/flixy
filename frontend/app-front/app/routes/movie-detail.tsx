@@ -1,5 +1,5 @@
 import { Play, Plus, Star } from "lucide-react";
-import { useLoaderData } from "react-router-dom";
+import { useFetcher, useLoaderData } from "react-router-dom";
 
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
@@ -17,19 +17,24 @@ import { Separator } from "../../components/ui/separator";
 import type { Route } from "./+types/movie-detail";
 
 import { StarRating } from "components/ui/star-rating";
+import { useTranslation } from "react-i18next";
 import { getAccessToken } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type {
   MovieDataGet,
   MovieOverallData,
 } from "../../services/api/flixy/types/movie";
-import type { ApiResponse } from "../../services/api/flixy/types/overall";
+import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 
+import { Pagination } from "components/ui/pagination";
 import { getReviewsData } from "services/api/flixy/server/reviews";
 import type {
   ReviewDataGet,
   ReviewsData,
 } from "services/api/flixy/types/review";
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 3;
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   let movieData: MovieDataGet = {} as MovieDataGet;
@@ -49,9 +54,17 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   let apiResponse: ApiResponse = {};
 
+  const url = new URL(request.url);
+  const page = parseInt(url.searchParams.get("page") ?? `${DEFAULT_PAGE}`, 10);
+
   try {
     movieData = await getMovieData(request, movieId);
-    reviewsData = await getReviewsData(request, movieId);
+    reviewsData = await getReviewsData(
+      page,
+      DEFAULT_PAGE_SIZE,
+      movieId,
+      request
+    );
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -78,11 +91,19 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export default function MovieDetail() {
   let apiResponse: ApiResponse = useLoaderData();
+  const { t } = useTranslation();
+  const fetcher = useFetcher();
 
   let currentMovieData: MovieDataGet = apiResponse.data.movie || {};
   let userReview: ReviewDataGet = apiResponse.data.reviews.user_review || null;
-  let currentReviews: ReviewDataGet[] =
-    apiResponse.data.reviews.reviews.items || {};
+  // let currentReviews: ReviewDataGet[] =
+  // apiResponse.data.reviews.reviews.items || {};
+
+  let currentReviews: Page<ReviewDataGet> =
+    fetcher.data?.data.reviews.reviews ??
+    (apiResponse.data.reviews.reviews || {});
+
+  console.log("Current reviews data:", currentReviews);
 
   const getDurationFromMovie = (minutes_str: string): string => {
     let minutes = parseInt(minutes_str, 10);
@@ -221,7 +242,7 @@ export default function MovieDetail() {
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
                   <CardHeader>
                     <CardTitle className="text-xl font-semibold">
-                      Director
+                      {t("movie_detail.directors")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -233,7 +254,7 @@ export default function MovieDetail() {
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
                   <CardHeader>
                     <CardTitle className="text-xl font-semibold">
-                      Writers
+                      {t("movie_detail.writers")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -245,7 +266,7 @@ export default function MovieDetail() {
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">
                   <CardHeader>
                     <CardTitle className="text-xl font-semibold">
-                      Cast
+                      {t("movie_detail.cast")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -264,17 +285,27 @@ export default function MovieDetail() {
               />
               <div>
                 <h2 className="text-2xl font-semibold mb-6">
-                  Reviews from flixies
+                  {t("movie_detail.reviews_title")}
                 </h2>
-                {currentReviews.length !== 0 ? (
-                  <div className="space-y-4">
-                    {currentReviews.map((review) => (
-                      <ReviewCard userReview={review} />
-                    ))}
-                  </div>
+                {currentReviews.items && currentReviews.items.length !== 0 ? (
+                  <Pagination
+                    itemsPage={currentReviews}
+                    onPageChange={(page: number) => {
+                      console.log("Changing page to:", page);
+                      fetcher.load(
+                        `/movies/${currentMovieData.id}?page=${page}`
+                      );
+                    }}
+                  >
+                    <div className="space-y-4">
+                      {currentReviews.items.map((review) => (
+                        <ReviewCard userReview={review} />
+                      ))}
+                    </div>
+                  </Pagination>
                 ) : (
                   <p className="text-gray-400 mb-6">
-                    No reviews so far. Be the first!
+                    {t("review_card.no_reviews")}
                   </p>
                 )}
               </div>

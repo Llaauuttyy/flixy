@@ -1,5 +1,11 @@
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
 import { Edit, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { handleReviewCreation } from "services/api/flixy/client/reviews";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 import type {
@@ -10,12 +16,6 @@ import { Button } from "./button";
 import { Card, CardContent } from "./card";
 import { ReviewCard } from "./review-card";
 import { Textarea } from "./textarea";
-
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs from "dayjs";
 
 interface ReviewCardProps {
   accessToken: string;
@@ -30,6 +30,8 @@ export function ReviewInput({
   title,
   userReview,
 }: ReviewCardProps) {
+  const { t } = useTranslation();
+
   const reviewLimit = 1000;
   const [review, setReview] = useState("");
   const [caracters, setCaracters] = useState(0);
@@ -87,8 +89,7 @@ export function ReviewInput({
       console.log("API POST /review: ", err.message);
 
       if (err instanceof TypeError) {
-        apiResponse.error =
-          "Service's not working properly. Please try again later.";
+        apiResponse.error = t("exceptions.service_error");
         setApiResponse(apiResponse);
       }
 
@@ -134,15 +135,15 @@ export function ReviewInput({
           <div className="grid mb-6">
             <div className="flex justify-between items-center">
               <p className="text-slate-300 mb-3">
-                Have you watched{" "}
+                {t("review_input.have_watched")}{" "}
                 <span className="text-purple-400 font-semibold">{title}</span>?
-                Share your thoughts...
+                {t("review_input.share_thoughts")}
               </p>
               <div className="inline-block p-2">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DatePicker"]}>
                     <DatePicker
-                      label="Choose watch date"
+                      label={t("review_input.watch_date_input")}
                       value={date}
                       onChange={(newValue) => setDate(newValue as dayjs.Dayjs)}
                       format="LL"
@@ -189,7 +190,7 @@ export function ReviewInput({
             </div>
 
             <Textarea
-              placeholder={"What did you think of the movie?"}
+              placeholder={t("review_input.review_placeholder")}
               value={review || currentReview?.text}
               onChange={(e) => updateReview(e.target.value)}
               className="mb-2 bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 min-h-[120px]"
@@ -215,10 +216,10 @@ export function ReviewInput({
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Analyzing review...
+                {t("review_input.review_analizying")}
               </>
             ) : (
-              "Publish review"
+              t("review_input.review_button")
             )}
           </Button>
 
@@ -227,7 +228,7 @@ export function ReviewInput({
               onClick={handleCancelReview}
               className="ml-2 bg-red-600 hover:bg-red-700 disabled:opacity-50"
             >
-              Cancel
+              {t("review_input.cancel_button")}
             </Button>
           ) : null}
 
@@ -243,7 +244,9 @@ export function ReviewInput({
     return (
       <div>
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold mb-6">Your Review</h2>
+          <h2 className="text-2xl font-semibold mb-6">
+            {t("movie_detail.review_user")}
+          </h2>
           <Button
             onClick={handleEditReview}
             className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"

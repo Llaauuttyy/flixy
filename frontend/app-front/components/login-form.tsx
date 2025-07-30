@@ -1,7 +1,6 @@
-import type React from "react";
-
 import { Github, Loader2, Mail } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useActionData } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
@@ -10,30 +9,20 @@ import { Label } from "./ui/label";
 
 export default function LoginForm() {
   const actionData = useActionData();
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Here you would normally redirect to dashboard or handle errors
-    }, 1500);
-  };
-
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
         <h2 className="text-2xl font-bold text-white">
-          Sign in to your account
+          {t("login.sign_in_title")}
         </h2>
         <p className="text-gray-400 text-sm">
-          Enter your credentials below to access your account
+          {t("login.sign_in_description")}
         </p>
       </div>
 
@@ -71,14 +60,14 @@ export default function LoginForm() {
         <form method="post" className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="username" className="text-gray-300">
-              Username
+              {t("login.username")}
             </Label>
             <Input
               id="username"
               // Se pone nombre para que llegue en el request a routes/login.tsx
               name="username"
               type="username"
-              placeholder="username"
+              placeholder={t("login.username")}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -89,13 +78,13 @@ export default function LoginForm() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password" className="text-gray-300">
-                Password
+                {t("login.password")}
               </Label>
               <Link
                 to="#"
                 className="text-sm text-purple-400 hover:text-purple-300"
               >
-                Forgot password?
+                {t("login.forgot_password")}
               </Link>
             </div>
             <Input
@@ -135,10 +124,10 @@ export default function LoginForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Signing in...
+                {t("login.sign_in_button_loading")}
               </>
             ) : (
-              "Sign in"
+              t("login.sign_in_button")
             )}
           </Button>
         </form>
@@ -146,12 +135,12 @@ export default function LoginForm() {
 
       <div className="text-center">
         <p className="text-gray-400 text-sm">
-          Don't have an account?{" "}
+          {t("login.dont_have_account")}{" "}
           <Link
             to="/register"
             className="text-purple-400 hover:text-purple-300 font-medium"
           >
-            Sign up
+            {t("login.sign_up")}
           </Link>
         </p>
       </div>
