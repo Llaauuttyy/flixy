@@ -10,8 +10,6 @@ import { handleRegistration } from "services/api/flixy/server/auth";
 export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();
 
-  console.log("FORM DATA:", form);
-
   const name = form.get("name");
   const username = form.get("username");
   const email = form.get("email");

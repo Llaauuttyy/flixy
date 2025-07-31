@@ -31,7 +31,7 @@ export function ReviewCard({ userReview }: ReviewCardProps) {
           <Avatar>
             <AvatarImage src={"/placeholder.svg?height=32&width=32"} />
             <AvatarFallback className="bg-slate-700 text-white">
-              {"JS"}
+              {userReview.user_name[0]?.toUpperCase() || "NN"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">

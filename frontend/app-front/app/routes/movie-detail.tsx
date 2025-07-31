@@ -291,7 +291,6 @@ export default function MovieDetail() {
                   <Pagination
                     itemsPage={currentReviews}
                     onPageChange={(page: number) => {
-                      console.log("Changing page to:", page);
                       fetcher.load(
                         `/movies/${currentMovieData.id}?page=${page}`
                       );

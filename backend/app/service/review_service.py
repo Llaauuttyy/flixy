@@ -93,9 +93,9 @@ class ReviewService:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
 
-    def delete_review(self, db: Database, user_id: int, review_id: int):
+    def delete_review(self, db: Database, user_id: int, id: int):
         try:
-            review_to_delete = db.find_by_multiple(Review, id=review_id, user_id=user_id)
+            review_to_delete = db.find_by_multiple(Review, id=id, user_id=user_id)
 
             if not review_to_delete:
                 raise Exception(REVIEW_NOT_FOUND)

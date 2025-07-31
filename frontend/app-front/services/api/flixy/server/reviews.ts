@@ -19,7 +19,6 @@ export async function getReviewsData(
 
   const response_json = await response.json();
 
-  console.log();
   if (!response.ok) {
     throw new Error(`${response_json.detail}`);
   }
