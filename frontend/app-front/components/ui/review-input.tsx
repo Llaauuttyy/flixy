@@ -41,6 +41,7 @@ export function ReviewInput({
   const [hasReachedLimit, setHasReachedLimit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [currentReview, setCurrentReview] = useState(userReview);
   const [date, setDate] = useState<dayjs.Dayjs>(
@@ -64,6 +65,8 @@ export function ReviewInput({
       return;
     }
 
+    setIsDeleting(true);
+
     let apiResponse: ApiResponse = {};
 
     try {
@@ -81,6 +84,8 @@ export function ReviewInput({
       apiResponse.error = err.message;
       setApiDeleteResponse(apiResponse);
     }
+
+    setIsDeleting(false);
   };
 
   const handleCancelReview = () => {
@@ -280,6 +285,7 @@ export function ReviewInput({
             </Button>
             <Button
               onClick={handleDeleteReview}
+              disabled={isDeleting}
               className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
             >
               <Trash size={30} color="red" />
