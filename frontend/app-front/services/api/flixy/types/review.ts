@@ -8,6 +8,7 @@ export interface ReviewCreation {
 }
 
 export interface ReviewDataGet {
+  id: number;
   user_name: string;
   movie_id: number;
   text: string;

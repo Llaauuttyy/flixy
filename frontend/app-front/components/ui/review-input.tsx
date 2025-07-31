@@ -3,10 +3,13 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
-import { Edit, Loader2 } from "lucide-react";
+import { Edit, Loader2, Trash } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { handleReviewCreation } from "services/api/flixy/client/reviews";
+import {
+  handleReviewCreation,
+  handleReviewDelete,
+} from "services/api/flixy/client/reviews";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 import type {
   ReviewCreation,
@@ -38,6 +41,7 @@ export function ReviewInput({
   const [hasReachedLimit, setHasReachedLimit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [currentReview, setCurrentReview] = useState(userReview);
   const [date, setDate] = useState<dayjs.Dayjs>(
@@ -46,14 +50,42 @@ export function ReviewInput({
       : dayjs().startOf("day")
   );
 
-  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
-
-  console.log(`ReviewCard: movie_id: ${movieId}, title: ${title}`);
+  const [apiResponse, setApiResponse] = useState<ApiResponse | null>();
+  const [apiDeleteResponse, setApiDeleteResponse] =
+    useState<ApiResponse | null>();
 
   const handleEditReview = () => {
     setIsEditing(true);
     setReview(String(currentReview?.text));
     setCaracters(String(currentReview?.text).length);
+  };
+
+  const handleDeleteReview = async () => {
+    if (!currentReview) {
+      return;
+    }
+
+    setIsDeleting(true);
+
+    let apiResponse: ApiResponse = {};
+
+    try {
+      await handleReviewDelete(accessToken, currentReview.id);
+
+      setCurrentReview(null);
+    } catch (err: Error | any) {
+      console.log("API DELETE /review/:reviewId ", err.message);
+
+      if (err instanceof TypeError) {
+        apiResponse.error = t("exceptions.service_error");
+        setApiDeleteResponse(apiResponse);
+      }
+
+      apiResponse.error = err.message;
+      setApiDeleteResponse(apiResponse);
+    }
+
+    setIsDeleting(false);
   };
 
   const handleCancelReview = () => {
@@ -64,9 +96,6 @@ export function ReviewInput({
   };
 
   const handleSubmitReview = async () => {
-    console.log("Submitting review:", review);
-    console.log("Movie ID:", movieId);
-
     setIsLoading(true);
 
     const reviewData: ReviewCreation = {
@@ -243,17 +272,29 @@ export function ReviewInput({
   if (currentReview) {
     return (
       <div>
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold mb-6">
+        <div className="flex justify-between items-center mb-[10px]">
+          <h2 className="text-2xl font-semibold">
             {t("movie_detail.review_user")}
           </h2>
-          <Button
-            onClick={handleEditReview}
-            className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
-          >
-            <Edit size={30} />
-          </Button>
+          <div className="flex gap-[10px]">
+            <Button
+              onClick={handleEditReview}
+              className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+            >
+              <Edit size={30} />
+            </Button>
+            <Button
+              onClick={handleDeleteReview}
+              disabled={isDeleting}
+              className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+            >
+              <Trash size={30} color="red" />
+            </Button>
+          </div>
         </div>
+        {apiDeleteResponse?.error && (
+          <p className="text-red-500 mt-4 mb-4">{apiDeleteResponse.error}</p>
+        )}
         <ReviewCard userReview={currentReview} />
       </div>
     );

@@ -14,7 +14,6 @@ export async function getMovies(page: number, size: number, request: Request) {
 
   const response_json = await response.json();
 
-  console.log();
   if (!response.ok) {
     throw new Error(`${response_json.detail}`);
   }
@@ -37,8 +36,6 @@ export async function getMovieData(
   });
 
   const response_json = await response.json();
-
-  console.log("response_json:", response_json);
 
   if (!response.ok) {
     throw new Error(`${response_json.detail}`);

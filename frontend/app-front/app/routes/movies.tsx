@@ -67,7 +67,6 @@ export default function MoviesPage() {
   const { t } = useTranslation();
 
   const moviesData: MoviesData = fetcher.data?.data ?? apiResponse.data;
-  console.log("Movies data:", moviesData);
 
   if (apiResponse.error) {
     return (

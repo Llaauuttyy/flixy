@@ -10,6 +10,10 @@ class Database:
         self.db_session.commit()
         self.db_session.refresh(register)
 
+    def delete(self, register):
+        self.db_session.delete(register)
+        self.db_session.commit()
+
     def rollback(self):
         self.db_session.rollback()
 

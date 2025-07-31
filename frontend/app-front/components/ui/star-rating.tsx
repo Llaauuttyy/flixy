@@ -25,7 +25,6 @@ export function StarRating({
 
   const handleClick = async (rating: number) => {
     if (interactive) {
-      console.log(`Movie "${movieId}" rated: ${rating} stars`);
       setCurrentRating(rating);
 
       let newRating: MovieSetRating = {
