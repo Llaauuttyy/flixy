@@ -1,16 +1,5 @@
 from app.constants.message import OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR, OLD_PASSWORD_DOESNT_MATCH_ERROR, PASSWORD_VALIDATION_ERROR
 from .setup import client
-import pytest
-
-@pytest.fixture(scope="module", autouse=True)
-def register_and_login_test_user():
-    login_form = {
-        "username": "test_user_1",
-        "password": "User.1234"
-    }
-    login_response = client.post("/login", json=login_form)
-    access_token = login_response.json()["access_token"]
-    client.headers = {"Authorization": f"Bearer {access_token}"}
 
 def test_update_password_with_valid_data_should_succeed():
     update_password_form = {
