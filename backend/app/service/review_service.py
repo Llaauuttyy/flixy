@@ -98,7 +98,7 @@ class ReviewService:
             review_to_delete = db.find_by_multiple(Review, id=id, user_id=user_id)
 
             if not review_to_delete:
-                raise Exception(REVIEW_NOT_FOUND)
+                raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
 
             db.delete(review_to_delete)
         except IntegrityError as e:

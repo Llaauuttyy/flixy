@@ -1,5 +1,6 @@
 from app.model.user import User
 from app.model.movie import Movie
+from app.model.review import Review
 import pytest
 from sqlalchemy import event
 from sqlmodel import SQLModel, Session, text
@@ -61,6 +62,10 @@ def add_tests_data(session):
 
     movies = get_movies_data()
     session.add_all(movies)
+
+    reviews = get_reviews_data()
+    session.add_all(reviews)
+
     session.commit()
 
 def get_users_data():
@@ -159,3 +164,15 @@ def get_movies_data():
     ))
 
     return movies
+
+def get_reviews_data():
+    reviews = []
+
+    reviews.append(Review(
+        user_id=1,
+        movie_id=1,
+        text="Review of a test movie.",
+        watch_date='2025-07-19 23:30:43',
+    ))
+
+    return reviews

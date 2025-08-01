@@ -1,4 +1,4 @@
-from .setup import client
+from tests.setup import client
 
 def test_login_with_valid_user_should_return_access_token():
     login_form = {
