@@ -12,6 +12,9 @@ export default [
     index("routes/home.tsx"),
     route("movies", "routes/movies.tsx"),
     route("movies/:movieId", "routes/movie-detail.tsx"),
+
+    route("profile", "routes/profile.tsx"),
+
     route("settings", "routes/settings.tsx"),
 
     route("signout", "routes/auth/signout.tsx"),
