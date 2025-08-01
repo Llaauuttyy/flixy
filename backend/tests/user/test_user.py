@@ -1,5 +1,5 @@
 from app.constants.message import EXISTENT_USERNAME_ERROR
-from .setup import client
+from tests.setup import client
 
 def test_update_user_data_changing_all_data_should_succeed():
     user_update_dto = {

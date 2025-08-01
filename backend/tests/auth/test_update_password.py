@@ -1,5 +1,5 @@
 from app.constants.message import OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR, OLD_PASSWORD_DOESNT_MATCH_ERROR, PASSWORD_VALIDATION_ERROR
-from .setup import client
+from tests.setup import client
 
 def test_update_password_with_valid_data_should_succeed():
     update_password_form = {
