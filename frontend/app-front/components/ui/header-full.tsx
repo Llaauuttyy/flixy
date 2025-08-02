@@ -4,12 +4,16 @@ import { Input } from "components/ui/input";
 import { Bell, Loader2, Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSubmit } from "react-router-dom";
+import { useLoaderData, useNavigate, useSubmit } from "react-router-dom";
+import type { ApiResponse } from "services/api/flixy/types/overall";
 
 export function HeaderFull() {
   const submit = useSubmit();
+  const apiResponse: ApiResponse = useLoaderData();
   const [isLoading, setIsLoading] = useState(false);
+  const [searchText, setSearchText] = useState(apiResponse?.data?.query ?? "");
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   function signOut() {
     setIsLoading(true);
@@ -20,13 +24,27 @@ export function HeaderFull() {
     });
   }
 
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (!searchText.trim()) return;
+      navigate(`/search?query=${encodeURIComponent(searchText.trim())}`);
+    }
+  };
+
   return (
     <header className="bg-gray-900 border-b border-gray-800 px-6 py-4">
       <div className="flex justify-between items-center">
         <div className="flex-1 max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 z-1" />
             <Input
+              id="search-bar"
+              name="search-bar"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onClear={() => setSearchText("")}
+              onKeyDown={handleSearch}
               placeholder={t("header.search_placeholder")}
               className="pl-10 bg-gray-800 border-gray-700 text-gray-300 placeholder-gray-500 focus:border-purple-500"
             />

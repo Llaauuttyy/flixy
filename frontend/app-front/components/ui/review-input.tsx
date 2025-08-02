@@ -166,7 +166,7 @@ export function ReviewInput({
               <p className="text-slate-300 mb-3">
                 {t("review_input.have_watched")}{" "}
                 <span className="text-purple-400 font-semibold">{title}</span>?
-                {t("review_input.share_thoughts")}
+                {" " + t("review_input.share_thoughts")}
               </p>
               <div className="inline-block p-2">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>

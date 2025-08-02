@@ -8,7 +8,7 @@ export const enTranslation = {
   header: {
     sign_out: "Sign out",
     signing_out: "Signing out...",
-    search_placeholder: "Search movies, users, reviews...",
+    search_placeholder: "Search movies, users...",
   },
   login: {
     welcome_title: "Welcome back to",
@@ -61,6 +61,16 @@ export const enTranslation = {
     cast: "Cast",
     reviews_title: "Reviews from flixies",
     review_user: "Your review",
+  },
+  search: {
+    page_title: "Search Results",
+    results_for_query: "Found results for",
+    movies_section_title: "Movies",
+    results: "results",
+    users_section_title: "Users",
+    user_followers: "followers",
+    user_reviews: "reviews",
+    user_follow_button: "Follow",
   },
   not_found: {
     title_oops: "Oops!",

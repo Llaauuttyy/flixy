@@ -43,3 +43,30 @@ export async function getMovieData(
 
   return response_json;
 }
+
+export async function searchMovies(
+  query: string,
+  page: number,
+  size: number,
+  request: Request
+) {
+  const token = await getAccessToken(request);
+
+  const response = await fetch(
+    process.env.VITE_API_URL +
+      `/movies?search_query=${query}&page=${page}&size=${size}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
