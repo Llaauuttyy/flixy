@@ -11,7 +11,7 @@ export function HeaderFull() {
   const submit = useSubmit();
   const apiResponse: ApiResponse = useLoaderData();
   const [isLoading, setIsLoading] = useState(false);
-  const [searchText, setSearchText] = useState(apiResponse.data?.query ?? "");
+  const [searchText, setSearchText] = useState(apiResponse?.data?.query ?? "");
   const { t } = useTranslation();
   const navigate = useNavigate();
 
