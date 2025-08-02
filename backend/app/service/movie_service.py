@@ -38,7 +38,7 @@ class MovieService:
             left_model=Movie,
             right_model=Rating,
             join_condition=(and_(Movie.id == Rating.movie_id, Rating.user_id == user_id)),
-            filters=[Movie.id == movie_id]
+            and_filters=[Movie.id == movie_id]
         )
 
         if len(movies_rating) != 0:
@@ -96,3 +96,34 @@ class MovieService:
         except Exception as e:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
+        
+    def search_movies(self, db: Database, search_query: str, user_id: int):
+        movies_rating = db.left_join(
+            left_model=Movie,
+            right_model=Rating,
+            join_condition=(and_(Movie.id == Rating.movie_id, Rating.user_id == user_id)),
+            or_filters=[
+                Movie.title.ilike(f"%{search_query}%"),
+                Movie.directors.ilike(f"%{search_query}%"),
+                Movie.cast.ilike(f"%{search_query}%"),
+                Movie.genres.ilike(f"%{search_query}%")
+            ]
+        )
+
+        return [
+            MovieGetResponse(
+                id=movie.id,
+                title=movie.title,
+                year=movie.year,
+                imdb_rating=movie.imdb_rating,
+                genres=movie.genres,
+                countries=movie.countries,
+                duration=movie.duration,
+                cast=movie.cast,
+                directors=movie.directors,
+                writers=movie.writers,
+                plot=movie.plot,
+                logo_url=movie.logo_url,
+                user_rating= rating.user_rating if rating else None
+            ) for movie, rating in movies_rating
+        ]

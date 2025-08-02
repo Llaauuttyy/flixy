@@ -15,6 +15,8 @@ export default [
 
     route("profile", "routes/profile.tsx"),
 
+    route("search", "routes/search.tsx"),
+    
     route("settings", "routes/settings.tsx"),
 
     route("signout", "routes/auth/signout.tsx"),

@@ -1,7 +1,6 @@
 from tests.setup import client
 from app.dto.movie import MovieRateDTO
 from app.constants.message import MOVIE_NOT_FOUND
-import pytest
 from tests.utils import NOT_EXISTENT_MOVIE_ID
 
 

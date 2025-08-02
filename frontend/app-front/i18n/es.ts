@@ -9,7 +9,7 @@ export const esTranslation = {
   header: {
     sign_out: "Cerrar sesión",
     signing_out: "Cerrando sesión...",
-    search_placeholder: "Buscar películas, usuarios, reseñas...",
+    search_placeholder: "Buscar películas, usuarios...",
   },
   login: {
     welcome_title: "Bienvenido de nuevo a",
@@ -64,6 +64,16 @@ export const esTranslation = {
     cast: "Elenco",
     reviews_title: "Reseñas de los flixis",
     review_user: "Tu reseña",
+  },
+  search: {
+    page_title: "Resultados de la Búsqueda",
+    results_for_query: "Resultados encontrados para",
+    movies_section_title: "Películas",
+    results: "resultados",
+    users_section_title: "Usuarios",
+    user_followers: "seguidores",
+    user_reviews: "reseñas",
+    user_follow_button: "Seguir",
   },
   not_found: {
     title_oops: "¡Uy!",
