@@ -27,8 +27,12 @@ class Database:
 
         return self.db_session.exec(query_expression).all()
 
-    def find_by(self, model, field_name, value):
+    def find_by(self, model, field_name, value, options=None):
         statement = select(model).where(getattr(model, field_name) == value)
+
+        if options:
+            statement = statement.options(*options)
+
         return self.db_session.exec(statement).first()
     
     def exists_by(self, model, field_name, value):
