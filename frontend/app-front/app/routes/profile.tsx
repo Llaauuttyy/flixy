@@ -6,6 +6,7 @@ import { OverallStats } from "components/ui/insights/overall-stats";
 import { QuickStats } from "components/ui/insights/quick-stats";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { BookOpen, Clock, Eye, List } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router";
 import { getUserInsights } from "services/api/flixy/server/user-data";
 import type { ApiResponse } from "services/api/flixy/types/overall";
@@ -40,6 +41,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function MovieInsights() {
+  const { t } = useTranslation();
+
   const userStats = {
     totalReviews: 247,
     moviesWatched: 1834,
@@ -144,19 +147,17 @@ export default function MovieInsights() {
         {/* Header */}
         <div className="p-6 pb-0">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Your{" "}
+            {t("profile.title.prefix")}{" "}
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               Flixy
             </span>{" "}
-            Insights
+            {t("profile.title.suffix")}
           </h1>
-          <p className="text-gray-300">
-            Discover your patterns and achievements as a cinephile
-          </p>
+          <p className="text-gray-300">{t("profile.subtitle")}</p>
         </div>
 
         {/* Stats Overview */}
-        <OverallStats userStats={userStats} />
+        <OverallStats userInsights={userInsights} />
 
         {/* Genre Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 pb-0">
@@ -170,7 +171,7 @@ export default function MovieInsights() {
         </div>
 
         {/* Quick Stats */}
-        <QuickStats userStats={userStats} />
+        <QuickStats userInsights={userInsights} />
       </div>
     </div>
   );

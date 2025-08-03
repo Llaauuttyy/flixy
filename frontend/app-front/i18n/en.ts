@@ -123,4 +123,58 @@ export const enTranslation = {
       update: "Update",
     },
   },
+  profile: {
+    title: {
+      prefix: "Your",
+      highlight: "Flixy",
+      suffix: "Insights",
+    },
+    subtitle: "Discover your patterns and achievements as a cinephile",
+    insights: {
+      overall_stats: {
+        reviews: {
+          title: "Total Reviews",
+          description: "Opinions shared",
+        },
+        movies_watched: {
+          title: "Movies Watched",
+          description: "Stories experienced",
+        },
+        movies_rated: {
+          title: "Movies Rated",
+          description: "Opinions recorded",
+        },
+        time: {
+          title: "Total Time",
+          description: {
+            less_than_a_day: "Less than a day of cinema",
+            one_day: "1 day of cinema",
+            days: "days of cinema",
+          },
+        },
+      },
+      genre_statistics: {
+        title: "Average by Genre",
+      },
+      featured_genres: {
+        title: "Featured Genres",
+        best_rated: "Best Rated",
+        worst_rated: "Worst Rated",
+        most_watched: "Most Watched",
+        least_watched: "Least Watched",
+        average: " average",
+        one_movie: " movie",
+        movies: " movies",
+      },
+      quick_stats: {
+        average_rating: "Average Rating",
+        watched_movies: "Watched Movies (from your Lists)",
+        reviewed_movies: "Reviewed Movies (of Watched)",
+      },
+      badge_gallery: {
+        title: "Achievements & Badges",
+      },
+      no_activity: "No activity found in any genre yet.",
+    },
+  },
 };
