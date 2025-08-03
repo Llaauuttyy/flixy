@@ -15,7 +15,7 @@ export function GenreStatistics({ userInsights }: GenreStatisticsProps) {
           Average by Genre
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 max-h-[360px] overflow-y-auto">
         {userInsights.genres.length === 0 ? (
           <p key={"no-activity"} className="text-slate-400 italic">
             No activity found in any genre yet.
