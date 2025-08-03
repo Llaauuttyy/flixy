@@ -4,14 +4,20 @@ from app.db.database_setup import SessionDep
 from app.service.user_service import UserService
 from app.dto.user import UserDTO, UserUpdateDTO
 from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi_pagination import Page, paginate
 
 user_router = APIRouter()
 
 UserServiceDep = Annotated[UserService, Depends(lambda: UserService())]
 
 @user_router.get("/users")
-def get_users(session: SessionDep, user_service: UserServiceDep) -> list[UserDTO]:
-    return user_service.get_all_users(Database(session))
+def get_users(session: SessionDep, request: Request, user_service: UserServiceDep, search_query: str = None) -> Page[UserDTO]:
+    user_id = request.state.user_id
+    if search_query is None or search_query == "":
+        users = user_service.get_all_users(Database(session))
+    else:
+        users = user_service.search_users(Database(session), search_query, user_id)
+    return paginate(users)
 
 @user_router.get("/user")
 async def get_user(session: SessionDep, request: Request, user_service: UserServiceDep) -> UserDTO:

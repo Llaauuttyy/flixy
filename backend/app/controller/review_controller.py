@@ -2,10 +2,9 @@ from typing import Annotated
 from app.db.database import Database
 from app.db.database_setup import SessionDep
 from app.service.review_service import ReviewService
-from app.dto.review import ReviewDTO, ReviewCreationDTO, ReviewGetSingularDTO, ReviewGetResponse
+from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO, ReviewGetResponse
 from fastapi import APIRouter, Depends, Path, HTTPException, Request
-from fastapi_pagination import Page, paginate, Params
-from app.constants.message import REVIEWS_NOT_FOUND
+from fastapi_pagination import Params, paginate
 
 review_router = APIRouter()
 
