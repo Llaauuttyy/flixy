@@ -29,3 +29,10 @@ export interface MovieOverallData {
   reviews: ReviewsData;
   [key: string]: null | undefined | MovieDataGet | ReviewsData;
 }
+
+export interface MovieGenre {
+  name: string;
+  average_rating: number;
+  movies_watched: number;
+  [key: string]: string | number;
+}
