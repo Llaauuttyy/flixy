@@ -1,5 +1,6 @@
 import { Award, type LucideProps } from "lucide-react";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "../badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../card";
 
@@ -16,12 +17,13 @@ interface BadgeGalleryProps {
 }
 
 export function BadgeGallery({ badges }: BadgeGalleryProps) {
+  const { t } = useTranslation();
   return (
     <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
           <Award className="h-5 w-5 text-yellow-400" />
-          Achievements & Badges
+          {t("profile.insights.badge_gallery.title")}
         </CardTitle>
       </CardHeader>
       <CardContent>

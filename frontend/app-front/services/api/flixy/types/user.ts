@@ -1,3 +1,5 @@
+import type { MovieGenre } from "./movie";
+
 export interface UserDataGet {
   error?: string | null;
   name: string;
@@ -20,3 +22,14 @@ export type PasswordData = {
   currentPassword: FormDataEntryValue | null;
   newPassword: FormDataEntryValue | null;
 };
+
+export interface UserInsights {
+  id: number;
+  genres: MovieGenre[];
+  total_reviews: number;
+  total_ratings: number;
+  total_movies_watched: number;
+  total_time_watched: number;
+  total_average_rating: number;
+  reviewed_movies_percentage: number;
+}

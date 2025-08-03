@@ -127,4 +127,58 @@ export const esTranslation = {
       update: "Actualizar",
     },
   },
+  profile: {
+    title: {
+      prefix: "Tus",
+      highlight: "Flixy",
+      suffix: "Estadísticas",
+    },
+    subtitle: "Descubrí tus patrones y logros como cinéfilo",
+    insights: {
+      overall_stats: {
+        reviews: {
+          title: "Reseñas Totales",
+          description: "Opiniones compartidas",
+        },
+        movies_watched: {
+          title: "Películas Vistas",
+          description: "Historias vividas",
+        },
+        movies_rated: {
+          title: "Películas Calificadas",
+          description: "Opiniones registradas",
+        },
+        time: {
+          title: "Tiempo Total",
+          description: {
+            less_than_a_day: "Menos de un día de cine",
+            one_day: "1 día de cine",
+            days: "días de cine",
+          },
+        },
+      },
+      genre_statistics: {
+        title: "Promedio por Género",
+      },
+      featured_genres: {
+        title: "Géneros Destacados",
+        best_rated: "Mejor Calificados",
+        worst_rated: "Peor Calificados",
+        most_watched: "Más Vistos",
+        least_watched: "Menos Vistos",
+        average: " de promedio",
+        one_movie: " película",
+        movies: " películas",
+      },
+      quick_stats: {
+        average_rating: "Calificación Promedio",
+        watched_movies: "Películas Vistas (de tus Listas)",
+        reviewed_movies: "Películas Reseñadas (de las Vistas)",
+      },
+      badge_gallery: {
+        title: "Logros y Medallas",
+      },
+      no_activity: "Todavía no hay actividad en ningún género.",
+    },
+  },
 };
