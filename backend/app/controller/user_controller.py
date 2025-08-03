@@ -14,11 +14,14 @@ UserServiceDep = Annotated[UserService, Depends(lambda: UserService())]
 @user_router.get("/users")
 def get_users(session: SessionDep, request: Request, user_service: UserServiceDep, search_query: str = None) -> Page[UserDTO]:
     user_id = request.state.user_id
-    if search_query is None or search_query == "":
-        users = user_service.get_all_users(Database(session))
-    else:
-        users = user_service.search_users(Database(session), search_query, user_id)
-    return paginate(users)
+    try:
+        if search_query is None or search_query == "":
+            users = user_service.get_all_users(Database(session))
+        else:
+            users = user_service.search_users(Database(session), search_query, user_id)
+        return paginate(users)
+    except Exception as e:
+        return HTTPException(status_code=409, detail=str(e))
 
 @user_router.get("/user")
 async def get_user(session: SessionDep, request: Request, user_service: UserServiceDep) -> UserDTO:
