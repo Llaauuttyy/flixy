@@ -161,7 +161,7 @@ export default function MovieInsights() {
         {/* Genre Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 pb-0">
           <GenreStatistics userInsights={userInsights} />
-          <FeaturedGenres genreStats={genreStats} />
+          <FeaturedGenres genreStats={userInsights.genres} />
         </div>
 
         {/* Badges/Achievements */}

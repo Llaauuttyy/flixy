@@ -1,30 +1,26 @@
 import { Trophy } from "lucide-react";
+import type { MovieGenre } from "services/api/flixy/types/movie";
 import { Card, CardContent, CardHeader, CardTitle } from "../card";
 
 interface FeaturedGenresProps {
-  genreStats: {
-    genre: string;
-    avgRating: number;
-    moviesWatched: number;
-    color: string;
-  }[];
+  genreStats: MovieGenre[];
 }
 
 export function FeaturedGenres({ genreStats }: FeaturedGenresProps) {
   const bestGenre = genreStats.reduce((prev, current) =>
-    prev.avgRating > current.avgRating ? prev : current
+    prev.average_rating > current.average_rating ? prev : current
   );
 
   const worstGenre = genreStats.reduce((prev, current) =>
-    prev.avgRating < current.avgRating ? prev : current
+    prev.average_rating < current.average_rating ? prev : current
   );
 
   const mostWatchedGenre = genreStats.reduce((prev, current) =>
-    prev.moviesWatched > current.moviesWatched ? prev : current
+    prev.movies_watched > current.movies_watched ? prev : current
   );
 
   const leastWatchedGenre = genreStats.reduce((prev, current) =>
-    prev.moviesWatched < current.moviesWatched ? prev : current
+    prev.movies_watched < current.movies_watched ? prev : current
   );
 
   return (
@@ -43,9 +39,9 @@ export function FeaturedGenres({ genreStats }: FeaturedGenresProps) {
           <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30">
             <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
             <div className="flex-1">
-              <div className="text-white font-semibold">{bestGenre.genre}</div>
+              <div className="text-white font-semibold">{bestGenre.name}</div>
               <div className="text-slate-400 text-sm">
-                {bestGenre.avgRating} ⭐ average
+                {bestGenre.average_rating} ⭐ average
               </div>
             </div>
           </div>
@@ -58,9 +54,9 @@ export function FeaturedGenres({ genreStats }: FeaturedGenresProps) {
           <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30">
             <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
             <div className="flex-1">
-              <div className="text-white font-semibold">{worstGenre.genre}</div>
+              <div className="text-white font-semibold">{worstGenre.name}</div>
               <div className="text-slate-400 text-sm">
-                {worstGenre.avgRating} ⭐ average
+                {worstGenre.average_rating} ⭐ average
               </div>
             </div>
           </div>
@@ -74,10 +70,10 @@ export function FeaturedGenres({ genreStats }: FeaturedGenresProps) {
             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
             <div className="flex-1">
               <div className="text-white font-semibold">
-                {mostWatchedGenre.genre}
+                {mostWatchedGenre.name}
               </div>
               <div className="text-slate-400 text-sm">
-                {mostWatchedGenre.moviesWatched} movies
+                {mostWatchedGenre.movies_watched} movies
               </div>
             </div>
           </div>
@@ -91,10 +87,10 @@ export function FeaturedGenres({ genreStats }: FeaturedGenresProps) {
             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
             <div className="flex-1">
               <div className="text-white font-semibold">
-                {leastWatchedGenre.genre}
+                {leastWatchedGenre.name}
               </div>
               <div className="text-slate-400 text-sm">
-                {leastWatchedGenre.moviesWatched} movies
+                {leastWatchedGenre.movies_watched} movies
               </div>
             </div>
           </div>
