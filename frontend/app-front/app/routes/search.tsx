@@ -9,12 +9,14 @@ import { Film, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/server/movies";
+import { searchUsers } from "services/api/flixy/server/user-data";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import { getAccessToken } from "services/api/utils";
 import type { Route } from "./+types/search";
 
 const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 8;
+const DEFAULT_MOVIES_PAGE_SIZE = 8;
+const DEFAULT_USERS_PAGE_SIZE = 8;
 
 interface SearchResults {
   query: string;
@@ -38,51 +40,16 @@ interface Movie {
   user_rating: number | null;
 }
 
-const userResults = [
-  {
-    id: 1,
-    username: "moviebuff2024",
-    name: "Alex Johnson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    followers: 1234,
-    reviews: 89,
-    verified: true,
-  },
-  {
-    id: 2,
-    username: "cinephile_sarah",
-    name: "Sarah Chen",
-    avatar: "/placeholder.svg?height=40&width=40",
-    followers: 856,
-    reviews: 156,
-    verified: false,
-  },
-  {
-    id: 3,
-    username: "filmcritic_mike",
-    name: "Mike Rodriguez",
-    avatar: "/placeholder.svg?height=40&width=40",
-    followers: 2341,
-    reviews: 234,
-    verified: true,
-  },
-  {
-    id: 4,
-    username: "horror_fan_jenny",
-    name: "Jenny Williams",
-    avatar: "/placeholder.svg?height=40&width=40",
-    followers: 567,
-    reviews: 78,
-    verified: false,
-  },
-];
-
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
 
   const query = url.searchParams.get("query") ?? "";
-  const page = parseInt(
+  const moviesPage = parseInt(
     url.searchParams.get("movies_page") ?? `${DEFAULT_PAGE}`,
+    10
+  );
+  const usersPage = parseInt(
+    url.searchParams.get("users_page") ?? `${DEFAULT_PAGE}`,
     10
   );
 
@@ -97,20 +64,27 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   try {
+    searchResults.query = query;
     searchResults.movies = await searchMovies(
       query,
-      page,
-      DEFAULT_PAGE_SIZE,
+      moviesPage,
+      DEFAULT_MOVIES_PAGE_SIZE,
       request
     );
-    searchResults.query = query;
-    searchResults.users = {
-      items: userResults,
-      total: userResults.length,
-      page: 1,
-      size: 5,
-      pages: 1,
-    };
+    searchResults.users = await searchUsers(
+      query,
+      usersPage,
+      DEFAULT_USERS_PAGE_SIZE,
+      request
+    );
+
+    // TODO: Esto carga algunos datos default que todavia no tenemos
+    searchResults.users.items = searchResults.users.items.map((user) => ({
+      ...user,
+      followers: 2341,
+      reviews: 234,
+      verified: true,
+    }));
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -189,7 +163,7 @@ export default function SearchPage() {
                     itemsPage={searchResults.movies}
                     onPageChange={(page: number) => {
                       fetcher.load(
-                        `/search?query=${searchResults.query}&movies_page=${page}`
+                        `/search?query=${searchResults.query}&movies_page=${page}&users_page=${searchResults.users.page}`
                       );
                     }}
                   >
@@ -218,56 +192,67 @@ export default function SearchPage() {
                       {searchResults.users.total} {t("search.results")}
                     </Badge>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {searchResults.users.items.map((user) => (
-                      <div
-                        key={user.id}
-                        className="bg-slate-800 rounded-lg p-4 hover:bg-slate-750 transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage
-                              src={user.avatar || "/placeholder.svg"}
-                            />
-                            <AvatarFallback className="bg-pink-500">
-                              {user.name
-                                .split(" ")
-                                .map((n: any) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium">{user.name}</h3>
-                              {user.verified && (
-                                <div className="w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
-                                  <span className="text-white text-xs">✓</span>
-                                </div>
-                              )}
+                  <Pagination
+                    itemsPage={searchResults.users}
+                    onPageChange={(page: number) => {
+                      fetcher.load(
+                        `/search?query=${searchResults.query}&users_page=${page}&movies_page=${searchResults.movies.page}`
+                      );
+                    }}
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {searchResults.users.items.map((user) => (
+                        <div
+                          key={user.id}
+                          className="bg-slate-800 rounded-lg p-4 hover:bg-slate-750 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Avatar className="w-12 h-12">
+                              <AvatarImage
+                                src={user.avatar || "/placeholder.svg"}
+                              />
+                              <AvatarFallback className="bg-pink-500">
+                                {user.name
+                                  .split(" ")
+                                  .map((n: any) => n[0])
+                                  .join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-medium">{user.name}</h3>
+                                {user.verified && (
+                                  <div className="w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs">
+                                      ✓
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-400">
+                                @{user.username}
+                              </p>
+                              <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                                <span>
+                                  {user.followers.toLocaleString()}{" "}
+                                  {t("search.user_followers")}
+                                </span>
+                                <span>
+                                  {user.reviews} {t("search.user_reviews")}
+                                </span>
+                              </div>
                             </div>
-                            <p className="text-sm text-slate-400">
-                              @{user.username}
-                            </p>
-                            <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-                              <span>
-                                {user.followers.toLocaleString()}{" "}
-                                {t("search.user_followers")}
-                              </span>
-                              <span>
-                                {user.reviews} {t("search.user_reviews")}
-                              </span>
-                            </div>
+                            <Button
+                              size="sm"
+                              className="bg-pink-500 hover:bg-pink-600 text-white"
+                            >
+                              {t("search.user_follow_button")}
+                            </Button>
                           </div>
-                          <Button
-                            size="sm"
-                            className="bg-pink-500 hover:bg-pink-600 text-white"
-                          >
-                            {t("search.user_follow_button")}
-                          </Button>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </Pagination>
                 </div>
               </div>
             </main>

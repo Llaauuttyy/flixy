@@ -6,7 +6,6 @@ from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO
 from sqlalchemy.exc import IntegrityError
 from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEW_NOT_FOUND, INSULTING_REVIEW
 from sqlalchemy.orm import selectinload
-from sqlalchemy import and_
 from typing import Tuple, List, Optional
 from datetime import datetime as datetime
 from app.external.moderation_assistant import Moderator
@@ -26,7 +25,11 @@ class ReviewService:
     def get_all_reviews(self, db: Database, user_id: int, movie_id: int) -> Tuple[Optional[ReviewGetSingularDTO], List[ReviewGetSingularDTO]]:
         current_user_review = db.find_by_multiple(Review, movie_id=movie_id, user_id=user_id)
         
-        reviews = db.find_all(Review, and_(Review.movie_id == movie_id, Review.user_id != user_id), [selectinload(Review.user)])
+        reviews = db.find_all(
+            Review,
+            db.build_condition([Review.movie_id == movie_id, Review.user_id != user_id]),
+            [selectinload(Review.user)]
+        )
 
         if not current_user_review and not reviews:
             return (None, [])

@@ -32,3 +32,9 @@ class UserService:
             username=user_to_update.username,
             email=user_to_update.email
         )
+    
+    def search_users(self, db: Database, search_query: str, user_id: int):
+        search_conditions = db.build_condition([User.name.ilike(f"%{search_query}%"),User.username.ilike(f"%{search_query}%")], "OR")
+        conditions = db.build_condition([search_conditions, User.id != user_id])
+        users = db.find_all_by_multiple(User, conditions)
+        return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email) for user in users]
