@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime as datetime
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import Page
 
 class ReviewDTO(BaseModel):
     id: int

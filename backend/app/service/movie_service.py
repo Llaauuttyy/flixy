@@ -2,17 +2,16 @@ from fastapi import HTTPException
 from app.model.movie import Movie
 from app.model.rating import Rating
 from app.db.database import Database
-from app.dto.movie import MovieDTO, MovieRateDTO, MovieRatingDTO, MovieGetResponse
+from app.dto.movie import MovieRateDTO, MovieRatingDTO, MovieGetResponse
 from sqlalchemy.exc import IntegrityError
 from app.constants.message import MOVIE_NOT_FOUND
-from sqlalchemy import and_
 
 class MovieService:
     def get_all_movies(self, db: Database, user_id: int) -> list[MovieGetResponse]:
         movies_rating = db.left_join(
             left_model=Movie,
             right_model=Rating,
-            join_condition=(and_(Movie.id == Rating.movie_id, Rating.user_id == user_id)),
+            join_condition=(db.build_condition([Movie.id == Rating.movie_id, Rating.user_id == user_id])),
         )
 
         return [
@@ -37,7 +36,7 @@ class MovieService:
         movies_rating = db.left_join(
             left_model=Movie,
             right_model=Rating,
-            join_condition=(and_(Movie.id == Rating.movie_id, Rating.user_id == user_id)),
+            join_condition=(db.build_condition([Movie.id == Rating.movie_id, Rating.user_id == user_id])),
             and_filters=[Movie.id == movie_id]
         )
 
@@ -101,7 +100,7 @@ class MovieService:
         movies_rating = db.left_join(
             left_model=Movie,
             right_model=Rating,
-            join_condition=(and_(Movie.id == Rating.movie_id, Rating.user_id == user_id)),
+            join_condition=(db.build_condition([Movie.id == Rating.movie_id, Rating.user_id == user_id])),
             or_filters=[
                 Movie.title.ilike(f"%{search_query}%"),
                 Movie.directors.ilike(f"%{search_query}%"),

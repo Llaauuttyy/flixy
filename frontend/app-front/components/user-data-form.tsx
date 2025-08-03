@@ -7,7 +7,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 import { useTranslation } from "react-i18next";
-import { handleUserDataChange } from "services/api//flixy/client/user-data-client";
+import { handleUserDataChange } from "services/api/flixy/client/user-data-client";
 import type {
   UserDataChange,
   UserDataGet,

@@ -1,5 +1,6 @@
 from sqlmodel import select
 from sqlalchemy import and_, or_
+from typing import Literal
 
 class Database:
     def __init__(self, db_session):
@@ -44,9 +45,8 @@ class Database:
         statement = select(model).where(and_(*conditions))
         return self.db_session.exec(statement).first()
     
-    def find_all_by_multiple(self, model, **filters):
-        conditions = [getattr(model, field) == value for field, value in filters.items()]
-        statement = select(model).where(and_(*conditions))
+    def find_all_by_multiple(self, model, conditions):
+        statement = select(model).where(conditions)
         return self.db_session.exec(statement)
     
     def left_join(
@@ -68,3 +68,6 @@ class Database:
             statement = statement.where(or_(*or_filters))
 
         return self.db_session.exec(statement).all()
+    
+    def build_condition(self, criteria: list, combine_with: Literal["AND", "OR"] = "AND"):
+        return and_(*criteria) if combine_with == "AND" else or_(*criteria)

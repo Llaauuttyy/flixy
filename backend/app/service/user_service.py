@@ -103,3 +103,8 @@ class UserService:
             total_average_rating=total_average_rating,
             reviewed_movies_percentage=round((len(user.reviews) / total_movies_watched) * 100, 0) if total_movies_watched > 0 else 0.0
         )
+    def search_users(self, db: Database, search_query: str, user_id: int):
+        search_conditions = db.build_condition([User.name.ilike(f"%{search_query}%"),User.username.ilike(f"%{search_query}%")], "OR")
+        conditions = db.build_condition([search_conditions, User.id != user_id])
+        users = db.find_all_by_multiple(User, conditions)
+        return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email) for user in users]
