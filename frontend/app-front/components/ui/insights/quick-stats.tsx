@@ -27,10 +27,13 @@ export function QuickStats({ userInsights }: UserStatsProps) {
         <CardContent className="p-6 text-center">
           <Film className="h-8 w-8 text-blue-400 mx-auto mb-3" />
           <div className="text-2xl font-bold text-white mb-1">
-            {Math.round(
-              (userInsights.total_ratings / userInsights.total_movies_watched) *
-                100
-            )}
+            {userInsights.total_movies_watched !== 0
+              ? Math.round(
+                  (userInsights.total_ratings /
+                    userInsights.total_movies_watched) *
+                    100
+                )
+              : 0}
             %
           </div>
           <div className="text-sm text-slate-300">
@@ -43,10 +46,13 @@ export function QuickStats({ userInsights }: UserStatsProps) {
         <CardContent className="p-6 text-center">
           <BookOpen className="h-8 w-8 text-yellow-400 mx-auto mb-3" />
           <div className="text-2xl font-bold text-white mb-1">
-            {Math.round(
-              (userInsights.total_reviews / userInsights.total_movies_watched) *
-                100
-            )}
+            {userInsights.total_movies_watched !== 0
+              ? Math.round(
+                  (userInsights.total_reviews /
+                    userInsights.total_movies_watched) *
+                    100
+                )
+              : 0}
             %
           </div>
           <div className="text-sm text-slate-300">
