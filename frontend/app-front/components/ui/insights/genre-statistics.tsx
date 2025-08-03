@@ -5,6 +5,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { UserInsights } from "services/api/flixy/types/user";
 import { Button } from "../button";
 import { Card, CardContent, CardHeader, CardTitle } from "../card";
@@ -14,8 +15,12 @@ interface GenreStatisticsProps {
 }
 
 export function GenreStatistics({ userInsights }: GenreStatisticsProps) {
-  const [genres, setGenresOrder] = useState(userInsights.genres);
-  const [isDescending, setIsDescending] = useState(false);
+  const { t } = useTranslation();
+
+  const [genres, setGenresOrder] = useState(() =>
+    [...userInsights.genres].sort((a, b) => b.average_rating - a.average_rating)
+  );
+  const [isDescending, setIsDescending] = useState(true);
   const hasGenres = genres.length !== 0 ? true : false;
 
   const handleSortAscending = () => {
@@ -40,7 +45,7 @@ export function GenreStatistics({ userInsights }: GenreStatisticsProps) {
         <CardTitle className="text-white flex justify-between items-center">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-purple-400" />
-            Average by Genre
+            {t("profile.insights.genre_statistics.title")}
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -63,7 +68,7 @@ export function GenreStatistics({ userInsights }: GenreStatisticsProps) {
       <CardContent className="space-y-4 max-h-[360px] overflow-y-auto">
         {genres.length === 0 ? (
           <p key={"no-activity"} className="text-slate-400 italic">
-            No activity found in any genre yet.
+            {t("profile.insights.no_activity")}
           </p>
         ) : (
           genres.map((genre) => (
