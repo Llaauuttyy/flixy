@@ -10,26 +10,29 @@ from app.main import app
 from .setup import client
 from .utils import register_and_login_test_user
 
+def clean_all_tables(session):
+    session.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
+
+    for table in reversed(SQLModel.metadata.sorted_tables):
+        session.execute(text(f"TRUNCATE TABLE `{table.name}`;"))
+
+    session.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
+    session.commit()
+
 @pytest.fixture(scope="session", autouse=True)
 def clean_database():
     # Antes de todos los tests
     with Session(test_engine) as session:
+        clean_all_tables(session)
         add_tests_data(session)
         register_and_login_test_user(client)
         
-
     yield
     
     # Despues de todos los tests
     # Borra toda la base
     with Session(test_engine) as session:
-        session.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
-
-        for table in reversed(SQLModel.metadata.sorted_tables):
-            session.execute(text(f"TRUNCATE TABLE `{table.name}`;"))
-
-        session.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
-        session.commit()
+        clean_all_tables(session)
 
 @pytest.fixture(scope="function", autouse=True)
 def override_get_session():
@@ -171,6 +174,7 @@ def get_reviews_data():
     reviews.append(Review(
         user_id=1,
         movie_id=1,
+        score=2,
         text="Review of a test movie.",
         watch_date='2025-07-19 23:30:43',
     ))
