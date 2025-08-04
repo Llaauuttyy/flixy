@@ -10,5 +10,4 @@ class User(SQLModel, table=True):
     email: str
     password: str
 
-    ratings: List["Rating"] = Relationship(back_populates="user")
     reviews: List["Review"] = Relationship(back_populates="user")

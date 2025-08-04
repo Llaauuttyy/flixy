@@ -18,12 +18,6 @@ export interface MovieDataGet {
   [key: string | number]: string | number | null | undefined;
 }
 
-export interface MovieSetRating {
-  id: number;
-  rating: number;
-  [key: string | number]: string | number | null | undefined;
-}
-
 export interface MovieOverallData {
   movie: MovieDataGet;
   reviews: ReviewsData;

@@ -16,6 +16,7 @@ class ReviewService:
             id=review.id,
             user_id=review.user_id,
             movie_id=review.movie_id,
+            rating=review.rating,
             text=review.text,
             watch_date=review.watch_date,
             updated_at=review.updated_at,
@@ -50,24 +51,31 @@ class ReviewService:
     
     def create_review(self, db: Database, review_dto: ReviewCreationDTO, user_id: int) -> ReviewGetSingularDTO:
         try:
-            if review_dto.watch_date.replace(tzinfo=None) > datetime.now():
+            if review_dto.watch_date and review_dto.watch_date.replace(tzinfo=None) > datetime.now():
                 raise Exception(FUTURE_TRAVELER)
             
-            if Moderator().is_review_insulting(review_dto.text):
+            if review_dto.text and Moderator().is_review_insulting(review_dto.text):
                 raise Exception(INSULTING_REVIEW)
             
             existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)
             if existing_review:
-                existing_review.text = review_dto.text
-                existing_review.watch_date = review_dto.watch_date
+                if review_dto.text:
+                    existing_review.text = review_dto.text
+                if review_dto.rating:
+                    existing_review.rating = review_dto.rating
+                if review_dto.watch_date:
+                    existing_review.watch_date = review_dto.watch_date
+
                 db.save(existing_review)
                 review = existing_review
             else:
+                curent_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                 new_review = Review(
                     user_id=user_id,
                     movie_id=review_dto.movie_id,
+                    rating=review_dto.rating if review_dto.rating else None,
                     text=review_dto.text,
-                    watch_date=review_dto.watch_date,
+                    watch_date=review_dto.watch_date if review_dto.watch_date else curent_date,
                 )
                 db.save(new_review)
                 review = new_review
@@ -78,6 +86,7 @@ class ReviewService:
                 id=review.id,
                 user_id=review.user_id,
                 movie_id=review.movie_id,
+                rating=review.rating,
                 text=review.text,
                 watch_date=review.watch_date,
                 updated_at=review.updated_at,

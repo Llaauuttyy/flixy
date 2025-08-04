@@ -281,13 +281,15 @@ export default function MovieDetail() {
                 accessToken={String(apiResponse.accessToken)}
                 movieId={Number(currentMovieData.id)}
                 title={String(currentMovieData.title)}
-                userReview={userReview}
+                userReview={userReview && userReview.text ? userReview : null}
               />
               <div>
                 <h2 className="text-2xl font-semibold mb-6">
                   {t("movie_detail.reviews_title")}
                 </h2>
-                {currentReviews.items && currentReviews.items.length !== 0 ? (
+                {currentReviews.items &&
+                currentReviews.items.filter((review) => review.text?.trim())
+                  .length !== 0 ? (
                   <Pagination
                     itemsPage={currentReviews}
                     onPageChange={(page: number) => {
@@ -297,9 +299,11 @@ export default function MovieDetail() {
                     }}
                   >
                     <div className="space-y-4">
-                      {currentReviews.items.map((review) => (
-                        <ReviewCard userReview={review} />
-                      ))}
+                      {currentReviews.items
+                        .filter((review) => review.text?.trim())
+                        .map((review) => (
+                          <ReviewCard userReview={review} />
+                        ))}
                     </div>
                   </Pagination>
                 ) : (

@@ -17,12 +17,13 @@ export function FeaturedGenres({ genreStats }: FeaturedGenresProps) {
         Math.max(...genreStats.map((g) => g.average_rating))
     ))();
 
-  const worstGenres = (() =>
-    genreStats.filter(
-      (g) =>
-        g.average_rating ===
-        Math.min(...genreStats.map((g) => g.average_rating))
-    ))();
+  const worstGenres = (() => {
+    const minNonZeroRating = Math.min(
+      ...genreStats.map((g) => g.average_rating).filter((rating) => rating > 0)
+    );
+
+    return genreStats.filter((g) => g.average_rating === minNonZeroRating);
+  })();
 
   const mostWatchedGenres = (() =>
     genreStats.filter(
