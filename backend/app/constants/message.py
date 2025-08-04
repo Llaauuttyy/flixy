@@ -16,3 +16,6 @@ REVIEWS_NOT_FOUND = "Reviews not found for this movie."
 REVIEW_NOT_FOUND = "Review not found."
 FUTURE_TRAVELER = "Date cannot be in the future."
 INSULTING_REVIEW = "Your review contains insulting content. Try to express yourself and be nice at the same time. It is not that hard!"
+
+# WatchList
+WATCHLIST_ALREADY_EXISTS = "Watchlist with that name already exists."

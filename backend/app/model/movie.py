@@ -18,3 +18,5 @@ class Movie(SQLModel, table=True):
     logo_url: str
 
     reviews: List["Review"] = Relationship(back_populates="movie")
+    watchlist_movie: List["WatchListMovie"] = Relationship(back_populates="movie")
+

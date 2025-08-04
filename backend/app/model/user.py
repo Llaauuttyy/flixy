@@ -11,3 +11,5 @@ class User(SQLModel, table=True):
     password: str
 
     reviews: List["Review"] = Relationship(back_populates="user")
+    watchlists: List["WatchList"] = Relationship(back_populates="user")
+    watchlist_movies: List["WatchListMovie"] = Relationship(back_populates="user")
