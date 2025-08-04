@@ -174,7 +174,7 @@ def get_reviews_data():
     reviews.append(Review(
         user_id=1,
         movie_id=1,
-        score=2,
+        rating=2,
         text="Review of a test movie.",
         watch_date='2025-07-19 23:30:43',
     ))
