@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class MovieDTO(BaseModel):
     id: int
@@ -14,16 +14,6 @@ class MovieDTO(BaseModel):
     writers: str
     plot: str
     logo_url: str
-
-class MovieRateDTO(BaseModel):
-    id: int
-    rating: int = Field(..., ge=0, le=5)
-
-class MovieRatingDTO(BaseModel):
-    id: int
-    user_id: int
-    movie_id: int
-    user_rating: int
 
 class MovieGetResponse(MovieDTO):
     user_rating: Optional[int] = None

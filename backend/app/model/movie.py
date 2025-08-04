@@ -17,5 +17,4 @@ class Movie(SQLModel, table=True):
     plot: str
     logo_url: str
 
-    ratings: List["Rating"] = Relationship(back_populates="movie")
     reviews: List["Review"] = Relationship(back_populates="movie")
