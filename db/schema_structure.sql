@@ -47,3 +47,29 @@ CREATE TABLE reviews (
   CONSTRAINT reviews_ibfk_2 FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE
 );
 
+CREATE TABLE watchlists (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  name varchar(256) NOT NULL,
+  description varchar(1024) DEFAULT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE (name),
+  CONSTRAINT watchlists_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE watchlist_movies (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  watchlist_id int NOT NULL,
+  movie_id int NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY watchlist_id (watchlist_id, movie_id),
+  CONSTRAINT watchlist_movies_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT watchlist_movies_ibfk_2 FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
+  CONSTRAINT watchlist_movies_ibfk_3 FOREIGN KEY (watchlist_id) REFERENCES watchlists (id) ON DELETE CASCADE
+);
+
