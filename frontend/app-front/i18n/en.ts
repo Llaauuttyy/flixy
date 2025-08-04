@@ -41,6 +41,7 @@ export const enTranslation = {
   sidebar_nav: {
     home: "Home",
     movies: "Movies",
+    watchlists: "Watchlists",
     social: "Social",
     reviews: "Reviews",
     explore: "Explore",

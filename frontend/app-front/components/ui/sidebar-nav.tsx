@@ -4,6 +4,7 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  Eye,
   Film,
   Home,
   Settings,
@@ -28,6 +29,11 @@ const navigationItems = [
     title: "sidebar_nav.movies",
     href: "/movies",
     icon: Film,
+  },
+  {
+    title: "sidebar_nav.watchlists",
+    href: "/watchlists",
+    icon: Eye,
   },
   {
     title: "sidebar_nav.social",
