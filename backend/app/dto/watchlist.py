@@ -11,10 +11,10 @@ class WatchListCreateResponse(BaseModel):
 
 class WatchListDTO(BaseModel):
     id: int
-    user_id: int
     name: str
     description: Optional[str] = None
-    movies: Optional[list[MovieDTO]] = None
+    movies: Optional[list[MovieDTO]] = []
+    created_at: datetime
     updated_at: datetime
 
 class WatchListGetResponse(BaseModel):

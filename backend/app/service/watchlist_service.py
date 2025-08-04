@@ -1,18 +1,60 @@
 from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListDTO
 from app.model.watchlist import WatchList
 from app.model.watchlist_movie import WatchListMovie
+from app.model.user import User
 from app.constants.message import MOVIE_NOT_FOUND, WATCHLIST_ALREADY_EXISTS
+from app.dto.movie import MovieDTO
 from fastapi import HTTPException
 from app.db.database import Database
 from sqlalchemy.exc import IntegrityError
-# from sqlalchemy.orm import selectinload
-# from typing import Tuple, List, Optional
+from sqlalchemy.orm import selectinload
+from typing import List
 from datetime import datetime as datetime
 
 class WatchListService:
+    def get_all_watchlists(self, db: Database, user_id: int) -> List[WatchListDTO]:
+        user = db.find_by(User, "id", user_id, options=[
+            selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie)
+        ])
+
+        if not user.watchlists:
+            return []
+
+        watchlists = []
+        for w in user.watchlists:
+            watchlists_movies = []
+
+            for wm in w.watchlist_movies:
+                movie_data = wm.movie
+
+                watchlists_movies.append(MovieDTO(
+                    id=movie_data.id,
+                    title=movie_data.title,
+                    year=movie_data.year,
+                    imdb_rating=movie_data.imdb_rating,
+                    genres=movie_data.genres,
+                    countries=movie_data.countries,
+                    duration=movie_data.duration,
+                    cast=movie_data.cast,
+                    directors=movie_data.directors,
+                    writers=movie_data.writers,
+                    plot=movie_data.plot,
+                    logo_url=movie_data.logo_url,
+                ))
+
+            watchlists.append(WatchListDTO(
+                id=w.id,
+                name=w.name,
+                description=w.description,
+                movies=watchlists_movies,
+                created_at=w.created_at,
+                updated_at=w.updated_at
+            ))
+        
+        return watchlists
+
     def create_watchlist(self, db: Database, watchlist_dto: WatchListCreationDTO, user_id: int) -> WatchListCreateResponse:
         try:
-
             watchlist = WatchList(
                 user_id=user_id,
                 name=watchlist_dto.name,
@@ -33,7 +75,6 @@ class WatchListService:
 
                 db.save(watchlist_movie)
             
-
             return WatchListCreateResponse(
                 name=watchlist.name,
                 description=watchlist.description,
