@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from app.model.movie import Movie
 from app.model.rating import Rating
+from app.model.review import Review
 from app.db.database import Database
 from app.dto.movie import MovieRateDTO, MovieRatingDTO, MovieGetResponse
 from sqlalchemy.exc import IntegrityError
@@ -10,8 +11,8 @@ class MovieService:
     def get_all_movies(self, db: Database, user_id: int) -> list[MovieGetResponse]:
         movies_rating = db.left_join(
             left_model=Movie,
-            right_model=Rating,
-            join_condition=(db.build_condition([Movie.id == Rating.movie_id, Rating.user_id == user_id])),
+            right_model=Review,
+            join_condition=(db.build_condition([Movie.id == Review.movie_id, Review.user_id == user_id])),
         )
 
         return [
@@ -28,20 +29,20 @@ class MovieService:
                 writers=movie.writers,
                 plot=movie.plot,
                 logo_url=movie.logo_url,
-                user_rating= rating.user_rating if rating else None
-            ) for movie, rating in movies_rating
+                user_rating=review.rating if review and review.rating else None
+            ) for movie, review in movies_rating
         ]
     
     def get_movie_by_id(self, db: Database, user_id: int, movie_id: int) -> MovieGetResponse:
         movies_rating = db.left_join(
             left_model=Movie,
-            right_model=Rating,
-            join_condition=(db.build_condition([Movie.id == Rating.movie_id, Rating.user_id == user_id])),
+            right_model=Review,
+            join_condition=(db.build_condition([Movie.id == Review.movie_id, Review.user_id == user_id])),
             and_filters=[Movie.id == movie_id]
         )
 
         if len(movies_rating) != 0:
-            movie, rating = movies_rating[0][0], movies_rating[0][1]
+            movie, review = movies_rating[0][0], movies_rating[0][1]
             return MovieGetResponse(
                 id=movie.id,
                 title=movie.title,
@@ -55,7 +56,7 @@ class MovieService:
                 writers=movie.writers,
                 plot=movie.plot,
                 logo_url=movie.logo_url,
-                user_rating= rating.user_rating if rating else None
+                user_rating= review.rating if review and review.rating else None
             ) 
         
         raise Exception(MOVIE_NOT_FOUND)
@@ -99,8 +100,8 @@ class MovieService:
     def search_movies(self, db: Database, search_query: str, user_id: int):
         movies_rating = db.left_join(
             left_model=Movie,
-            right_model=Rating,
-            join_condition=(db.build_condition([Movie.id == Rating.movie_id, Rating.user_id == user_id])),
+            right_model=Review,
+            join_condition=(db.build_condition([Movie.id == Review.movie_id, Review.user_id == user_id])),
             or_filters=[
                 Movie.title.ilike(f"%{search_query}%"),
                 Movie.directors.ilike(f"%{search_query}%"),
@@ -123,6 +124,6 @@ class MovieService:
                 writers=movie.writers,
                 plot=movie.plot,
                 logo_url=movie.logo_url,
-                user_rating= rating.user_rating if rating else None
-            ) for movie, rating in movies_rating
+                user_rating= review.rating if review and review.rating else None
+            ) for movie, review in movies_rating
         ]

@@ -11,6 +11,7 @@ class Review(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id")
     movie_id: int = Field(foreign_key="movies.id")
+    rating: int
     text: str
     watch_date: datetime
     created_at: datetime = Field(default_factory=datetime.now)
