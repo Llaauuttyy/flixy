@@ -1,4 +1,5 @@
 import { HeaderFull } from "components/ui/header-full";
+import { MovieCard } from "components/ui/movie-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { Clock, Film, Pencil, Plus, Star, TrendingUp } from "lucide-react";
 import { useState } from "react";
@@ -6,7 +7,17 @@ import { useState } from "react";
 interface Movie {
   id: number;
   title: string;
-  poster: string;
+  year: number;
+  imdb_rating: number;
+  genres: string;
+  countries: string;
+  duration: number;
+  cast: string;
+  directors: string;
+  writers: string;
+  plot: string;
+  logo_url: string;
+  user_rating: number | null;
 }
 
 interface Watchlist {
@@ -29,33 +40,83 @@ export default function MovieInsights() {
       movies: [
         {
           id: 1,
-          title: "Top Gun: Maverick",
-          poster: "/placeholder.svg?height=120&width=80",
+          title: "Theater",
+          year: 2020,
+          imdb_rating: 6.6,
+          genres: "Drama, Romance",
+          countries: "Japan",
+          duration: 136,
+          cast: "Kento Yamazaki, Mayu Matsuoka, Kan'ichirô Satô...",
+          directors: "Isao Yukisada",
+          writers: "Ryûta Hôrai, Naoki Matayoshi...",
+          plot: "The director of a...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BZDcyMjhiYTUtMGEyZC00YWM2LWJmMWQtYjBiNWIzNzdhZjg3XkEyXkFqcGdeQXVyNjc3MjQzNTI@.jpg",
+          user_rating: null,
         },
         {
           id: 2,
-          title: "John Wick 4",
-          poster: "/placeholder.svg?height=120&width=80",
+          title: "The Way of the Gun",
+          year: 2000,
+          imdb_rating: 6.6,
+          genres: "Action, Crime, Drama...",
+          countries: "United States",
+          duration: 119,
+          cast: "Ryan Phillippe, Benicio Del Toro, Juliette Lewis...",
+          directors: "Christopher McQuarrie",
+          writers: "Christopher McQuarrie",
+          plot: "Two petty, violent criminals...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BMTAyNjEyMDEwMzBeQTJeQWpwZ15BbWU4MDczMjY1NDEy.jpg",
+          user_rating: null,
         },
         {
           id: 3,
-          title: "Fast X",
-          poster: "/placeholder.svg?height=120&width=80",
+          title: "Bad Company",
+          year: 1972,
+          imdb_rating: 6.9,
+          genres: "Adventure, Drama, Western",
+          countries: "United States",
+          duration: 93,
+          cast: "Jeff Bridges, Barry Brown, Jim Davis...",
+          directors: "Robert Benton",
+          writers: "David Newman, Robert Benton",
+          plot: "A group of naive boys...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BNjIzMGU1ZTQtNDRmOC00OWUzLWFlNGUtYzRhYTM0YWRmNDNjXkEyXkFqcGdeQXVyMTUzMDUzNTI3.jpg",
+          user_rating: null,
         },
         {
           id: 4,
-          title: "Mission Impossible",
-          poster: "/placeholder.svg?height=120&width=80",
+          title: "Mimic",
+          year: 1997,
+          imdb_rating: 6.0,
+          genres: "Horror, Sci-Fi",
+          countries: "United States",
+          duration: 105,
+          cast: "Mira Sorvino, Jeremy Northam, Alexander Goodwin...",
+          directors: "Guillermo del Toro",
+          writers: "Donald A. Wollheim, Matthew Robbins...",
+          plot: "A disease carried by...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BODk4MjRkODctOTVjNS00MmI2LTg0Y2ItMWQyMzdkZDU3MzMyXkEyXkFqcGdeQXVyNTAyODkwOQ@@.jpg",
+          user_rating: null,
         },
         {
           id: 5,
-          title: "The Batman",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 6,
-          title: "Spider-Man",
-          poster: "/placeholder.svg?height=120&width=80",
+          title: "Dave Made a Maze",
+          year: 2017,
+          imdb_rating: 6.3,
+          genres: "Adventure, Comedy, Fantasy...",
+          countries: "United States",
+          duration: 80,
+          cast: "Meera Rohit Kumbhani, Nick Thune, Adam Busch...",
+          directors: "Bill Watterson",
+          writers: "Steven Sears, Bill Watterson...",
+          plot: "'Dave Made A Maze' re-imagines...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BZWYwOTgyYzQtYjdjZC00ZGE4LWExM2ItZTczZGEzMDY4OTU0XkEyXkFqcGdeQXVyMTY2NTQ3ODc@.jpg",
+          user_rating: null,
         },
       ],
     },
@@ -67,97 +128,84 @@ export default function MovieInsights() {
       updatedAt: "2 days ago",
       movies: [
         {
-          id: 7,
-          title: "Dune",
-          poster: "/placeholder.svg?height=120&width=80",
+          id: 1,
+          title: "Theater",
+          year: 2020,
+          imdb_rating: 6.6,
+          genres: "Drama, Romance",
+          countries: "Japan",
+          duration: 136,
+          cast: "Kento Yamazaki, Mayu Matsuoka, Kan'ichirô Satô...",
+          directors: "Isao Yukisada",
+          writers: "Ryûta Hôrai, Naoki Matayoshi...",
+          plot: "The director of a...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BZDcyMjhiYTUtMGEyZC00YWM2LWJmMWQtYjBiNWIzNzdhZjg3XkEyXkFqcGdeQXVyNjc3MjQzNTI@.jpg",
+          user_rating: null,
         },
         {
-          id: 8,
-          title: "Blade Runner 2049",
-          poster: "/placeholder.svg?height=120&width=80",
+          id: 2,
+          title: "The Way of the Gun",
+          year: 2000,
+          imdb_rating: 6.6,
+          genres: "Action, Crime, Drama...",
+          countries: "United States",
+          duration: 119,
+          cast: "Ryan Phillippe, Benicio Del Toro, Juliette Lewis...",
+          directors: "Christopher McQuarrie",
+          writers: "Christopher McQuarrie",
+          plot: "Two petty, violent criminals...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BMTAyNjEyMDEwMzBeQTJeQWpwZ15BbWU4MDczMjY1NDEy.jpg",
+          user_rating: null,
         },
         {
-          id: 9,
-          title: "Interstellar",
-          poster: "/placeholder.svg?height=120&width=80",
+          id: 3,
+          title: "Bad Company",
+          year: 1972,
+          imdb_rating: 6.9,
+          genres: "Adventure, Drama, Western",
+          countries: "United States",
+          duration: 93,
+          cast: "Jeff Bridges, Barry Brown, Jim Davis...",
+          directors: "Robert Benton",
+          writers: "David Newman, Robert Benton",
+          plot: "A group of naive boys...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BNjIzMGU1ZTQtNDRmOC00OWUzLWFlNGUtYzRhYTM0YWRmNDNjXkEyXkFqcGdeQXVyMTUzMDUzNTI3.jpg",
+          user_rating: null,
         },
         {
-          id: 10,
-          title: "The Matrix",
-          poster: "/placeholder.svg?height=120&width=80",
+          id: 4,
+          title: "Mimic",
+          year: 1997,
+          imdb_rating: 6.0,
+          genres: "Horror, Sci-Fi",
+          countries: "United States",
+          duration: 105,
+          cast: "Mira Sorvino, Jeremy Northam, Alexander Goodwin...",
+          directors: "Guillermo del Toro",
+          writers: "Donald A. Wollheim, Matthew Robbins...",
+          plot: "A disease carried by...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BODk4MjRkODctOTVjNS00MmI2LTg0Y2ItMWQyMzdkZDU3MzMyXkEyXkFqcGdeQXVyNTAyODkwOQ@@.jpg",
+          user_rating: null,
         },
         {
-          id: 11,
-          title: "Arrival",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Horror Collection",
-      icon: "👻",
-      createdAt: "3 days ago",
-      updatedAt: "2 days ago",
-      movies: [
-        {
-          id: 12,
-          title: "The Conjuring",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 13,
-          title: "Hereditary",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 14,
-          title: "Get Out",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 15,
-          title: "A Quiet Place",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 16,
-          title: "Midsommar",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 17,
-          title: "The Babadook",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-      ],
-    },
-    {
-      id: 4,
-      title: "Comedy Classics",
-      icon: "😄",
-      createdAt: "5 days ago",
-      updatedAt: "2 days ago",
-      movies: [
-        {
-          id: 18,
-          title: "Superbad",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 19,
-          title: "The Grand Budapest Hotel",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 20,
-          title: "Knives Out",
-          poster: "/placeholder.svg?height=120&width=80",
-        },
-        {
-          id: 21,
-          title: "Parasite",
-          poster: "/placeholder.svg?height=120&width=80",
+          id: 5,
+          title: "Dave Made a Maze",
+          year: 2017,
+          imdb_rating: 6.3,
+          genres: "Adventure, Comedy, Fantasy...",
+          countries: "United States",
+          duration: 80,
+          cast: "Meera Rohit Kumbhani, Nick Thune, Adam Busch...",
+          directors: "Bill Watterson",
+          writers: "Steven Sears, Bill Watterson...",
+          plot: "'Dave Made A Maze' re-imagines...",
+          logo_url:
+            "https://m.media-amazon.com/images/M/MV5BZWYwOTgyYzQtYjdjZC00ZGE4LWExM2ItZTczZGEzMDY4OTU0XkEyXkFqcGdeQXVyMTY2NTQ3ODc@.jpg",
+          user_rating: null,
         },
       ],
     },
@@ -235,16 +283,31 @@ export default function MovieInsights() {
               {/* Movie Posters Grid */}
               <div className="flex gap-4 overflow-x-auto pb-2">
                 {watchlist.movies.map((movie) => (
-                  <div
+                  <MovieCard
                     key={movie.id}
-                    className="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-105"
-                  >
-                    <img
-                      src={movie.poster || "/placeholder.svg"}
-                      alt={movie.title}
-                      className="w-20 h-30 object-cover rounded-lg border-2 border-gray-600 transition-colors duration-200 hover:border-violet-400"
-                    />
-                  </div>
+                    movie={movie}
+                    styles={{
+                      card_width: 32,
+                      card_height: 40,
+                      title_size: "sm",
+                      title_padding: 1,
+                      show_rate_this_movie: false,
+                      star_component_multiplier: 0.5,
+                      show_details_size: "xs",
+                      show_details_padding: 1,
+                    }}
+                    accessToken={undefined}
+                  />
+                  //   <div
+                  //     key={movie.id}
+                  //     className="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-105"
+                  //   >
+                  //     <img
+                  //       src={movie.poster || "/placeholder.svg"}
+                  //       alt={movie.title}
+                  //       className="w-20 h-30 object-cover rounded-lg border-2 border-gray-600 transition-colors duration-200 hover:border-violet-400"
+                  //     />
+                  //   </div>
                 ))}
               </div>
             </div>

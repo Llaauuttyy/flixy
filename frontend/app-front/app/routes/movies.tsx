@@ -111,6 +111,7 @@ export default function MoviesPage() {
                     <MovieCard
                       key={movie.id}
                       movie={movie}
+                      styles={{ show_rate_this_movie: true }}
                       accessToken={String(apiResponse.accessToken)}
                     />
                   ))}
