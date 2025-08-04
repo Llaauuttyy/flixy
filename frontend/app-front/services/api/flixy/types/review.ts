@@ -12,10 +12,11 @@ export interface ReviewDataGet {
   id: number;
   user_name: string;
   movie_id: number;
-  text: string;
+  rating: number | null;
+  text: string | null;
   watch_date: Date;
   updated_at: Date;
-  [key: string]: string | number | Date;
+  [key: string]: string | number | Date | null;
 }
 
 export interface ReviewsData {
