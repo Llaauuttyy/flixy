@@ -30,7 +30,7 @@ def test_review_with_invalid_movie_should_return_not_found():
 
     response = client.post("/review", json=review_dto)
 
-    assert response.status_code == 404, f"Status: {response.status_code}, Body: {response.text}"
+    assert response.status_code == 404
     response_json = response.json()
 
     assert response_json["detail"] == MOVIE_NOT_FOUND
