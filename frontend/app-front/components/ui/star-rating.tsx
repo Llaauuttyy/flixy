@@ -2,8 +2,8 @@ import { cn } from "lib/utils";
 import { Star } from "lucide-react";
 import { useState } from "react";
 
-import { setMovieRating } from "services/api/flixy/client/movies";
-import type { MovieSetRating } from "services/api/flixy/types/movie";
+import { handleReviewCreation } from "services/api/flixy/client/reviews";
+import type { ReviewCreation } from "services/api/flixy/types/review";
 interface StarRatingProps {
   initialRating: number;
   // onRatingChange?: (rating: number) => void;
@@ -27,12 +27,12 @@ export function StarRating({
     if (interactive) {
       setCurrentRating(rating);
 
-      let newRating: MovieSetRating = {
-        id: movieId,
+      let newRating: ReviewCreation = {
+        movie_id: movieId,
         rating: rating,
       };
 
-      await setMovieRating(accessToken, newRating);
+      await handleReviewCreation(accessToken, newRating);
     }
   };
 
