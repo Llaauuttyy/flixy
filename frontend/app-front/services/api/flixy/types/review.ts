@@ -2,19 +2,21 @@ import type { Page } from "./overall";
 
 export interface ReviewCreation {
   movie_id: number;
-  text: string;
-  watch_date: Date;
-  [key: string]: string | number | Date;
+  rating?: number;
+  text?: string;
+  watch_date?: Date;
+  [key: string]: string | number | Date | undefined;
 }
 
 export interface ReviewDataGet {
   id: number;
   user_name: string;
   movie_id: number;
-  text: string;
+  rating: number | null;
+  text: string | null;
   watch_date: Date;
   updated_at: Date;
-  [key: string]: string | number | Date;
+  [key: string]: string | number | Date | null;
 }
 
 export interface ReviewsData {

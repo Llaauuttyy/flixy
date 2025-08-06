@@ -65,6 +65,23 @@ def test_review_with_insulting_content_should_return_insulting_review_error():
 
     assert response_json["detail"] == INSULTING_REVIEW
 
+def test_review_with_valid_rating_should_return_review():
+    time = (datetime.now()).strftime("%Y-%m-%dT%H:%M:%S")
+    review_dto = {
+        "movie_id": 1,
+        "rating": 2,
+        "watch_date": time
+    }
+
+    response = client.post("/review", json=review_dto)
+
+    assert response.status_code == 200
+    response_json = response.json()
+
+    assert response_json["movie_id"] == review_dto["movie_id"]
+    assert response_json["rating"] == review_dto["rating"]
+    assert response_json["watch_date"] == review_dto["watch_date"]
+
 def test_delete_review_of_existent_review_should_succeed():
     review_id = 1
 

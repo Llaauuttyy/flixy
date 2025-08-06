@@ -1,4 +1,4 @@
-NOT_EXISTENT_MOVIE_ID = 9999999
+NOT_EXISTENT_MOVIE_ID = 9999
 
 def register_and_login_test_user(client):
     login_form = {
