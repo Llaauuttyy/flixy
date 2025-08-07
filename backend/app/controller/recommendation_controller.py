@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from app.db.database_setup import SessionDep
 from app.service.recommendation_service import RecommendationService
 from app.db.database import Database
-from backend.app.dto.recommendation import Recommendations
+from app.dto.recommendation import Recommendations
 from fastapi import APIRouter, Depends, Request
 from typing import Annotated
 
