@@ -3,18 +3,23 @@ from app.model.watchlist import WatchList
 from app.model.watchlist_movie import WatchListMovie
 from app.model.user import User
 from app.constants.message import MOVIE_NOT_FOUND, WATCHLIST_ALREADY_EXISTS
-from app.dto.movie import MovieDTO
+from app.dto.movie import MovieGetResponse
+from app.model.review import Review
 from fastapi import HTTPException
 from app.db.database import Database
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, with_loader_criteria
 from typing import List
 from datetime import datetime as datetime
 
 class WatchListService:
     def get_all_watchlists(self, db: Database, user_id: int) -> List[WatchListDTO]:
         user = db.find_by(User, "id", user_id, options=[
-            selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie)
+            selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+            with_loader_criteria(
+                Review,
+                lambda review: review.user_id == user_id
+            )
         ])
 
         if not user.watchlists:
@@ -27,7 +32,11 @@ class WatchListService:
             for wm in w.watchlist_movies:
                 movie_data = wm.movie
 
-                watchlists_movies.append(MovieDTO(
+                movie_user_rating = None
+                if movie_data.reviews:
+                    movie_user_rating = movie_data.reviews[0].rating
+
+                watchlists_movies.append(MovieGetResponse(
                     id=movie_data.id,
                     title=movie_data.title,
                     year=movie_data.year,
@@ -40,6 +49,7 @@ class WatchListService:
                     writers=movie_data.writers,
                     plot=movie_data.plot,
                     logo_url=movie_data.logo_url,
+                    user_rating=movie_user_rating
                 ))
 
             watchlists.append(WatchListDTO(

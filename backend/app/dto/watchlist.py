@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime as datetime
 from fastapi_pagination import Page
-from app.dto.movie import MovieDTO
+from app.dto.movie import MovieGetResponse
 
 class WatchListCreateResponse(BaseModel):
     name: str
@@ -13,7 +13,7 @@ class WatchListDTO(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
-    movies: Optional[list[MovieDTO]] = []
+    movies: Optional[list[MovieGetResponse]] = []
     created_at: datetime
     updated_at: datetime
 
