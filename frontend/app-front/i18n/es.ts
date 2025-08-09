@@ -65,6 +65,17 @@ export const esTranslation = {
     reviews_title: "Reseñas de los flixis",
     review_user: "Tu reseña",
   },
+  recommendations: {
+    title: "Explora",
+    subtitle:
+      "Explora tus recomendaciones personalizadas basadas en tus interacciones.",
+    random_movie: {
+      title: "¿No sabes con que película comenzar?",
+      prefix: "Déjate sorprender con una ",
+      random: "recomendación aleatoria",
+      sufix: " y encuentra tu próxima favorita.",
+    },
+  },
   search: {
     page_title: "Resultados de la Búsqueda",
     results_for_query: "Resultados encontrados para",

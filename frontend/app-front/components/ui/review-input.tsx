@@ -255,7 +255,8 @@ export function ReviewInput({
           {isEditing ? (
             <Button
               onClick={handleCancelReview}
-              className="ml-2 bg-red-600 hover:bg-red-700 disabled:opacity-50"
+              variant={"outline"}
+              className="ml-2 hover:bg-red-700 hover:text-white text-red-500 border-red-500 disabled:opacity-50"
             >
               {t("review_input.cancel_button")}
             </Button>

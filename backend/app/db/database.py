@@ -1,4 +1,4 @@
-from sqlmodel import select
+from sqlmodel import select, desc, asc
 from sqlalchemy import and_, or_
 from typing import Literal
 
@@ -45,8 +45,18 @@ class Database:
         statement = select(model).where(and_(*conditions))
         return self.db_session.exec(statement).first()
     
-    def find_all_by_multiple(self, model, conditions):
+    def find_all_by_multiple(self, model, conditions, options=None, order_by=None):
         statement = select(model).where(conditions)
+
+        if options:
+            statement = statement.options(*options)
+
+        if order_by:
+            if order_by["way"] == "desc":
+                statement = statement.order_by(desc(getattr(model, order_by["column"])))
+            else:
+                statement = statement.order_by(getattr(model, order_by["column"]))
+
         return self.db_session.exec(statement)
     
     def left_join(

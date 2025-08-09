@@ -13,11 +13,14 @@ MovieServiceDep = Annotated[MovieService, Depends(lambda: MovieService())]
 @movie_router.get("/movies")
 def get_movies(session: SessionDep, request: Request, movie_service: MovieServiceDep, search_query: str = None) -> Page[MovieGetResponse]:
     user_id = request.state.user_id
-    if search_query is None or search_query == "":
-        movies = movie_service.get_all_movies(Database(session), user_id=user_id)
-    else:
-        movies = movie_service.search_movies(Database(session), search_query, user_id)
-    return paginate(movies)
+    try:
+        if search_query is None or search_query == "":
+            movies = movie_service.get_all_movies(Database(session), user_id=user_id)
+        else:
+            movies = movie_service.search_movies(Database(session), search_query, user_id)
+        return paginate(movies)
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
 
 @movie_router.get("/movie/{id}")
 def get_movie(session: SessionDep, request: Request, movie_service: MovieServiceDep, id: int = Path(..., title="movie id", ge=1)) -> MovieGetResponse:
