@@ -287,8 +287,8 @@ export default function MovieInsights() {
                     key={movie.id}
                     movie={movie}
                     styles={{
-                      card_width: 32,
-                      card_height: 40,
+                      card_width: 128,
+                      card_height: 160,
                       title_size: "sm",
                       title_padding: 1,
                       show_rate_this_movie: false,
@@ -298,16 +298,6 @@ export default function MovieInsights() {
                     }}
                     accessToken={undefined}
                   />
-                  //   <div
-                  //     key={movie.id}
-                  //     className="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-105"
-                  //   >
-                  //     <img
-                  //       src={movie.poster || "/placeholder.svg"}
-                  //       alt={movie.title}
-                  //       className="w-20 h-30 object-cover rounded-lg border-2 border-gray-600 transition-colors duration-200 hover:border-violet-400"
-                  //     />
-                  //   </div>
                 ))}
               </div>
             </div>

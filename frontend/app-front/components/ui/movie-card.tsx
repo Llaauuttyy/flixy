@@ -39,13 +39,33 @@ export function MovieCard({ movie, styles, accessToken }: MovieCardProps) {
   const [showRating, setShowRating] = useState(false);
   const { t } = useTranslation();
 
+  const titleSizeClass = styles?.title_size
+    ? `text-${styles.title_size}`
+    : "text-lg";
+
+  const titlePaddingClass = styles?.title_padding
+    ? `p-[${styles.title_padding}px]`
+    : "p-5";
+
+  const rateTextSizeClass = styles?.size_rate_this_movie
+    ? `text-${styles.size_rate_this_movie}`
+    : "";
+
+  const showDetailsPaddingClass = styles?.show_details_padding
+    ? `p-[${styles.show_details_padding}px]`
+    : "p-5";
+
+  const showDetailsSizeClass = styles?.show_details_size
+    ? `text-${styles.show_details_size}`
+    : "";
+
   return (
     <Card
-      className={`relative w-${
-        styles?.card_width ? String(styles.card_width) : "64"
-      } h-${
-        styles?.card_height ? String(styles.card_height) : "80"
-      } bg-slate-800 border-slate-700 flex flex-col items-center justify-center p-4 overflow-hidden group transition transform border border-gray-700 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:border-purple-600`}
+      style={{
+        width: styles?.card_width ? `${styles.card_width}px` : "256px",
+        height: styles?.card_height ? `${styles.card_height}px` : "320px",
+      }}
+      className={`relative bg-slate-800 border-slate-700 flex flex-col items-center justify-center p-4 overflow-hidden group transition transform border border-gray-700 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:border-purple-600`}
       onMouseEnter={() => setShowRating(true)}
       onMouseLeave={() => setShowRating(false)}
     >
@@ -68,22 +88,13 @@ export function MovieCard({ movie, styles, accessToken }: MovieCardProps) {
           }`}
         >
           <CardTitle
-            className={`text-white text-${
-              styles?.title_size ? styles.title_size : "lg"
-            } p-${
-              styles?.title_padding ? String(styles.title_padding) : "5"
-            } text-center`}
+            className={`text-white ${titleSizeClass} ${titlePaddingClass} text-center`}
           >
             {movie.title}
           </CardTitle>
-          {styles?.show_rate_this_movie && (
-            <div
-              className={`${
-                styles.size_rate_this_movie
-                  ? "text-" + styles.size_rate_this_movie
-                  : null
-              }`}
-            >
+
+          {(styles?.show_rate_this_movie ?? true) && (
+            <div className={rateTextSizeClass}>
               {t("movie_card.rate_movie")}
             </div>
           )}
@@ -99,15 +110,7 @@ export function MovieCard({ movie, styles, accessToken }: MovieCardProps) {
 
           <Link to={`/movies/${movie.id}`} state={movie}>
             <p
-              className={`p-${
-                styles?.show_details_padding
-                  ? String(styles.show_details_padding)
-                  : "5"
-              } ${
-                styles?.show_details_size
-                  ? "text-" + String(styles.show_details_size)
-                  : null
-              } hover:cursor-pointer hover:underline text-center`}
+              className={`${showDetailsPaddingClass} ${showDetailsSizeClass} hover:cursor-pointer hover:underline text-center`}
             >
               {t("movie_card.show_details")}
             </p>
