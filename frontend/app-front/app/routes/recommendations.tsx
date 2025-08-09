@@ -129,7 +129,12 @@ export default function MoviesPage() {
                   </div>
                 </CardContent>
               </Card>
-              <Pagination itemsPage={recommendation}>
+              <Pagination
+                itemsPage={recommendation}
+                onPageChange={(page: number) =>
+                  fetcher.load(`/recommendations?page=${page}`)
+                }
+              >
                 <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
                   {recommendation.items.map((movie) => (
                     <MovieCard
