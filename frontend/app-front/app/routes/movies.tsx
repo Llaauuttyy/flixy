@@ -1,7 +1,12 @@
 import { HeaderFull } from "components/ui/header-full";
 import { MovieCard } from "components/ui/movie-card";
+import MovieFilters, {
+  type SortDirection,
+  type SortField,
+} from "components/ui/movie-filters";
 import { Pagination } from "components/ui/pagination";
 import { SidebarNav } from "components/ui/sidebar-nav";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { getMovies } from "services/api/flixy/server/movies";
@@ -65,6 +70,9 @@ export default function MoviesPage() {
   const apiResponse: ApiResponse = useLoaderData();
   const fetcher = useFetcher();
   const { t } = useTranslation();
+  const [sortField, setSortField] = useState<SortField>("title");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
   const moviesData: MoviesData = fetcher.data?.data ?? apiResponse.data;
 
@@ -75,7 +83,6 @@ export default function MoviesPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
           <HeaderFull />
-
           <main className="overflow-auto mx-auto py-6 px-6 md:px-6">
             <p className="text-gray-400 mb-6">{apiResponse.error}</p>
           </main>
@@ -84,12 +91,19 @@ export default function MoviesPage() {
     );
   }
 
+  const allGenres = useMemo(() => {
+    const set = new Set<string>();
+    moviesData.movies.items.forEach((m) =>
+      m.genres.split(",").forEach((g) => set.add(g.trim()))
+    );
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [moviesData.movies]);
+
   return (
     <html lang="es">
       <body>
         <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
           <SidebarNav />
-
           <div className="flex-1 overflow-y-auto">
             <HeaderFull />
             {/* Movies Section */}
@@ -100,6 +114,16 @@ export default function MoviesPage() {
                 </h1>
                 <p className="text-gray-300">{t("movies.subtitle")}</p>
               </div>
+              <MovieFilters
+                genres={allGenres}
+                selectedGenres={selectedGenres}
+                onGenresChange={setSelectedGenres}
+                sortField={sortField}
+                onSortFieldChange={setSortField}
+                sortDirection={sortDirection}
+                onSortDirectionChange={setSortDirection}
+                className="bg-slate-800/50 border-slate-700 rounded-lg mb-6"
+              />
               <Pagination
                 itemsPage={moviesData.movies}
                 onPageChange={(page: number) => {

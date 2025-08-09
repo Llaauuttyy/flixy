@@ -11,11 +11,16 @@ movie_router = APIRouter()
 MovieServiceDep = Annotated[MovieService, Depends(lambda: MovieService())]
 
 @movie_router.get("/movies")
-def get_movies(session: SessionDep, request: Request, movie_service: MovieServiceDep, search_query: str = None) -> Page[MovieGetResponse]:
+def get_movies(session: SessionDep, request: Request, movie_service: MovieServiceDep, search_query: str = None, order_column = "title", order_way = "asc") -> Page[MovieGetResponse]:
     user_id = request.state.user_id
     try:
         if search_query is None or search_query == "":
-            movies = movie_service.get_all_movies(Database(session), user_id=user_id)
+            movies = movie_service.get_all_movies(
+                Database(session),
+                user_id=user_id,
+                order_column=order_column,
+                order_way=order_way
+            )
         else:
             movies = movie_service.search_movies(Database(session), search_query, user_id)
         return paginate(movies)
