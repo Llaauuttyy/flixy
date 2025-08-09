@@ -84,7 +84,7 @@ export function GenreStatistics({ userInsights }: GenreStatisticsProps) {
               </div>
               <progress
                 value={genre.average_rating}
-                max={10}
+                max={5}
                 className="w-full h-2 appearance-none rounded-full overflow-hidden bg-slate-700 [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-value]:bg-blue-900 [&::-webkit-progress-value]:rounded-full [&::-moz-progress-bar]:bg-blue-900"
               />
             </div>

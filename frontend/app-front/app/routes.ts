@@ -16,11 +16,10 @@ export default [
     route("watchlists", "routes/watchlists.tsx"),
 
     route("profile", "routes/profile.tsx"),
-
     route("search", "routes/search.tsx"),
 
+    route("recommendations", "routes/recommendations.tsx"),
     route("settings", "routes/settings.tsx"),
-
     route("signout", "routes/auth/signout.tsx"),
   ]),
 ] satisfies RouteConfig;
