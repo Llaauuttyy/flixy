@@ -62,6 +62,17 @@ export const enTranslation = {
     reviews_title: "Reviews from flixies",
     review_user: "Your review",
   },
+  recommendations: {
+    title: "Explore",
+    subtitle:
+      "Explore your personalized recommendations based on your interactions.",
+    random_movie: {
+      title: "Don't know which movie to start with?",
+      prefix: "Let yourself be surprised by a ",
+      random: "random recommendation",
+      sufix: " and find your next favorite.",
+    },
+  },
   search: {
     page_title: "Search Results",
     results_for_query: "Found results for",

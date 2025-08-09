@@ -1,5 +1,4 @@
 from app.db.database import Database
-from app.dto.recommendation import Recommendations
 from app.dto.movie import MovieDTO
 from app.model.review import Review
 from app.model.movie import Movie
@@ -7,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from math import log10
 
 class RecommendationService:
-    def get_recommendations(self, db: Database, user_id: int) -> Recommendations:
+    def get_recommendations(self, db: Database, user_id: int) -> list[Movie]:
         user_reviews = db.find_all_by_multiple(
             Review,
             db.build_condition([Review.user_id == user_id]),
@@ -60,21 +59,19 @@ class RecommendationService:
             order_by={"way": "desc", "column": "imdb_rating"}
         )
 
-        return Recommendations(
-            movies=[
-                MovieDTO(
-                    id=movie.id,
-                    title=movie.title,
-                    year=movie.year,
-                    imdb_rating=movie.imdb_rating,
-                    genres=movie.genres,
-                    countries=movie.countries,
-                    duration=movie.duration,
-                    cast=movie.cast,
-                    directors=movie.directors,
-                    writers=movie.writers,
-                    plot=movie.plot,
-                    logo_url=movie.logo_url
-                ) for movie in movies_recommended
-            ]
-        )
+        return [
+            MovieDTO(
+                id=movie.id,
+                title=movie.title,
+                year=movie.year,
+                imdb_rating=movie.imdb_rating,
+                genres=movie.genres,
+                countries=movie.countries,
+                duration=movie.duration,
+                cast=movie.cast,
+                directors=movie.directors,
+                writers=movie.writers,
+                plot=movie.plot,
+                logo_url=movie.logo_url
+            ) for movie in movies_recommended
+        ]
