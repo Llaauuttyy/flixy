@@ -30,6 +30,7 @@ interface Movie {
 }
 
 interface AddMovieWatchListProps {
+  showOnly?: boolean;
   accessToken: string;
   watchListId: number;
   onMovieSelect: (movie: Movie) => void;
@@ -39,6 +40,7 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 100;
 
 export function AddMovieWatchList({
+  showOnly,
   accessToken,
   watchListId,
   onMovieSelect,
@@ -51,6 +53,8 @@ export function AddMovieWatchList({
   const [searchText, setSearchText] = useState("");
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const isShowOnly = showOnly ?? false;
 
   console.log(watchListId);
 
@@ -70,17 +74,19 @@ export function AddMovieWatchList({
 
   async function handleMovieAddClick(movie: Movie) {
     try {
-      const watchListMovieAdd: WatchListMovieAdd = {
-        watchlist_id: watchListId,
-        movie_id: movie.id,
-      };
+      if (!isShowOnly) {
+        const watchListMovieAdd: WatchListMovieAdd = {
+          watchlist_id: watchListId,
+          movie_id: movie.id,
+        };
 
-      const success = await handleAddMovieToWatchList(
-        accessToken,
-        watchListMovieAdd
-      );
+        const success = await handleAddMovieToWatchList(
+          accessToken,
+          watchListMovieAdd
+        );
 
-      setApiResponseMovieAdd({ success });
+        setApiResponseMovieAdd({ success });
+      }
       onMovieSelect(movie);
     } catch (err: Error | any) {
       console.log("API POST /watchlist/movie said: ", err.message);

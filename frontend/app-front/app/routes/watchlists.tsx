@@ -2,13 +2,14 @@ import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { Film, Plus, Star, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { getWatchLists } from "services/api/flixy/server/watchlists";
 import type { ApiResponse } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
 
 import { Button } from "components/ui/button";
 import WatchList from "components/ui/watchlist";
+import WatchListCreator from "components/ui/watchlist-creator";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import { getAccessToken } from "services/api/utils";
@@ -79,9 +80,15 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function WatchListsPage() {
   const apiResponse: ApiResponse = useLoaderData();
+  const navigate = useNavigate();
+
+  const [isCreation, setIsCreation] = useState(false);
+
   const [watchlists, setWatchlists] = useState<WatchLists>(
     apiResponse.data || []
   );
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const watchlistsData = watchlists.items.items.reduce(
     (totals, watchlist) => {
@@ -91,6 +98,15 @@ export default function WatchListsPage() {
     },
     { movies: 0, watchlists: 0 }
   );
+
+  function handleNavigation() {
+    setIsCreation(true);
+    // navigate("/watchlists/creation");
+  }
+
+  function handleCancelCreation() {
+    setIsCreation(false);
+  }
 
   if (apiResponse.error) {
     return (
@@ -118,7 +134,10 @@ export default function WatchListsPage() {
 
           <main className="overflow-auto w-full mx-auto py-6 px-6 md:px-6">
             <div className="flex justify-end mb-6">
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+              <Button
+                onClick={handleNavigation}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Create WatchList
               </Button>
@@ -163,12 +182,29 @@ export default function WatchListsPage() {
               </div>
             </div>
             <div className="mt-3 h-px bg-gray-600 mb-6" />
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Create WatchList
-            </Button>
+            {!isCreation && (
+              <Button
+                onClick={handleNavigation}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create WatchList
+              </Button>
+            )}
+            {isCreation && (
+              <Button
+                onClick={handleCancelCreation}
+                variant={"outline"}
+                className="ml-2 hover:bg-red-700 hover:text-white text-red-500 border-red-500 disabled:opacity-50"
+              >
+                Cancel
+              </Button>
+            )}
           </div>
           <div className="h-px bg-gray-600 mt-2 mb-4" />
+          {isCreation && (
+            <WatchListCreator accessToken={String(apiResponse.accessToken)} />
+          )}
         </div>
 
         {/* Watchlists Content */}
