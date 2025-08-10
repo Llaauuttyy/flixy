@@ -3,9 +3,11 @@ import { Input } from "components/ui/input";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLoaderData, useNavigate, useSubmit } from "react-router-dom";
+import { useNavigate, useSubmit } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/client/movies";
+import { handleAddMovieToWatchList } from "services/api/flixy/client/watchlists";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
+import type { WatchListMovieAdd } from "services/api/flixy/types/watchlist";
 
 interface SearchResults {
   movies: Page<Movie>;
@@ -27,16 +29,30 @@ interface Movie {
   user_rating: number | null;
 }
 
+interface AddMovieWatchListProps {
+  accessToken: string;
+  watchListId: number;
+  onMovieSelect: (movie: Movie) => void;
+}
+
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 100;
 
-export function AddMovieWatchList({ accessToken }: { accessToken: string }) {
+export function AddMovieWatchList({
+  accessToken,
+  watchListId,
+  onMovieSelect,
+}: AddMovieWatchListProps) {
   const submit = useSubmit();
-  const apiResponse: ApiResponse = useLoaderData();
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchText, setSearchText] = useState(apiResponse?.data?.query ?? "");
+  const [apiResponseMovieAdd, setApiResponseMovieAdd] = useState<ApiResponse>(
+    {}
+  );
+  const [apiResponseSearch, setApiResponseSearch] = useState<ApiResponse>({});
+  const [searchText, setSearchText] = useState("");
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  console.log(watchListId);
 
   const [addingMovie, setAddingMovie] = useState(false);
   const [searchedMovies, setSearchedMovies] = useState<Movie[]>([]);
@@ -49,11 +65,37 @@ export function AddMovieWatchList({ accessToken }: { accessToken: string }) {
     setAddingMovie(false);
     setSearchText("");
     setSearchedMovies([]);
+    setApiResponseMovieAdd({});
   }
 
-  function handleMovieClick(id: number) {
-    console.log("Movie ID:", id);
-    return;
+  async function handleMovieAddClick(movie: Movie) {
+    try {
+      const watchListMovieAdd: WatchListMovieAdd = {
+        watchlist_id: watchListId,
+        movie_id: movie.id,
+      };
+
+      const success = await handleAddMovieToWatchList(
+        accessToken,
+        watchListMovieAdd
+      );
+
+      setApiResponseMovieAdd({ success });
+      onMovieSelect(movie);
+    } catch (err: Error | any) {
+      console.log("API POST /watchlist/movie said: ", err.message);
+
+      if (err instanceof TypeError) {
+        setApiResponseMovieAdd({
+          error: "Service's not working properly. Please try again later.",
+        });
+        return;
+      }
+
+      setApiResponseMovieAdd({
+        error: err.message,
+      });
+    }
   }
 
   async function handleMovieSearch() {
@@ -61,7 +103,7 @@ export function AddMovieWatchList({ accessToken }: { accessToken: string }) {
       return;
     }
 
-    let apiResponse: ApiResponse = {};
+    let apiResponseSearch: ApiResponse = {};
 
     let searchResults: SearchResults = {} as SearchResults;
 
@@ -73,23 +115,21 @@ export function AddMovieWatchList({ accessToken }: { accessToken: string }) {
         DEFAULT_PAGE_SIZE
       );
 
-      apiResponse.data = searchResults;
+      apiResponseSearch.data = searchResults;
 
       setSearchedMovies(searchResults.movies.items);
-
-      console.log("Movies", searchResults.movies);
-      return apiResponse;
+      setApiResponseSearch(apiResponseSearch);
     } catch (err: Error | any) {
       console.log("API GET /movies?search_query said: ", err.message);
 
       if (err instanceof TypeError) {
-        apiResponse.error =
+        apiResponseSearch.error =
           "Service's not working properly. Please try again later.";
-        return apiResponse;
+        setApiResponseSearch(apiResponseSearch);
       }
 
-      apiResponse.error = err.message;
-      return apiResponse;
+      apiResponseSearch.error = err.message;
+      setApiResponseSearch(apiResponseSearch);
     }
   }
 
@@ -130,21 +170,27 @@ export function AddMovieWatchList({ accessToken }: { accessToken: string }) {
             />
 
             {addingMovie && (
-              <ul className="h-25 absolute top-full left-0 w-full bg-gray-800 border border-gray-700 rounded-md shadow-lg mt-1 overflow-y-auto z-[9999]">
-                {searchedMovies.length > 0 ? (
-                  searchedMovies.map((movie) => (
-                    <li
-                      key={movie.id}
-                      onClick={() => handleMovieClick(movie.id)}
-                      className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-gray-300"
-                    >
-                      {movie.title} ({movie.year})
+              <>
+                <ul className="h-25 absolute top-full left-0 w-full bg-gray-800 border border-gray-700 rounded-md shadow-lg mt-1 overflow-y-auto z-[9999]">
+                  {searchedMovies.length > 0 ? (
+                    <>
+                      {searchedMovies.map((movie) => (
+                        <li
+                          key={movie.id}
+                          onClick={() => handleMovieAddClick(movie)}
+                          className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-gray-300"
+                        >
+                          {movie.title} ({movie.year})
+                        </li>
+                      ))}
+                    </>
+                  ) : (
+                    <li className="px-4 py-2 text-gray-500">
+                      No matches found.
                     </li>
-                  ))
-                ) : (
-                  <li className="px-4 py-2 text-gray-500">No matches found.</li>
-                )}
-              </ul>
+                  )}
+                </ul>
+              </>
             )}
 
             <Button
@@ -157,6 +203,14 @@ export function AddMovieWatchList({ accessToken }: { accessToken: string }) {
           </div>
         </div>
       </div>
+      {apiResponseMovieAdd?.error && (
+        <p className="px-4 py-2 text-red-400">{apiResponseMovieAdd.error}</p>
+      )}
+      {apiResponseMovieAdd?.success && (
+        <p className="px-4 py-2 text-green-400">
+          Movie successfully added to watchlist!
+        </p>
+      )}
     </header>
   );
 }

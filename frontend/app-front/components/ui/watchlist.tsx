@@ -57,6 +57,10 @@ export default function WatchList({
     watchlist.movies || []
   );
 
+  function handleMovieAddition(movie: Movie) {
+    setWatchListMovies((prevMovies) => [...prevMovies, movie]);
+  }
+
   return (
     <div key={watchlist.id} className="mb-12">
       {/* Watchlist Header */}
@@ -154,7 +158,11 @@ export default function WatchList({
             />
           ))
         )}
-        <AddMovieWatchList accessToken={String(accessToken)} />
+        <AddMovieWatchList
+          accessToken={String(accessToken)}
+          watchListId={watchlist.id}
+          onMovieSelect={handleMovieAddition}
+        />
       </div>
     </div>
   );
