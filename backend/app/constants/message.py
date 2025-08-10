@@ -19,3 +19,5 @@ INSULTING_REVIEW = "Your review contains insulting content. Try to express yours
 
 # WatchList
 WATCHLIST_ALREADY_EXISTS = "Watchlist with that name already exists."
+WATCHLIST_NOT_FOUND = "Watchlist not found."
+MOVIE_ALREADY_IN_WATCHLIST = "Movie already in watchlist."
