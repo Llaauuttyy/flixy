@@ -15,10 +15,12 @@ import type { Route } from "./+types/movies";
 
 import relativeTime from "dayjs/plugin/relativeTime";
 
+import { AddMovieWatchList } from "components/ui/add-movie-watchlist";
 import { Button } from "components/ui/button";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import i18n from "i18n/i18n";
+import { getAccessToken } from "services/api/utils";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -71,7 +73,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     watchlists = await getWatchLists(page, DEFAULT_PAGE_SIZE, request);
 
-    // apiResponse.accessToken = await getAccessToken(request);
+    apiResponse.accessToken = await getAccessToken(request);
 
     apiResponse.data = watchlists;
     return apiResponse;
@@ -226,7 +228,47 @@ export default function MovieInsights() {
 
               {/* Movie Posters Grid */}
               <div className="flex gap-4 overflow-x-auto pb-2">
-                {watchlist.movies.length !== 0 ? (
+                {watchlist.movies.length > 5 ? (
+                  <>
+                    {watchlist.movies.slice(0, 4).map((movie) => (
+                      <MovieCard
+                        key={movie.id}
+                        movie={movie}
+                        styles={{
+                          card_width: 128,
+                          card_height: 160,
+                          title_size: "sm",
+                          title_padding: 1,
+                          show_rate_this_movie: false,
+                          star_component_multiplier: 0.5,
+                          show_details_size: "xs",
+                          show_details_padding: 1,
+                        }}
+                        accessToken={undefined}
+                      />
+                    ))}
+
+                    <div className="flex items-center justify-center w-12 text-gray-400 text-2xl">
+                      ...
+                    </div>
+
+                    <MovieCard
+                      key={watchlist.movies[watchlist.movies.length - 1].id}
+                      movie={watchlist.movies[watchlist.movies.length - 1]}
+                      styles={{
+                        card_width: 128,
+                        card_height: 160,
+                        title_size: "sm",
+                        title_padding: 1,
+                        show_rate_this_movie: false,
+                        star_component_multiplier: 0.5,
+                        show_details_size: "xs",
+                        show_details_padding: 1,
+                      }}
+                      accessToken={undefined}
+                    />
+                  </>
+                ) : (
                   watchlist.movies.map((movie) => (
                     <MovieCard
                       key={movie.id}
@@ -244,11 +286,10 @@ export default function MovieInsights() {
                       accessToken={undefined}
                     />
                   ))
-                ) : (
-                  <p className="text-sm text-gray-400">
-                    No movies in this watchlist yet.
-                  </p>
                 )}
+                <AddMovieWatchList
+                  accessToken={String(apiResponse.accessToken)}
+                />
               </div>
             </div>
           ))}

@@ -24,3 +24,28 @@ export async function setMovieRating(
 
   return response_json;
 }
+
+export async function searchMovies(
+  accessToken: string | undefined,
+  query: string,
+  page: number,
+  size: number
+) {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL_CLIENT +
+      `/movies?search_query=${query}&page=${page}&size=${size}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
