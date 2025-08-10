@@ -25,6 +25,10 @@ class WatchListCreationDTO(BaseModel):
     description: Optional[str] = None
     movie_id: Optional[int] = None
 
+class WatchListAddResponse(BaseModel):
+    watchlist_id: int
+    movie_id: int
+
 class WatchListMovieCreationDTO(BaseModel):
     watchlist_id: int
     movie_id: int
