@@ -108,6 +108,31 @@ export default function WatchListsPage() {
     setIsCreation(false);
   }
 
+  function getCreationButtons() {
+    return (
+      <>
+        {!isCreation && (
+          <Button
+            onClick={handleNavigation}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create WatchList
+          </Button>
+        )}
+        {isCreation && (
+          <Button
+            onClick={handleCancelCreation}
+            variant={"outline"}
+            className="ml-2 hover:bg-red-700 hover:text-white text-red-500 border-red-500 disabled:opacity-50"
+          >
+            Cancel
+          </Button>
+        )}
+      </>
+    );
+  }
+
   if (apiResponse.error) {
     return (
       <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
@@ -133,15 +158,11 @@ export default function WatchListsPage() {
           <HeaderFull />
 
           <main className="overflow-auto w-full mx-auto py-6 px-6 md:px-6">
-            <div className="flex justify-end mb-6">
-              <Button
-                onClick={handleNavigation}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create WatchList
-              </Button>
-            </div>
+            <div className="flex justify-end mb-6">{getCreationButtons()}</div>
+            <div className="h-px bg-gray-600 mt-2 mb-4" />
+            {isCreation && (
+              <WatchListCreator accessToken={String(apiResponse.accessToken)} />
+            )}
             <div className="flex justify-center mb-6">
               <p className="text-gray-400 mb-6">No watchlists so far.</p>
             </div>
@@ -182,24 +203,7 @@ export default function WatchListsPage() {
               </div>
             </div>
             <div className="mt-3 h-px bg-gray-600 mb-6" />
-            {!isCreation && (
-              <Button
-                onClick={handleNavigation}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create WatchList
-              </Button>
-            )}
-            {isCreation && (
-              <Button
-                onClick={handleCancelCreation}
-                variant={"outline"}
-                className="ml-2 hover:bg-red-700 hover:text-white text-red-500 border-red-500 disabled:opacity-50"
-              >
-                Cancel
-              </Button>
-            )}
+            {getCreationButtons()}
           </div>
           <div className="h-px bg-gray-600 mt-2 mb-4" />
           {isCreation && (
