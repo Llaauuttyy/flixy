@@ -73,22 +73,23 @@ class WatchListService:
 
             db.add(watchlist)
 
-            movie_data = None
-            if watchlist_dto.movie_id is not None:
+            for movie_id in watchlist_dto.movie_ids:
                 watchlist_movie = WatchListMovie(
                     user_id=user_id,
                     watchlist_id=watchlist.id,
-                    movie_id=watchlist_dto.movie_id
+                    movie_id=movie_id
                 )
 
-                movie_data = watchlist_dto.movie_id
+                db.add(watchlist_movie)
 
-                db.save(watchlist_movie)
+            db.commit()
+
+            print("Watchlist created successfully with ID:", watchlist_dto.movie_ids)
             
             return WatchListCreateResponse(
                 name=watchlist.name,
                 description=watchlist.description,
-                movie_id=movie_data,
+                movie_ids=watchlist_dto.movie_ids,
             )
 
         except IntegrityError as e:

@@ -4,10 +4,6 @@ from datetime import datetime as datetime
 from fastapi_pagination import Page
 from app.dto.movie import MovieGetResponse
 
-class WatchListCreateResponse(BaseModel):
-    name: str
-    description: Optional[str] = None
-    movie_id: Optional[int] = None
 
 class WatchListDTO(BaseModel):
     id: int
@@ -23,8 +19,11 @@ class WatchListGetResponse(BaseModel):
 class WatchListCreationDTO(BaseModel):
     name: str
     description: Optional[str] = None
-    movie_id: Optional[int] = None
+    movie_ids: Optional[list[int]] = []
 
+class WatchListCreateResponse(WatchListCreationDTO):
+    pass
+    
 class WatchListAddResponse(BaseModel):
     watchlist_id: int
     movie_id: int

@@ -11,6 +11,9 @@ class Database:
         self.db_session.commit()
         self.db_session.refresh(register)
 
+    def commit(self):
+        self.db_session.commit()
+
     def add(self, register):
         self.db_session.add(register)
         self.db_session.flush()
