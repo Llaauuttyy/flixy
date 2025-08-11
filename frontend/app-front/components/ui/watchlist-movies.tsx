@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AddMovieWatchList } from "./add-movie-watchlist";
-import { MovieCard } from "./movie-card";
+import WatchListMoviesDisplay from "./watchlist-movies-display";
 
 interface Movie {
   id: number;
@@ -59,66 +59,11 @@ export default function WatchListMovies({
 
   return (
     <div>
-      <div className="flex gap-4 overflow-x-auto pb-2">
-        {watchListMovies.length > 5 ? (
-          <>
-            {watchListMovies.slice(0, 4).map((movie) => (
-              <MovieCard
-                key={movie.id}
-                movie={movie}
-                styles={{
-                  card_width: 128,
-                  card_height: 160,
-                  title_size: "sm",
-                  title_padding: 1,
-                  show_rate_this_movie: false,
-                  star_component_multiplier: 0.5,
-                  show_details_size: "xs",
-                  show_details_padding: 1,
-                }}
-                accessToken={String(accessToken)}
-              />
-            ))}
-
-            <div className="flex items-center justify-center w-12 text-gray-400 text-2xl">
-              ...
-            </div>
-
-            <MovieCard
-              key={watchListMovies[watchListMovies.length - 1].id}
-              movie={watchListMovies[watchListMovies.length - 1]}
-              styles={{
-                card_width: 128,
-                card_height: 160,
-                title_size: "sm",
-                title_padding: 1,
-                show_rate_this_movie: false,
-                star_component_multiplier: 0.5,
-                show_details_size: "xs",
-                show_details_padding: 1,
-              }}
-              accessToken={String(accessToken)}
-            />
-          </>
-        ) : (
-          watchListMovies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              movie={movie}
-              styles={{
-                card_width: 128,
-                card_height: 160,
-                title_size: "sm",
-                title_padding: 1,
-                show_rate_this_movie: false,
-                star_component_multiplier: 0.5,
-                show_details_size: "xs",
-                show_details_padding: 1,
-              }}
-              accessToken={String(accessToken)}
-            />
-          ))
-        )}
+      <div className="flex items-center">
+        <WatchListMoviesDisplay
+          accessToken={accessToken}
+          movies={watchListMovies}
+        />
         <AddMovieWatchList
           showOnly={showOnly}
           accessToken={String(accessToken)}

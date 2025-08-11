@@ -61,6 +61,7 @@ class WatchListService:
                 updated_at=w.updated_at
             ))
         
+        watchlists.sort(key=lambda x: x.updated_at, reverse=True)
         return watchlists
 
     def create_watchlist(self, db: Database, watchlist_dto: WatchListCreationDTO, user_id: int) -> WatchListCreateResponse:
@@ -84,8 +85,6 @@ class WatchListService:
 
             db.commit()
 
-            print("Watchlist created successfully with ID:", watchlist_dto.movie_ids)
-            
             return WatchListCreateResponse(
                 name=watchlist.name,
                 description=watchlist.description,

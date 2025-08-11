@@ -2,7 +2,7 @@ import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { Film, Plus, Star, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import { getWatchLists } from "services/api/flixy/server/watchlists";
 import type { ApiResponse } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
@@ -80,15 +80,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function WatchListsPage() {
   const apiResponse: ApiResponse = useLoaderData();
-  const navigate = useNavigate();
 
   const [isCreation, setIsCreation] = useState(false);
 
   const [watchlists, setWatchlists] = useState<WatchLists>(
     apiResponse.data || []
   );
-
-  const [isLoading, setIsLoading] = useState(false);
 
   const watchlistsData = watchlists.items.items.reduce(
     (totals, watchlist) => {
@@ -99,12 +96,20 @@ export default function WatchListsPage() {
     { movies: 0, watchlists: 0 }
   );
 
-  function handleNavigation() {
+  function handleCreation() {
     setIsCreation(true);
-    // navigate("/watchlists/creation");
   }
 
   function handleCancelCreation() {
+    setIsCreation(false);
+  }
+
+  function handleWatchListCreation(watchlist: WatchListFace) {
+    setWatchlists((prevWatchlists) => ({
+      items: {
+        items: [watchlist, ...prevWatchlists.items.items],
+      },
+    }));
     setIsCreation(false);
   }
 
@@ -113,7 +118,7 @@ export default function WatchListsPage() {
       <>
         {!isCreation && (
           <Button
-            onClick={handleNavigation}
+            onClick={handleCreation}
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -161,7 +166,10 @@ export default function WatchListsPage() {
             <div className="flex justify-end mb-6">{getCreationButtons()}</div>
             <div className="h-px bg-gray-600 mt-2 mb-4" />
             {isCreation && (
-              <WatchListCreator accessToken={String(apiResponse.accessToken)} />
+              <WatchListCreator
+                accessToken={String(apiResponse.accessToken)}
+                onCreation={handleWatchListCreation}
+              />
             )}
             <div className="flex justify-center mb-6">
               <p className="text-gray-400 mb-6">No watchlists so far.</p>
@@ -207,7 +215,10 @@ export default function WatchListsPage() {
           </div>
           <div className="h-px bg-gray-600 mt-2 mb-4" />
           {isCreation && (
-            <WatchListCreator accessToken={String(apiResponse.accessToken)} />
+            <WatchListCreator
+              accessToken={String(apiResponse.accessToken)}
+              onCreation={handleWatchListCreation}
+            />
           )}
         </div>
 
