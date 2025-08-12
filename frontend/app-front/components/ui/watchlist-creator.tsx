@@ -1,12 +1,12 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "./button";
-import { Input } from "./input";
 import { Label } from "./label";
 
 import { useState } from "react";
 import { handleWatchListCreation } from "services/api/flixy/client/watchlists";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 import type { WatchListCreate } from "services/api/flixy/types/watchlist";
+import { MaxLengthInput } from "./max-length-input";
 import WatchListCreatorMovies from "./watchlist-creator-movies";
 
 interface Movie {
@@ -45,6 +45,9 @@ export default function WatchListCreator({
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState<String>("");
+
+  const [nameLimitReached, setNameLimitReached] = useState(false);
+  const [descriptionLimitReached, setDescriptionLimitReached] = useState(false);
 
   const [newWatchListMovies, setNewWatchListMovies] = useState<Movie[]>([]);
   const [apiResponse, setApiResponse] = useState<ApiResponse>({});
@@ -116,12 +119,14 @@ export default function WatchListCreator({
                   Name
                 </Label>
               </div>
-              <Input
+              <MaxLengthInput
                 id="name"
                 name="name"
                 placeholder="watchlist name"
-                onChange={(e) => setName(e.target.value)}
-                required
+                length={140}
+                onChange={(value) => setName(value)}
+                onLimitReached={(nameLimit) => setNameLimitReached(nameLimit)}
+                // required
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
               />
             </div>
@@ -135,11 +140,15 @@ export default function WatchListCreator({
                   Description
                 </Label>
               </div>
-              <Input
+              <MaxLengthInput
                 id="description"
                 name="description"
                 placeholder="watchlist description"
-                onChange={(e) => setDescription(e.target.value)}
+                length={1000}
+                onChange={(value) => setDescription(value)}
+                onLimitReached={(descriptionLimit) =>
+                  setDescriptionLimitReached(descriptionLimit)
+                }
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
               />
             </div>
@@ -159,7 +168,12 @@ export default function WatchListCreator({
             </div>
 
             <Button
-              disabled={isLoading || !name}
+              disabled={
+                isLoading ||
+                !name ||
+                nameLimitReached ||
+                descriptionLimitReached
+              }
               type="submit"
               className="max-w-3xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
             >
