@@ -86,6 +86,7 @@ class WatchListService:
             db.commit()
 
             return WatchListCreateResponse(
+                id=watchlist.id,
                 name=watchlist.name,
                 description=watchlist.description,
                 movie_ids=watchlist_dto.movie_ids,

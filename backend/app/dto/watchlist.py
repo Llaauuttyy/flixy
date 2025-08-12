@@ -22,7 +22,7 @@ class WatchListCreationDTO(BaseModel):
     movie_ids: Optional[list[int]] = []
 
 class WatchListCreateResponse(WatchListCreationDTO):
-    pass
+    id: int
     
 class WatchListAddResponse(BaseModel):
     watchlist_id: int
