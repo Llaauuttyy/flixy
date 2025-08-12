@@ -1,4 +1,4 @@
-import type { WatchListCreate, WatchListMovieAdd } from "../types/watchlist";
+import type { WatchListCreate, WatchListEdit } from "../types/watchlist";
 
 export async function handleWatchListCreation(
   accessToken: string | undefined,
@@ -25,19 +25,20 @@ export async function handleWatchListCreation(
   return response_json;
 }
 
-export async function handleAddMovieToWatchList(
+export async function handleWatchListEdition(
   accessToken: string | undefined,
-  watchlistData: WatchListMovieAdd
+  watchlistData: WatchListEdit
 ) {
   const response = await fetch(
     import.meta.env.VITE_API_URL_CLIENT +
-      `/watchlist/${watchlistData.watchlist_id}/movie/${watchlistData.movie_id}`,
+      `/watchlist/${watchlistData.watchlist_id}`,
     {
-      method: "POST",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
+      body: JSON.stringify(watchlistData.data),
     }
   );
 

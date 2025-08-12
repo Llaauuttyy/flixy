@@ -1,4 +1,4 @@
-from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListDTO, WatchListAddResponse, WatchListEditionDTO, WatchListEditResponse
+from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListDTO, WatchListEditionDTO, WatchListEditResponse
 from app.model.watchlist import WatchList
 from app.model.watchlist_movie import WatchListMovie
 from app.model.user import User
@@ -107,47 +107,6 @@ class WatchListService:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
         
-    def add_movie_to_watchlist(self, db: Database, user_id: int, watchlist_id: int, movie_id: int) -> WatchListAddResponse:
-        try:
-            user = db.find_by(User, "id", user_id, options=[
-                selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
-                with_loader_criteria(
-                    WatchList,
-                    lambda watchlist: watchlist.id == watchlist_id
-                ),
-                with_loader_criteria(
-                    WatchListMovie,
-                    lambda watchlistmovie: watchlistmovie.movie_id == movie_id
-                ),
-            ])
-        
-            if not user.watchlists:
-                raise HTTPException(status_code=404, detail=WATCHLIST_NOT_FOUND)
-
-            if user.watchlists[0].watchlist_movies: 
-                raise HTTPException(status_code=409, detail=MOVIE_ALREADY_IN_WATCHLIST)
-            
-            watchlist = user.watchlists[0]
-            watchlist.updated_at = datetime.now()
-            db.add(watchlist)
-
-            watchlist_movie = WatchListMovie(
-                user_id=user_id,
-                watchlist_id=watchlist.id,
-                movie_id=movie_id
-            )
-            db.save(watchlist_movie)
-
-            return WatchListAddResponse(
-                watchlist_id=watchlist.id,
-                movie_id=movie_id
-            )
-
-        except HTTPException as e:
-            db.rollback()
-            raise HTTPException(status_code=e.status_code, detail=str(e.detail))
-    
-    
     def edit_watchlist(self, db: Database, user_id: int, watchlist_id: int, watchlist_dto: WatchListEditionDTO) -> WatchListEditResponse:
         try:
             user = db.find_by(User, "id", user_id, options=[

@@ -5,8 +5,15 @@ export interface WatchListCreate {
   [key: string]: string | number[] | null;
 }
 
-export interface WatchListMovieAdd {
+export interface WatchListEditData {
+  name?: string;
+  description?: string | null;
+  movie_ids_to_add?: number[];
+  movie_ids_to_delete?: number[];
+}
+
+export interface WatchListEdit {
   watchlist_id: number;
-  movie_id: number;
-  [key: string]: number;
+  data: WatchListEditData;
+  [key: string]: number | WatchListEditData;
 }

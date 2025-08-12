@@ -5,9 +5,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSubmit } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/client/movies";
-import { handleAddMovieToWatchList } from "services/api/flixy/client/watchlists";
+import { handleWatchListEdition } from "services/api/flixy/client/watchlists";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
-import type { WatchListMovieAdd } from "services/api/flixy/types/watchlist";
+import type {
+  WatchListEdit,
+  WatchListEditData,
+} from "services/api/flixy/types/watchlist";
 
 interface SearchResults {
   movies: Page<Movie>;
@@ -75,14 +78,17 @@ export function AddMovieWatchList({
   async function handleMovieAddClick(movie: Movie) {
     try {
       if (!isShowOnly) {
-        const watchListMovieAdd: WatchListMovieAdd = {
+        const watchListMovieEditData: WatchListEditData = {
+          movie_ids_to_add: [movie.id],
+        };
+        const watchListMovieEdit: WatchListEdit = {
           watchlist_id: watchListId,
-          movie_id: movie.id,
+          data: watchListMovieEditData,
         };
 
-        const success = await handleAddMovieToWatchList(
+        const success = await handleWatchListEdition(
           accessToken,
-          watchListMovieAdd
+          watchListMovieEdit
         );
 
         setApiResponseMovieAdd({ success });
