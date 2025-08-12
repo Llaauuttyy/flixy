@@ -1,7 +1,7 @@
 from typing import Annotated
 from app.db.database import Database
 from app.db.database_setup import SessionDep
-from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListGetResponse, WatchListAddResponse
+from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListGetResponse, WatchListAddResponse, WatchListEditResponse, WatchListEditionDTO
 from app.service.watchlist_service import WatchListService
 from fastapi import APIRouter, Depends, HTTPException, Request, Path
 from fastapi_pagination import Params, paginate
@@ -38,4 +38,12 @@ def add_watchlist_movie(session: SessionDep, request: Request, watchlist_service
         return watchlist_movie
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
-    
+
+@watchlist_router.patch("/watchlist/{watchlist_id}")
+def edit_watchlist(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, watchlist_dto: WatchListEditionDTO, watchlist_id: int = Path(..., title="watchlist id", ge=1)) -> WatchListEditResponse:
+    user_id = request.state.user_id
+    try:
+        watchlist_edited = watchlist_service.edit_watchlist(Database(session), user_id, watchlist_id, watchlist_dto)
+        return watchlist_edited
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))

@@ -20,4 +20,9 @@ INSULTING_REVIEW = "Your review contains insulting content. Try to express yours
 # WatchList
 WATCHLIST_ALREADY_EXISTS = "Watchlist with that name already exists."
 WATCHLIST_NOT_FOUND = "Watchlist not found."
-MOVIE_ALREADY_IN_WATCHLIST = "Movie already in watchlist."
+
+def MOVIE_ALREADY_IN_WATCHLIST(movie_id: int) -> str:
+    return f"Movie with ID {movie_id} already in watchlist."
+
+def MOVIE_NOT_FOUND_IN_WATCHLIST(movie_id: int) -> str:
+    return f"Movie with ID {movie_id} not found in watchlist."

@@ -1,8 +1,8 @@
-from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListDTO, WatchListAddResponse
+from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListDTO, WatchListAddResponse, WatchListEditionDTO, WatchListEditResponse
 from app.model.watchlist import WatchList
 from app.model.watchlist_movie import WatchListMovie
 from app.model.user import User
-from app.constants.message import MOVIE_ALREADY_IN_WATCHLIST, MOVIE_NOT_FOUND, WATCHLIST_ALREADY_EXISTS, WATCHLIST_NOT_FOUND
+from app.constants.message import MOVIE_ALREADY_IN_WATCHLIST, MOVIE_NOT_FOUND, WATCHLIST_ALREADY_EXISTS, WATCHLIST_NOT_FOUND, MOVIE_NOT_FOUND_IN_WATCHLIST
 from app.dto.movie import MovieGetResponse
 from app.model.review import Review
 from fastapi import HTTPException
@@ -148,4 +148,70 @@ class WatchListService:
             raise HTTPException(status_code=e.status_code, detail=str(e.detail))
     
     
+    def edit_watchlist(self, db: Database, user_id: int, watchlist_id: int, watchlist_dto: WatchListEditionDTO) -> WatchListEditResponse:
+        try:
+            user = db.find_by(User, "id", user_id, options=[
+                selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+                with_loader_criteria(
+                    WatchList,
+                    lambda watchlist: watchlist.id == watchlist_id
+                ),
+            ])
+
+            movies_to_add = watchlist_dto.movie_ids_to_add if watchlist_dto.movie_ids_to_add else []
+            movies_to_delete = watchlist_dto.movie_ids_to_delete if watchlist_dto.movie_ids_to_delete else []
+
+            if not user.watchlists:
+                raise HTTPException(status_code=404, detail=WATCHLIST_NOT_FOUND)
+
+            current_movies = user.watchlists[0].watchlist_movies
+
+            for m in movies_to_add:
+                for cm in current_movies:
+                    if cm.movie_id == m:
+                        raise HTTPException(status_code=409, detail=MOVIE_ALREADY_IN_WATCHLIST(m))
+
+            for m in movies_to_delete:
+                movie_found = False
+                for cm in current_movies:
+                    if cm.movie_id == m:
+                        movie_found = True
+                        break
+                if not movie_found:
+                    raise HTTPException(status_code=404, detail=MOVIE_NOT_FOUND_IN_WATCHLIST(m))
+
+            watchlist = user.watchlists[0]
+            watchlist.updated_at = datetime.now()
+
+            if watchlist_dto.name:
+                watchlist.name = watchlist_dto.name
             
+            if watchlist_dto.description:
+                watchlist.description = watchlist_dto.description
+
+            db.add(watchlist)
+
+            for movie_id in movies_to_add:
+                watchlist_movie = WatchListMovie(
+                    user_id=user_id,
+                    watchlist_id=watchlist.id,
+                    movie_id=movie_id
+                )
+                db.add(watchlist_movie)
+
+            for movie_id in movies_to_delete:
+                watchlist_movie_to_delete = db.find_by_multiple(WatchListMovie, user_id=user_id, watchlist_id=watchlist.id, movie_id=movie_id)
+                db.delete(watchlist_movie_to_delete)
+            
+            db.commit()
+
+            return WatchListEditResponse(
+                name=watchlist.name,
+                description=watchlist.description,
+                movie_ids_added=movies_to_add,
+                movie_ids_deleted=movies_to_delete
+            )
+
+        except HTTPException as e:
+            db.rollback()
+            raise HTTPException(status_code=e.status_code, detail=str(e.detail))
