@@ -38,3 +38,12 @@ def edit_watchlist(session: SessionDep, request: Request, watchlist_service: Wat
         return watchlist_edited
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+
+@watchlist_router.delete("/watchlist/{watchlist_id}")
+def delete_watchlist(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, watchlist_id: int = Path(..., title="watchlist id", ge=1)) -> dict:
+    user_id = request.state.user_id
+    try:
+        watchlist_service.delete_watchlist(Database(session), user_id, watchlist_id)
+        return {"watchlist_id": watchlist_id}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))

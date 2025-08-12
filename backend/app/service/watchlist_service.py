@@ -132,7 +132,7 @@ class WatchListService:
 
             for m in movies_to_delete:
                 movie_found = False
-                for cm in current_movies:
+                for cm in ccurrent_movies:
                     if cm.movie_id == m:
                         movie_found = True
                         break
@@ -174,3 +174,30 @@ class WatchListService:
         except HTTPException as e:
             db.rollback()
             raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+
+    def delete_watchlist(self, db: Database, user_id: int, watchlist_id: int):
+        try:
+            user = db.find_by(User, "id", user_id, options=[
+                selectinload(User.watchlists).selectinload(WatchList.watchlist_movies),
+                with_loader_criteria(
+                    WatchList,
+                    lambda watchlist: watchlist.id == watchlist_id
+                ),
+            ])
+
+            if not user.watchlists:
+                raise HTTPException(status_code=404, detail=WATCHLIST_NOT_FOUND)
+
+            watchlist = user.watchlists[0]
+            for movie in watchlist.watchlist_movies:
+                db.remove(movie)
+
+            db.delete(watchlist)
+
+        except HTTPException as e:
+            db.rollback()
+            raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+        
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))

@@ -22,6 +22,9 @@ class Database:
         self.db_session.delete(register)
         self.db_session.commit()
 
+    def remove(self, register):
+        self.db_session.delete(register)
+
     def rollback(self):
         self.db_session.rollback()
 

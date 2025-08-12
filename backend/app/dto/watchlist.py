@@ -43,10 +43,6 @@ class WatchListEditResponse(BaseModel):
 class WatchListCreateResponse(WatchListCreationDTO):
     id: int
     
-class WatchListAddResponse(BaseModel):
-    watchlist_id: int
-    movie_id: int
-
 class WatchListMovieCreationDTO(BaseModel):
     watchlist_id: int
     movie_id: int
