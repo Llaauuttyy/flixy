@@ -13,8 +13,29 @@ class WatchListDTO(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-class WatchListGetResponse(BaseModel):
+class WatchListsGetResponse(BaseModel):
     items: Page[WatchListDTO]
+
+class WatchListInsights(BaseModel):
+    total_movies: int
+    total_watched_movies: int
+    average_rating_imdb: float
+    average_rating_user: float
+
+class WatchListActivity(BaseModel):
+    action: str
+    target: str
+    timestamp: datetime
+
+class WatchListGetResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    movies: Optional[Page[MovieGetResponse]] = []
+    activity: Optional[list[WatchListActivity]] = []
+    insights: Optional[WatchListInsights] = None
+    created_at: datetime
+    updated_at: datetime
 
 class WatchListCreationDTO(BaseModel):
     name: str

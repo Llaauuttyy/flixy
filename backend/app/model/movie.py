@@ -1,5 +1,7 @@
 from typing import List, Optional
 from sqlmodel import Field, SQLModel, Relationship
+from datetime import datetime as datetime
+
 
 class Movie(SQLModel, table=True):
     __tablename__ = "movies"
@@ -16,6 +18,8 @@ class Movie(SQLModel, table=True):
     writers: str
     plot: str
     logo_url: str
+    created_at: datetime
+    updated_at: datetime
 
     reviews: List["Review"] = Relationship(back_populates="movie")
     watchlist_movie: List["WatchListMovie"] = Relationship(back_populates="movie")

@@ -1,7 +1,7 @@
 from typing import Annotated
 from app.db.database import Database
 from app.db.database_setup import SessionDep
-from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListGetResponse, WatchListEditResponse, WatchListEditionDTO
+from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListsGetResponse, WatchListGetResponse, WatchListEditResponse, WatchListEditionDTO
 from app.service.watchlist_service import WatchListService
 from fastapi import APIRouter, Depends, HTTPException, Request, Path
 from fastapi_pagination import Params, paginate
@@ -11,15 +11,25 @@ watchlist_router = APIRouter()
 WatchListServiceDep = Annotated[WatchListService, Depends(lambda: WatchListService())]
 
 @watchlist_router.get("/watchlists")
-def get_watchlists(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, params: Params = Depends()) -> WatchListGetResponse:
+def get_watchlists(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, params: Params = Depends()) -> WatchListsGetResponse:
     user_id = request.state.user_id
     try:
-        watchlist = watchlist_service.get_all_watchlists(Database(session), user_id)
-        return WatchListGetResponse(
-            items=paginate(watchlist, params)
+        watchlists = watchlist_service.get_all_watchlists(Database(session), user_id)
+        return WatchListsGetResponse(
+            items=paginate(watchlists, params)
         )
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+
+@watchlist_router.get("/watchlist/{watchlist_id}")
+def get_watchlist(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, watchlist_id: int = Path(..., title="watchlist id", ge=1), params: Params = Depends()) -> WatchListGetResponse:
+    user_id = request.state.user_id
+    try:
+        watchlist, movies = watchlist_service.get_watchlist(Database(session), user_id, watchlist_id)
+        watchlist.movies = paginate(movies, params) if movies else movies
+        return watchlist
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))
 
 @watchlist_router.post("/watchlist")
 def create_watchlist(session: SessionDep, request: Request, watchlist_dto: WatchListCreationDTO, watchlist_service: WatchListServiceDep) -> WatchListCreateResponse:

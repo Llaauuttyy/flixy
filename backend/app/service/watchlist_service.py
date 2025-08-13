@@ -1,4 +1,4 @@
-from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListDTO, WatchListEditionDTO, WatchListEditResponse
+from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListDTO, WatchListEditionDTO, WatchListEditResponse, WatchListGetResponse, WatchListActivity, WatchListInsights
 from app.model.watchlist import WatchList
 from app.model.watchlist_movie import WatchListMovie
 from app.model.user import User
@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from app.db.database import Database
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload, with_loader_criteria
-from typing import List
+from typing import List, Tuple
 from datetime import datetime as datetime
 
 class WatchListService:
@@ -63,6 +63,102 @@ class WatchListService:
         
         watchlists.sort(key=lambda x: x.updated_at, reverse=True)
         return watchlists
+
+    def get_watchlist(self, db: Database, user_id: int, watchlist_id: int) -> Tuple[WatchListGetResponse, List[MovieGetResponse]]:
+        user = db.find_by(User, "id", user_id, options=[
+            selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+            with_loader_criteria(
+                WatchList,
+                lambda watchlist: watchlist.id == watchlist_id
+            ),
+            with_loader_criteria(
+                Review,
+                lambda review: review.user_id == user_id
+            )
+        ])
+
+        if not user.watchlists:
+            raise HTTPException(status_code=404, detail=WATCHLIST_NOT_FOUND)
+
+        watchlist = user.watchlists[0]
+
+        watchlist_movie_objects = watchlist.watchlist_movies
+        watchlist_movie_objects.sort(key=lambda x: x.updated_at, reverse=True)
+
+        watchlists_movies = []
+
+        total_movies = 0
+        total_watched_movies = 0
+        total_imdb_rating = 0.0
+        total_user_rating = 0.0
+
+        movies = []
+
+        for wm in watchlist_movie_objects:
+            movie_data = wm.movie
+
+            print(movie_data)
+
+            movies.append(movie_data)
+
+            movie_user_rating = None
+            if movie_data.reviews:
+                movie_user_rating = movie_data.reviews[0].rating
+
+                total_watched_movies += 1
+
+                if movie_user_rating:
+                    total_user_rating += movie_user_rating
+
+            watchlists_movies.append(MovieGetResponse(
+                id=movie_data.id,
+                title=movie_data.title,
+                year=movie_data.year,
+                imdb_rating=movie_data.imdb_rating,
+                genres=movie_data.genres,
+                countries=movie_data.countries,
+                duration=movie_data.duration,
+                cast=movie_data.cast,
+                directors=movie_data.directors,
+                writers=movie_data.writers,
+                plot=movie_data.plot,
+                logo_url=movie_data.logo_url,
+                user_rating=movie_user_rating
+            ))
+
+            total_movies += 1
+            total_imdb_rating += movie_data.imdb_rating
+
+        watchlist_insights = WatchListInsights(
+            total_movies=total_movies,
+            total_watched_movies=total_watched_movies,
+            average_rating_imdb=total_imdb_rating / total_movies if total_movies > 0 else 0.0,
+            average_rating_user=total_user_rating / total_watched_movies if total_watched_movies > 0 else 0.0
+        )
+
+        watchlist_activities = []
+
+        for activity_number in range(0, 3):
+            if activity_number >= len(movies):
+                break
+            
+            watchlist_movie_object = watchlist_movie_objects[activity_number]
+            watchlist_activities.append(WatchListActivity(
+                action="Add",
+                target=f"{watchlist_movie_object.movie.title}",
+                timestamp=watchlist_movie_object.created_at
+            ))
+
+        return WatchListGetResponse(
+            id=watchlist.id,
+            name=watchlist.name,
+            description=watchlist.description,
+            activity=watchlist_activities,
+            insights=watchlist_insights,
+            created_at=watchlist.created_at,
+            updated_at=watchlist.updated_at
+        ), watchlists_movies
+        
 
     def create_watchlist(self, db: Database, watchlist_dto: WatchListCreationDTO, user_id: int) -> WatchListCreateResponse:
         try:
