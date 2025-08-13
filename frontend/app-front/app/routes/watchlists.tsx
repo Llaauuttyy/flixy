@@ -93,15 +93,13 @@ export default function WatchListsPage() {
   let [newWatchLists, setNewWatchLists] = useState<WatchListFace[]>([]);
 
   console.log("Watchlists: ", watchlists);
-  // Todo: Traer directo del endpoint.
-  const watchlistsData = watchlists.items.reduce(
-    (totals, watchlist) => {
-      totals.movies += watchlist.movies.length;
-      totals.watchlists += 1;
-      return totals;
-    },
-    { movies: 0, watchlists: 0 }
-  );
+
+  const [watchListsData, setWatchListsData] = useState({
+    movies: apiResponse.data.total_movies ? apiResponse.data.total_movies : 0,
+    watchlists: apiResponse.data.total_watchlists
+      ? apiResponse.data.total_watchlists
+      : 0,
+  });
 
   function handleCreation() {
     setIsCreation(true);
@@ -114,6 +112,11 @@ export default function WatchListsPage() {
   function handleWatchListCreation(watchlist: WatchListFace) {
     // TODO: Crear array de watchlists nuevas y que crees solo en la pagina 1.
     setNewWatchLists((prevWatchlists) => [watchlist, ...prevWatchlists]);
+    setWatchListsData((prevData) => ({
+      ...prevData,
+      watchlists: prevData.watchlists + 1,
+      movies: prevData.movies + watchlist.movies.length,
+    }));
     setIsCreation(false);
   }
 
@@ -203,11 +206,11 @@ export default function WatchListsPage() {
             <div className="flex justify-start gap-6">
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <Film className="w-4 h-4 text-violet-400" />
-                <span>{watchlistsData.movies} movies</span>
+                <span>{watchListsData.movies} movies</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <Star className="w-4 h-4 text-violet-400" />
-                <span>{watchlistsData.watchlists} watchlists</span>
+                <span>{watchListsData.watchlists} watchlists</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <TrendingUp className="w-4 h-4 text-violet-400" />

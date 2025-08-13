@@ -1,4 +1,4 @@
-from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListDTO, WatchListEditionDTO, WatchListEditResponse, WatchListGetResponse, WatchListActivity, WatchListInsights
+from app.dto.watchlist import WatchListCreateResponse, WatchListsGetResponse, WatchListCreationDTO, WatchListDTO, WatchListEditionDTO, WatchListEditResponse, WatchListGetResponse, WatchListActivity, WatchListInsights
 from app.model.watchlist import WatchList
 from app.model.watchlist_movie import WatchListMovie
 from app.model.user import User
@@ -13,7 +13,7 @@ from typing import List, Tuple
 from datetime import datetime as datetime
 
 class WatchListService:
-    def get_all_watchlists(self, db: Database, user_id: int) -> List[WatchListDTO]:
+    def get_all_watchlists(self, db: Database, user_id: int) -> Tuple[WatchListGetResponse, List[WatchListDTO]]:
         user = db.find_by(User, "id", user_id, options=[
             selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
             with_loader_criteria(
@@ -26,6 +26,10 @@ class WatchListService:
             return []
 
         watchlists = []
+
+        total_watchlists = 0
+        total_movies = 0
+
         for w in user.watchlists:
             watchlists_movies = []
 
@@ -52,6 +56,8 @@ class WatchListService:
                     user_rating=movie_user_rating
                 ))
 
+                total_movies += 1
+
             watchlists.append(WatchListDTO(
                 id=w.id,
                 name=w.name,
@@ -60,9 +66,14 @@ class WatchListService:
                 created_at=w.created_at,
                 updated_at=w.updated_at
             ))
+
+            total_watchlists += 1
         
         watchlists.sort(key=lambda x: x.updated_at, reverse=True)
-        return watchlists
+        return WatchListsGetResponse(
+            total_movies=total_movies,
+            total_watchlists=total_watchlists
+        ), watchlists
 
     def get_watchlist(self, db: Database, user_id: int, watchlist_id: int) -> Tuple[WatchListGetResponse, List[MovieGetResponse]]:
         user = db.find_by(User, "id", user_id, options=[

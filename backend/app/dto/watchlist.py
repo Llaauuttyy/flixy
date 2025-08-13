@@ -14,7 +14,9 @@ class WatchListDTO(BaseModel):
     updated_at: datetime
 
 class WatchListsGetResponse(BaseModel):
-    items: Page[WatchListDTO]
+    items: Optional[Page[WatchListDTO]] = []
+    total_movies: int
+    total_watchlists: int
 
 class WatchListInsights(BaseModel):
     total_movies: int

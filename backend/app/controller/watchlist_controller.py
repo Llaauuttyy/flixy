@@ -14,10 +14,9 @@ WatchListServiceDep = Annotated[WatchListService, Depends(lambda: WatchListServi
 def get_watchlists(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, params: Params = Depends()) -> WatchListsGetResponse:
     user_id = request.state.user_id
     try:
-        watchlists = watchlist_service.get_all_watchlists(Database(session), user_id)
-        return WatchListsGetResponse(
-            items=paginate(watchlists, params)
-        )
+        watchlists, items = watchlist_service.get_all_watchlists(Database(session), user_id)
+        watchlists.items = paginate(items, params) if items else items
+        return watchlists
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
 
