@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import Optional, Union
+from app.model.movie import Movie
 from pydantic import BaseModel, model_validator
 from datetime import datetime as datetime
 from fastapi_pagination import Page
@@ -13,8 +14,16 @@ class WatchListDTO(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+class WatchListBase(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    movies: Optional[Page[MovieGetResponse]] = []
+    created_at: datetime
+    updated_at: datetime
+
 class WatchListsGetResponse(BaseModel):
-    items: Optional[Page[WatchListDTO]] = []
+    items: Optional[Page[WatchListBase]] = []
     total_movies: int
     total_watchlists: int
 
@@ -26,7 +35,7 @@ class WatchListInsights(BaseModel):
 
 class WatchListActivity(BaseModel):
     action: str
-    target: str
+    target: Union[Movie]
     timestamp: datetime
 
 class WatchListGetResponse(BaseModel):

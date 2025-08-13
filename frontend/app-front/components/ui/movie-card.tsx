@@ -1,25 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import type { MovieDataGet } from "services/api/flixy/types/movie";
 import { Card, CardContent, CardTitle } from "./card";
 import { StarRating } from "./star-rating";
 
 interface MovieCardProps {
-  movie: {
-    id: number;
-    title: string;
-    year: number;
-    imdb_rating: number;
-    genres: string;
-    countries: string;
-    duration: number;
-    cast: string;
-    directors: string;
-    writers: string;
-    plot: string;
-    logo_url: string;
-    user_rating: number | null;
-  };
+  movie: MovieDataGet;
   styles?: {
     card_width?: number;
     card_height?: number;
@@ -102,7 +89,7 @@ export function MovieCard({ movie, styles, accessToken }: MovieCardProps) {
           <div>
             <StarRating
               initialRating={userRating}
-              movieId={movie.id}
+              movieId={Number(movie.id)}
               accessToken={accessToken}
               size={32 * (styles?.star_component_multiplier || 1)}
             />

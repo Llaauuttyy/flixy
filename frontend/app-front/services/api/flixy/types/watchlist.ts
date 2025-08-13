@@ -1,3 +1,6 @@
+import type { MovieDataGet } from "./movie";
+import type { Page } from "./overall";
+
 export interface WatchListCreate {
   name: string;
   description: string | null;
@@ -16,4 +19,28 @@ export interface WatchListEdit {
   watchlist_id: number;
   data: WatchListEditData;
   [key: string]: number | WatchListEditData;
+}
+
+export interface WatchListInsights {
+  total_movies: number;
+  total_watched_movies: number;
+  average_rating_imdb: number;
+  average_rating_user: number;
+}
+
+export interface WatchListActivity {
+  action: string;
+  target: string;
+  timestamp: string;
+}
+
+export interface WatchListGet {
+  id: number;
+  name: string;
+  description: string | null;
+  movies: Page<MovieDataGet>;
+  activity: WatchListActivity[];
+  insights: WatchListInsights;
+  created_at: string;
+  updated_at: string;
 }

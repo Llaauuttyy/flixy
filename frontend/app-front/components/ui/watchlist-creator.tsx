@@ -4,7 +4,8 @@ import { Label } from "./label";
 
 import { useState } from "react";
 import { handleWatchListCreation } from "services/api/flixy/client/watchlists";
-import type { ApiResponse } from "services/api/flixy/types/overall";
+import type { MovieDataGet } from "services/api/flixy/types/movie";
+import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { WatchListCreate } from "services/api/flixy/types/watchlist";
 import { MaxLengthInput } from "./max-length-input";
 import WatchListCreatorMovies from "./watchlist-creator-movies";
@@ -25,11 +26,11 @@ interface Movie {
   user_rating: number | null;
 }
 
-interface WatchList {
+interface WatchListFace {
   id: number;
   name: string;
   description: string;
-  movies: Movie[];
+  movies: Page<MovieDataGet>;
   // icon: string;
   created_at: string;
   updated_at: string;
@@ -40,7 +41,7 @@ export default function WatchListCreator({
   onCreation,
 }: {
   accessToken: string;
-  onCreation: (watchlist: WatchList) => void;
+  onCreation: (watchlist: WatchListFace) => void;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
@@ -49,17 +50,21 @@ export default function WatchListCreator({
   const [nameLimitReached, setNameLimitReached] = useState(false);
   const [descriptionLimitReached, setDescriptionLimitReached] = useState(false);
 
-  const [newWatchListMovies, setNewWatchListMovies] = useState<Movie[]>([]);
+  const [newWatchListMovies, setNewWatchListMovies] = useState<MovieDataGet[]>(
+    []
+  );
   const [apiResponse, setApiResponse] = useState<ApiResponse>({});
 
-  function handleMovieAdition(movie: Movie) {
+  function handleMovieAdition(movie: MovieDataGet) {
     setNewWatchListMovies((prevMovies) => [...prevMovies, movie]);
   }
 
   async function handleCreateWatchList() {
     setIsLoading(true);
     let apiResponse: ApiResponse = {};
-    let movieIds: number[] = newWatchListMovies.map((movie) => movie.id);
+    let movieIds: number[] = newWatchListMovies.map((movie) =>
+      Number(movie.id)
+    );
 
     let watchListData: WatchListCreate = {
       name: name,
@@ -75,11 +80,18 @@ export default function WatchListCreator({
 
       setApiResponse(apiResponse);
 
-      let newWatchList: WatchList = {
+      let movies: Page<MovieDataGet> = {
+        items: newWatchListMovies,
+        total: newWatchListMovies.length,
+        page: 1,
+        size: newWatchListMovies.length,
+        pages: 1,
+      };
+      let newWatchList: WatchListFace = {
         id: apiResponse.data.id,
         name: apiResponse.data.name,
         description: apiResponse.data.description,
-        movies: newWatchListMovies,
+        movies: movies,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -161,7 +173,15 @@ export default function WatchListCreator({
                 <WatchListCreatorMovies
                   showOnly={true}
                   accessToken={accessToken}
-                  watchlist={{ movies: [] }}
+                  watchlist={{
+                    movies: {
+                      items: [],
+                      total: 0,
+                      page: 1,
+                      size: 0,
+                      pages: 1,
+                    },
+                  }}
                   onAddMovie={handleMovieAdition}
                 />
               </div>

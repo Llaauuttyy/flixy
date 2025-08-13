@@ -24,3 +24,30 @@ export async function getWatchLists(
 
   return response_json;
 }
+
+export async function getWatchList(
+  watchlist_id: string,
+  page: number,
+  size: number,
+  request: Request
+) {
+  const token = await getAccessToken(request);
+
+  const response = await fetch(
+    process.env.VITE_API_URL +
+      `/watchlist/${watchlist_id}?page=${page}&size=${size}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}

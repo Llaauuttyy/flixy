@@ -14,6 +14,7 @@ export interface MovieDataGet {
   writers: string | undefined;
   plot: string | undefined;
   logo_url: string | undefined;
+  user_rating?: number;
   access_token?: string | undefined;
   [key: string | number]: string | number | null | undefined;
 }

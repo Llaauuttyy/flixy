@@ -13,6 +13,7 @@ import WatchList from "components/ui/watchlist";
 import WatchListCreator from "components/ui/watchlist-creator";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
+import type { MovieDataGet } from "services/api/flixy/types/movie";
 import { getAccessToken } from "services/api/utils";
 
 interface Movie {
@@ -35,7 +36,7 @@ interface WatchListFace {
   id: number;
   name: string;
   description: string;
-  movies: Movie[];
+  movies: Page<MovieDataGet>;
   // icon: string;
   created_at: string;
   updated_at: string;
@@ -48,7 +49,7 @@ interface WatchLists {
 }
 
 const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 4;
+const DEFAULT_PAGE_SIZE = 6;
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -88,7 +89,7 @@ export default function WatchListsPage() {
   const [isCreation, setIsCreation] = useState(false);
 
   let watchlists: Page<WatchListFace> =
-    fetcher.data?.data.items ?? (apiResponse.data.items || {});
+    fetcher.data?.data.items ?? apiResponse.data.items;
 
   let [newWatchLists, setNewWatchLists] = useState<WatchListFace[]>([]);
 
@@ -110,12 +111,11 @@ export default function WatchListsPage() {
   }
 
   function handleWatchListCreation(watchlist: WatchListFace) {
-    // TODO: Crear array de watchlists nuevas y que crees solo en la pagina 1.
     setNewWatchLists((prevWatchlists) => [watchlist, ...prevWatchlists]);
     setWatchListsData((prevData) => ({
       ...prevData,
       watchlists: prevData.watchlists + 1,
-      movies: prevData.movies + watchlist.movies.length,
+      movies: prevData.movies + watchlist.movies.total,
     }));
     setIsCreation(false);
   }
@@ -161,7 +161,10 @@ export default function WatchListsPage() {
     );
   }
 
-  if (watchlists.items.length === 0) {
+  if (
+    (!watchlists.items || watchlists.items.length === 0) &&
+    newWatchLists.length === 0
+  ) {
     return (
       <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
         <SidebarNav />
@@ -242,20 +245,22 @@ export default function WatchListsPage() {
               ))}
             </div>
           )}
-          <Pagination
-            itemsPage={watchlists}
-            onPageChange={(page: number) => {
-              fetcher.load(`/watchlists?page=${page}`);
-              setNewWatchLists([]);
-            }}
-          >
-            {watchlists.items.map((watchlist) => (
-              <WatchList
-                accessToken={String(apiResponse.accessToken)}
-                watchlist={watchlist}
-              />
-            ))}
-          </Pagination>
+          {watchlists.items && watchlists.items.length !== 0 && (
+            <Pagination
+              itemsPage={watchlists}
+              onPageChange={(page: number) => {
+                fetcher.load(`/watchlists?page=${page}`);
+                setNewWatchLists([]);
+              }}
+            >
+              {watchlists.items.map((watchlist) => (
+                <WatchList
+                  accessToken={String(apiResponse.accessToken)}
+                  watchlist={watchlist}
+                />
+              ))}
+            </Pagination>
+          )}
         </div>
       </div>
     </div>

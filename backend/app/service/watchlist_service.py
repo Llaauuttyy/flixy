@@ -1,4 +1,4 @@
-from app.dto.watchlist import WatchListCreateResponse, WatchListsGetResponse, WatchListCreationDTO, WatchListDTO, WatchListEditionDTO, WatchListEditResponse, WatchListGetResponse, WatchListActivity, WatchListInsights
+from app.dto.watchlist import WatchListCreateResponse, WatchListsGetResponse, WatchListBase, WatchListCreationDTO, WatchListDTO, WatchListEditionDTO, WatchListEditResponse, WatchListGetResponse, WatchListActivity, WatchListInsights
 from app.model.watchlist import WatchList
 from app.model.watchlist_movie import WatchListMovie
 from app.model.user import User
@@ -11,9 +11,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload, with_loader_criteria
 from typing import List, Tuple
 from datetime import datetime as datetime
+from fastapi_pagination import Params, paginate
+
 
 class WatchListService:
-    def get_all_watchlists(self, db: Database, user_id: int) -> Tuple[WatchListGetResponse, List[WatchListDTO]]:
+    def get_all_watchlists(self, db: Database, user_id: int, params: Params) -> Tuple[WatchListsGetResponse, List[WatchListDTO]]:
         user = db.find_by(User, "id", user_id, options=[
             selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
             with_loader_criteria(
@@ -23,7 +25,10 @@ class WatchListService:
         ])
 
         if not user.watchlists:
-            return []
+            return WatchListsGetResponse(
+                total_movies=0,
+                total_watchlists=0
+            ), []
 
         watchlists = []
 
@@ -58,11 +63,11 @@ class WatchListService:
 
                 total_movies += 1
 
-            watchlists.append(WatchListDTO(
+            watchlists.append(WatchListBase(
                 id=w.id,
                 name=w.name,
                 description=w.description,
-                movies=watchlists_movies,
+                movies=paginate(watchlists_movies, params),
                 created_at=w.created_at,
                 updated_at=w.updated_at
             ))
@@ -149,14 +154,14 @@ class WatchListService:
 
         watchlist_activities = []
 
-        for activity_number in range(0, 3):
+        for activity_number in range(0, 6):
             if activity_number >= len(movies):
                 break
             
             watchlist_movie_object = watchlist_movie_objects[activity_number]
             watchlist_activities.append(WatchListActivity(
                 action="Add",
-                target=f"{watchlist_movie_object.movie.title}",
+                target=watchlist_movie_object.movie,
                 timestamp=watchlist_movie_object.created_at
             ))
 

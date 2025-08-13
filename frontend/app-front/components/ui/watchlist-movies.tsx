@@ -1,4 +1,7 @@
 import { useState } from "react";
+import type { MovieDataGet } from "services/api/flixy/types/movie";
+import type { Page } from "services/api/flixy/types/overall";
+import type { WatchListGet } from "services/api/flixy/types/watchlist";
 import { AddMovieWatchList } from "./add-movie-watchlist";
 import WatchListMoviesDisplay from "./watchlist-movies-display";
 
@@ -22,7 +25,7 @@ interface WatchList {
   id?: number;
   name?: string;
   description?: string;
-  movies: Movie[];
+  movies: Page<MovieDataGet>;
   // icon: string;
   created_at?: string;
   updated_at?: string;
@@ -30,30 +33,42 @@ interface WatchList {
 
 export default function WatchListMovies({
   showOnly,
+  isSeeWatchList = false,
+  watchList,
   accessToken,
-  watchlist,
 }: {
   showOnly?: boolean;
+  isSeeWatchList?: boolean;
+  watchList: WatchList | WatchListGet;
   accessToken: string;
-  watchlist: WatchList;
 }) {
-  const [watchListMovies, setWatchListMovies] = useState<Movie[]>(
-    watchlist.movies || []
+  const [watchListMovies, setWatchListMovies] = useState<Page<MovieDataGet>>(
+    watchList.movies || { items: [], total: 0, page: 1, size: 0, pages: 0 }
   );
 
   const [showOnlyError, setShowOnlyError] = useState<String>("");
 
-  function handleMovieAddition(movie: Movie) {
+  function handleMovieAddition(movie: MovieDataGet) {
     if (showOnly) {
-      const movieExists = watchListMovies.some((m) => m.id === movie.id);
+      const movieExists = watchListMovies.items.some(
+        (m: MovieDataGet) => m.id === movie.id
+      );
       if (movieExists) {
         setShowOnlyError("Movie already exists in the watchlist.");
       } else {
         setShowOnlyError("");
-        setWatchListMovies((prevMovies) => [...prevMovies, movie]);
+        setWatchListMovies((prevMovies) => ({
+          ...prevMovies,
+          items: [...prevMovies.items, movie],
+          total: prevMovies.total + 1,
+        }));
       }
     } else {
-      setWatchListMovies((prevMovies) => [...prevMovies, movie]);
+      setWatchListMovies((prevMovies) => ({
+        ...prevMovies,
+        items: [...prevMovies.items, movie],
+        total: prevMovies.total + 1,
+      }));
     }
   }
 
@@ -62,15 +77,18 @@ export default function WatchListMovies({
       <div className="flex items-center">
         <WatchListMoviesDisplay
           accessToken={accessToken}
-          watchlist_id={watchlist.id ? watchlist.id : 0}
+          watchlist_id={watchList.id ? watchList.id : 0}
+          isSeeWatchList={isSeeWatchList}
           movies={watchListMovies}
         />
-        <AddMovieWatchList
-          showOnly={showOnly}
-          accessToken={String(accessToken)}
-          watchListId={watchlist.id ? watchlist.id : 0}
-          onMovieSelect={handleMovieAddition}
-        />
+        {!isSeeWatchList && (
+          <AddMovieWatchList
+            showOnly={showOnly}
+            accessToken={String(accessToken)}
+            watchListId={watchList.id ? watchList.id : 0}
+            onMovieSelect={handleMovieAddition}
+          />
+        )}
       </div>
       {showOnly && showOnlyError && (
         <p className="text-red-500 text-sm mt-2">{showOnlyError}</p>

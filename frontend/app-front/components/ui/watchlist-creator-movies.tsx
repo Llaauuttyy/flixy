@@ -1,4 +1,6 @@
 import { useState } from "react";
+import type { MovieDataGet } from "services/api/flixy/types/movie";
+import type { Page } from "services/api/flixy/types/overall";
 import { AddMovieWatchList } from "./add-movie-watchlist";
 import WatchListMoviesDisplay from "./watchlist-movies-display";
 
@@ -18,11 +20,11 @@ interface Movie {
   user_rating: number | null;
 }
 
-interface WatchList {
+interface WatchListFace {
   id?: number;
   name?: string;
   description?: string;
-  movies: Movie[];
+  movies: Page<MovieDataGet>;
   // icon: string;
   created_at?: string;
   updated_at?: string;
@@ -36,27 +38,35 @@ export default function WatchListCreatorMovies({
 }: {
   showOnly?: boolean;
   accessToken: string;
-  watchlist: WatchList;
-  onAddMovie: (movie: Movie) => void;
+  watchlist: WatchListFace;
+  onAddMovie: (movie: MovieDataGet) => void;
 }) {
-  const [watchListMovies, setWatchListMovies] = useState<Movie[]>(
+  const [watchListMovies, setWatchListMovies] = useState<Page<MovieDataGet>>(
     watchlist.movies || []
   );
 
   const [showOnlyError, setShowOnlyError] = useState<String>("");
 
-  function handleMovieAddition(movie: Movie) {
+  function handleMovieAddition(movie: MovieDataGet) {
     if (showOnly) {
-      const movieExists = watchListMovies.some((m) => m.id === movie.id);
+      const movieExists = watchListMovies.items.some((m) => m.id === movie.id);
       if (movieExists) {
         setShowOnlyError("Movie already exists in the watchlist.");
       } else {
         setShowOnlyError("");
-        setWatchListMovies((prevMovies) => [...prevMovies, movie]);
+        setWatchListMovies((prevMovies) => ({
+          ...prevMovies,
+          items: [...prevMovies.items, movie],
+          total: prevMovies.total + 1,
+        }));
         onAddMovie(movie);
       }
     } else {
-      setWatchListMovies((prevMovies) => [...prevMovies, movie]);
+      setWatchListMovies((prevMovies) => ({
+        ...prevMovies,
+        items: [...prevMovies.items, movie],
+        total: prevMovies.total + 1,
+      }));
     }
   }
 
@@ -65,6 +75,7 @@ export default function WatchListCreatorMovies({
       <div className="flex items-center">
         <WatchListMoviesDisplay
           accessToken={accessToken}
+          watchlist_id={watchlist.id ? watchlist.id : 0}
           movies={watchListMovies}
         />
         <AddMovieWatchList

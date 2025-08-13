@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSubmit } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/client/movies";
 import { handleWatchListEdition } from "services/api/flixy/client/watchlists";
+import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type {
   WatchListEdit,
@@ -14,6 +15,10 @@ import type {
 
 interface SearchResults {
   movies: Page<Movie>;
+}
+
+interface SearchResultsWatchLists {
+  movies: Page<MovieDataGet>;
 }
 
 interface Movie {
@@ -36,7 +41,7 @@ interface AddMovieWatchListProps {
   showOnly?: boolean;
   accessToken: string;
   watchListId: number;
-  onMovieSelect: (movie: Movie) => void;
+  onMovieSelect: (movie: MovieDataGet) => void;
 }
 
 const DEFAULT_PAGE = 1;
@@ -62,7 +67,7 @@ export function AddMovieWatchList({
   console.log(watchListId);
 
   const [addingMovie, setAddingMovie] = useState(false);
-  const [searchedMovies, setSearchedMovies] = useState<Movie[]>([]);
+  const [searchedMovies, setSearchedMovies] = useState<MovieDataGet[]>([]);
 
   function handleAddMovie() {
     setAddingMovie(true);
@@ -75,11 +80,11 @@ export function AddMovieWatchList({
     setApiResponseMovieAdd({});
   }
 
-  async function handleMovieAddClick(movie: Movie) {
+  async function handleMovieAddClick(movie: MovieDataGet) {
     try {
       if (!isShowOnly) {
         const watchListMovieEditData: WatchListEditData = {
-          movie_ids_to_add: [movie.id],
+          movie_ids_to_add: [Number(movie.id)],
         };
         const watchListMovieEdit: WatchListEdit = {
           watchlist_id: watchListId,
@@ -117,7 +122,7 @@ export function AddMovieWatchList({
 
     let apiResponseSearch: ApiResponse = {};
 
-    let searchResults: SearchResults = {} as SearchResults;
+    let searchResults: SearchResultsWatchLists = {} as SearchResultsWatchLists;
 
     try {
       searchResults.movies = await searchMovies(
