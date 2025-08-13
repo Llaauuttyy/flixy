@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MovieCard } from "./movie-card";
 
 interface Movie {
@@ -18,9 +19,11 @@ interface Movie {
 
 export default function WatchListMoviesDisplay({
   accessToken,
+  watchlist_id,
   movies,
 }: {
   accessToken: string;
+  watchlist_id: number;
   movies: Movie[];
 }) {
   return (
@@ -44,9 +47,8 @@ export default function WatchListMoviesDisplay({
               accessToken={String(accessToken)}
             />
           ))}
-
           <div className="flex items-center justify-center w-12 text-gray-400 text-2xl">
-            ...
+            <Link to={`/watchlists/${watchlist_id}`}>...</Link>
           </div>
 
           <MovieCard

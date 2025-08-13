@@ -1,4 +1,5 @@
 import { Clock, Pencil } from "lucide-react";
+import { Link } from "react-router-dom";
 // import { Pagination } from "components/ui/pagination";
 // import { useTranslation } from "react-i18next";
 // import { useFetcher, useLoaderData } from "react-router-dom";
@@ -11,6 +12,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import i18n from "i18n/i18n";
+import { Button } from "./button";
 import WatchListMovies from "./watchlist-movies";
 
 dayjs.extend(relativeTime);
@@ -76,12 +78,14 @@ export default function WatchList({
             </div>
           </div>
         </div>
-        <button
-          onClick={() => {}}
-          className="mt-5 justify-end bg-transparent border-none text-violet-400 text-sm font-medium cursor-pointer px-4 py-2 rounded-md transition-all duration-200 hover:bg-slate-800"
-        >
-          See WatchList
-        </button>
+        <Link to={`/watchlists/${watchlist.id}`}>
+          <Button
+            onClick={() => {}}
+            className="mt-5 justify-end bg-transparent border-none text-violet-400 text-sm font-medium cursor-pointer px-4 py-2 rounded-md transition-all duration-200 hover:bg-slate-800"
+          >
+            See WatchList
+          </Button>
+        </Link>
       </div>
 
       {/* Divider Line */}
