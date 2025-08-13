@@ -2,12 +2,13 @@ import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { Film, Plus, Star, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { useFetcher, useLoaderData } from "react-router-dom";
 import { getWatchLists } from "services/api/flixy/server/watchlists";
-import type { ApiResponse } from "../../services/api/flixy/types/overall";
+import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
 
 import { Button } from "components/ui/button";
+import { Pagination } from "components/ui/pagination";
 import WatchList from "components/ui/watchlist";
 import WatchListCreator from "components/ui/watchlist-creator";
 import "dayjs/locale/en";
@@ -60,6 +61,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     watchlists = await getWatchLists(page, DEFAULT_PAGE_SIZE, request);
 
+    console.log("Watchlists: ", watchlists);
+
     apiResponse.accessToken = await getAccessToken(request);
 
     apiResponse.data = watchlists;
@@ -80,14 +83,18 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function WatchListsPage() {
   const apiResponse: ApiResponse = useLoaderData();
+  const fetcher = useFetcher();
 
   const [isCreation, setIsCreation] = useState(false);
 
-  const [watchlists, setWatchlists] = useState<WatchLists>(
-    apiResponse.data || []
-  );
+  let watchlists: Page<WatchListFace> =
+    fetcher.data?.data.items ?? (apiResponse.data.items || {});
 
-  const watchlistsData = watchlists.items.items.reduce(
+  let [newWatchLists, setNewWatchLists] = useState<WatchListFace[]>([]);
+
+  console.log("Watchlists: ", watchlists);
+  // Todo: Traer directo del endpoint.
+  const watchlistsData = watchlists.items.reduce(
     (totals, watchlist) => {
       totals.movies += watchlist.movies.length;
       totals.watchlists += 1;
@@ -105,11 +112,8 @@ export default function WatchListsPage() {
   }
 
   function handleWatchListCreation(watchlist: WatchListFace) {
-    setWatchlists((prevWatchlists) => ({
-      items: {
-        items: [watchlist, ...prevWatchlists.items.items],
-      },
-    }));
+    // TODO: Crear array de watchlists nuevas y que crees solo en la pagina 1.
+    setNewWatchLists((prevWatchlists) => [watchlist, ...prevWatchlists]);
     setIsCreation(false);
   }
 
@@ -154,7 +158,7 @@ export default function WatchListsPage() {
     );
   }
 
-  if (watchlists.items.items.length === 0) {
+  if (watchlists.items.length === 0) {
     return (
       <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
         <SidebarNav />
@@ -224,12 +228,31 @@ export default function WatchListsPage() {
 
         {/* Watchlists Content */}
         <div className="p-6 pt-0">
-          {watchlists.items.items.map((watchlist) => (
-            <WatchList
-              accessToken={String(apiResponse.accessToken)}
-              watchlist={watchlist}
-            />
-          ))}
+          {newWatchLists.length > 0 && (
+            <div>
+              {newWatchLists.map((watchlist) => (
+                <WatchList
+                  key={watchlist.id}
+                  accessToken={String(apiResponse.accessToken)}
+                  watchlist={watchlist}
+                />
+              ))}
+            </div>
+          )}
+          <Pagination
+            itemsPage={watchlists}
+            onPageChange={(page: number) => {
+              fetcher.load(`/watchlists?page=${page}`);
+              setNewWatchLists([]);
+            }}
+          >
+            {watchlists.items.map((watchlist) => (
+              <WatchList
+                accessToken={String(apiResponse.accessToken)}
+                watchlist={watchlist}
+              />
+            ))}
+          </Pagination>
         </div>
       </div>
     </div>
