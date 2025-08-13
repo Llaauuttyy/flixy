@@ -208,12 +208,12 @@ export default function WatchListsPage() {
                     Rating
                   </span>
                   <span className="text-white font-medium">
-                    {watchlist.insights.average_rating_user}{" "}
+                    {watchlist.insights.average_rating_user.toFixed(1)}{" "}
                     <Badge
                       variant="secondary"
                       className="bg-gray-700 text-gray-300"
                     >
-                      {watchlist.insights.average_rating_user * 2}
+                      {(watchlist.insights.average_rating_user * 2).toFixed(1)}
                       <Badge className="text-yellow-400 font-bold rounded-sm px-0.5">
                         IMDb
                       </Badge>
