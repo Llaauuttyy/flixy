@@ -68,7 +68,7 @@ export const enTranslation = {
       dropdown_title: "Filter by genre",
       clear: "Clear",
     },
-    sort: {
+    order: {
       button_text: "Sort",
       dropdown_column_title: "Sort by",
       dropdown_way_title: "Order",

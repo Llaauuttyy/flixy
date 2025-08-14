@@ -18,18 +18,18 @@ import { Separator } from "components/ui/separator";
 import { cn } from "lib/utils";
 import { useTranslation } from "react-i18next";
 
-export type SortField = "title" | "year" | "duration" | "imdb_rating";
-export type SortDirection = "asc" | "desc";
+export type OrderColumn = "title" | "year" | "duration" | "imdb_rating";
+export type OrderWay = "asc" | "desc";
 
 type Props = {
   className?: string;
   genres?: string[];
   selectedGenres?: string[];
   onGenresChange?: (next: string[]) => void;
-  sortField?: SortField;
-  onSortFieldChange?: (field: SortField) => void;
-  sortDirection?: SortDirection;
-  onSortDirectionChange?: (dir: SortDirection) => void;
+  orderColumn?: OrderColumn;
+  onOrderColumnChange: (column: OrderColumn) => void;
+  orderWay?: OrderWay;
+  onOrderWayChange: (way: OrderWay) => void;
 };
 
 export default function MovieFilters({
@@ -37,10 +37,10 @@ export default function MovieFilters({
   genres = [],
   selectedGenres = [],
   onGenresChange = () => {},
-  sortField = "title",
-  onSortFieldChange = () => {},
-  sortDirection = "asc",
-  onSortDirectionChange = () => {},
+  orderColumn = "title",
+  onOrderColumnChange,
+  orderWay,
+  onOrderWayChange,
 }: Props) {
   const { t } = useTranslation();
   const selectedCount = selectedGenres.length;
@@ -155,30 +155,30 @@ export default function MovieFilters({
                 className="border-neutral-700 text-neutral-200 bg-transparent"
               >
                 <ListFilter className="mr-2 h-4 w-4" />
-                {t("movie_filters.sort.button_text")}:{" "}
-                {t(`movie_filters.sort.column.${sortField}`)}
+                {t("movie_filters.order.button_text")}:{" "}
+                {t(`movie_filters.order.column.${orderColumn}`)}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-neutral-900 border-neutral-800 text-neutral-200">
               <DropdownMenuLabel>
-                {t("movie_filters.sort.dropdown_column_title")}
+                {t("movie_filters.order.dropdown_column_title")}
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-neutral-800" />
               <DropdownMenuRadioGroup
-                value={sortField}
-                onValueChange={(v) => onSortFieldChange(v as SortField)}
+                value={orderColumn}
+                onValueChange={(v) => onOrderColumnChange(v as OrderColumn)}
               >
                 <DropdownMenuRadioItem value="title">
-                  {t(`movie_filters.sort.column.title`)}
+                  {t(`movie_filters.order.column.title`)}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="year">
-                  {t(`movie_filters.sort.column.year`)}
+                  {t(`movie_filters.order.column.year`)}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="duration">
-                  {t(`movie_filters.sort.column.duration`)}
+                  {t(`movie_filters.order.column.duration`)}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="imdb_rating">
-                  {t(`movie_filters.sort.column.imdb_rating`)}
+                  {t(`movie_filters.order.column.imdb_rating`)}
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
@@ -191,35 +191,35 @@ export default function MovieFilters({
                 size="sm"
                 className="border-neutral-700 text-neutral-200 bg-transparent"
               >
-                {sortDirection === "asc" ? (
+                {orderWay === "asc" ? (
                   <>
                     <SortAsc className="mr-2 h-4 w-4" />
-                    {t(`movie_filters.sort.way.asc`)}
+                    {t(`movie_filters.order.way.asc`)}
                   </>
                 ) : (
                   <>
                     <SortDesc className="mr-2 h-4 w-4" />
-                    {t(`movie_filters.sort.way.desc`)}
+                    {t(`movie_filters.order.way.desc`)}
                   </>
                 )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40 bg-neutral-900 border-neutral-800 text-neutral-200">
               <DropdownMenuLabel>
-                {t(`movie_filters.sort.dropdown_way_title`)}
+                {t(`movie_filters.order.dropdown_way_title`)}
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-neutral-800" />
               <DropdownMenuRadioGroup
-                value={sortDirection}
-                onValueChange={(v) => onSortDirectionChange(v as SortDirection)}
+                value={orderWay}
+                onValueChange={(v) => onOrderWayChange(v as OrderWay)}
               >
                 <DropdownMenuRadioItem value="asc">
                   <SortAsc className="mr-2 h-4 w-4" />
-                  {t(`movie_filters.sort.way.asc`)}
+                  {t(`movie_filters.order.way.asc`)}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="desc">
                   <SortDesc className="mr-2 h-4 w-4" />
-                  {t(`movie_filters.sort.way.desc`)}
+                  {t(`movie_filters.order.way.desc`)}
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>

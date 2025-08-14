@@ -71,7 +71,7 @@ export const esTranslation = {
       dropdown_title: "Filtra por género",
       clear: "Borrar",
     },
-    sort: {
+    order: {
       button_text: "Ordenar",
       dropdown_column_title: "Ordenar por",
       dropdown_way_title: "Orden",

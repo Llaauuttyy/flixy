@@ -1,8 +1,8 @@
 import { HeaderFull } from "components/ui/header-full";
 import { MovieCard } from "components/ui/movie-card";
 import MovieFilters, {
-  type SortDirection,
-  type SortField,
+  type OrderColumn,
+  type OrderWay,
 } from "components/ui/movie-filters";
 import { Pagination } from "components/ui/pagination";
 import { SidebarNav } from "components/ui/sidebar-nav";
@@ -15,8 +15,8 @@ import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
 
 interface Order {
-  column: SortField | null;
-  way: SortDirection | null;
+  column: OrderColumn | null;
+  way: OrderWay | null;
 }
 
 interface MoviesData {
@@ -46,8 +46,10 @@ const DEFAULT_PAGE_SIZE = 40;
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const page = parseInt(url.searchParams.get("page") ?? `${DEFAULT_PAGE}`, 10);
-  const orderColumn = url.searchParams.get("order_column") as SortField | null;
-  const orderWay = url.searchParams.get("order_way") as SortDirection | null;
+  const orderColumn = url.searchParams.get(
+    "order_column"
+  ) as OrderColumn | null;
+  const orderWay = url.searchParams.get("order_way") as OrderWay | null;
 
   let order: Order = {
     column: orderColumn,
@@ -90,10 +92,10 @@ export default function MoviesPage() {
   const fetcher = useFetcher();
   const { t } = useTranslation();
   const moviesData: MoviesData = fetcher.data?.data ?? apiResponse.data;
-  const [sortField, setSortField] = useState<SortField>(
+  const [orderColumn, setOrderColumn] = useState<OrderColumn>(
     moviesData.order?.column ?? "title"
   );
-  const [sortDirection, setSortDirection] = useState<SortDirection>(
+  const [orderWay, setOrderWay] = useState<OrderWay>(
     moviesData.order.way ?? "asc"
   );
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
@@ -113,17 +115,17 @@ export default function MoviesPage() {
     );
   }
 
-  const handleSortColumnChange = (column: SortField) => {
-    setSortField(column);
+  const handleOrderColumnChange = (column: OrderColumn) => {
+    setOrderColumn(column);
     fetcher.load(
-      `/movies?page=${DEFAULT_PAGE}&order_column=${column}&order_way=${sortDirection}`
+      `/movies?page=${DEFAULT_PAGE}&order_column=${column}&order_way=${orderWay}`
     );
   };
 
-  const handleSortWayChange = (way: SortDirection) => {
-    setSortDirection(way);
+  const handleOrderWayChange = (way: OrderWay) => {
+    setOrderWay(way);
     fetcher.load(
-      `/movies?page=${DEFAULT_PAGE}&order_column=${sortField}&order_way=${way}`
+      `/movies?page=${DEFAULT_PAGE}&order_column=${orderColumn}&order_way=${way}`
     );
   };
 
@@ -154,17 +156,17 @@ export default function MoviesPage() {
                 genres={allGenres}
                 selectedGenres={selectedGenres}
                 onGenresChange={setSelectedGenres}
-                sortField={sortField}
-                onSortFieldChange={handleSortColumnChange}
-                sortDirection={sortDirection}
-                onSortDirectionChange={handleSortWayChange}
+                orderColumn={orderColumn}
+                onOrderColumnChange={handleOrderColumnChange}
+                orderWay={orderWay}
+                onOrderWayChange={handleOrderWayChange}
                 className="bg-slate-800/50 border-slate-700 rounded-lg mb-6"
               />
               <Pagination
                 itemsPage={moviesData.movies}
                 onPageChange={(page: number) => {
                   fetcher.load(
-                    `/movies?page=${page}&order_column=${sortField}&order_way=${sortDirection}`
+                    `/movies?page=${page}&order_column=${orderColumn}&order_way=${orderWay}`
                   );
                 }}
               >
@@ -182,8 +184,6 @@ export default function MoviesPage() {
           </div>
         </div>
       </body>
-
-      {/* <Outlet /> */}
     </html>
   );
 }
