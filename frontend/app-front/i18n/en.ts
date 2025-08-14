@@ -62,6 +62,28 @@ export const enTranslation = {
     reviews_title: "Reviews from flixies",
     review_user: "Your review",
   },
+  movie_filters: {
+    filter: {
+      button_text: "Genres",
+      dropdown_title: "Filter by genre",
+      clear: "Clear",
+    },
+    sort: {
+      button_text: "Sort",
+      dropdown_column_title: "Sort by",
+      dropdown_way_title: "Order",
+      column: {
+        title: "Title",
+        year: "Year",
+        duration: "Duration",
+        imdb_rating: "IMDb rating",
+      },
+      way: {
+        asc: "Asc",
+        desc: "Desc",
+      },
+    },
+  },
   recommendations: {
     title: "Explore",
     subtitle:

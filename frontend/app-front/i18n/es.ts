@@ -65,6 +65,28 @@ export const esTranslation = {
     reviews_title: "Reseñas de los flixis",
     review_user: "Tu reseña",
   },
+  movie_filters: {
+    filter: {
+      button_text: "Géneros",
+      dropdown_title: "Filtra por género",
+      clear: "Borrar",
+    },
+    sort: {
+      button_text: "Ordenar",
+      dropdown_column_title: "Ordenar por",
+      dropdown_way_title: "Orden",
+      column: {
+        title: "Título",
+        year: "Año",
+        duration: "Duración",
+        imdb_rating: "Puntuación IMDb",
+      },
+      way: {
+        asc: "Asc",
+        desc: "Desc",
+      },
+    },
+  },
   recommendations: {
     title: "Explora",
     subtitle:

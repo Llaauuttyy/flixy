@@ -1,11 +1,4 @@
-import {
-  ArrowDownWideNarrow,
-  ArrowUpWideNarrow,
-  Filter,
-  ListFilter,
-  SortAsc,
-  SortDesc,
-} from "lucide-react";
+import { Filter, ListFilter, SortAsc, SortDesc } from "lucide-react";
 import { useMemo } from "react";
 
 import { Badge } from "components/ui/badge";
@@ -23,6 +16,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "components/ui/popover";
 import { Separator } from "components/ui/separator";
 import { cn } from "lib/utils";
+import { useTranslation } from "react-i18next";
 
 export type SortField = "title" | "year" | "duration" | "imdb_rating";
 export type SortDirection = "asc" | "desc";
@@ -48,6 +42,7 @@ export default function MovieFilters({
   sortDirection = "asc",
   onSortDirectionChange = () => {},
 }: Props) {
+  const { t } = useTranslation();
   const selectedCount = selectedGenres.length;
   const hasFilters = selectedCount > 0;
 
@@ -77,7 +72,7 @@ export default function MovieFilters({
                 className="border-neutral-700 text-neutral-200 bg-transparent"
               >
                 <Filter className="mr-2 h-4 w-4" />
-                Genres
+                {t("movie_filters.filter.button_text")}
                 {hasFilters ? (
                   <span className="ml-2 rounded bg-neutral-800 px-1.5 py-0.5 text-xs text-neutral-300">
                     {selectedCount}
@@ -91,7 +86,9 @@ export default function MovieFilters({
               align="start"
             >
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Filter by genre</span>
+                <span className="text-sm font-medium">
+                  {t("movie_filters.filter.dropdown_title")}
+                </span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -99,7 +96,7 @@ export default function MovieFilters({
                   onClick={clearAll}
                   disabled={!hasFilters}
                 >
-                  Clear
+                  {t("movie_filters.filter.clear")}
                 </Button>
               </div>
               <Separator className="my-2 bg-neutral-800" />
@@ -158,25 +155,30 @@ export default function MovieFilters({
                 className="border-neutral-700 text-neutral-200 bg-transparent"
               >
                 <ListFilter className="mr-2 h-4 w-4" />
-                Sort: {labelForField(sortField)}
+                {t("movie_filters.sort.button_text")}:{" "}
+                {t(`movie_filters.sort.column.${sortField}`)}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-neutral-900 border-neutral-800 text-neutral-200">
-              <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {t("movie_filters.sort.dropdown_column_title")}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-neutral-800" />
               <DropdownMenuRadioGroup
                 value={sortField}
                 onValueChange={(v) => onSortFieldChange(v as SortField)}
               >
                 <DropdownMenuRadioItem value="title">
-                  Title
+                  {t(`movie_filters.sort.column.title`)}
                 </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="year">Year</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="year">
+                  {t(`movie_filters.sort.column.year`)}
+                </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="duration">
-                  Duration
+                  {t(`movie_filters.sort.column.duration`)}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="imdb_rating">
-                  IMDb rating
+                  {t(`movie_filters.sort.column.imdb_rating`)}
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
@@ -191,27 +193,33 @@ export default function MovieFilters({
               >
                 {sortDirection === "asc" ? (
                   <>
-                    <SortAsc className="mr-2 h-4 w-4" /> Asc
+                    <SortAsc className="mr-2 h-4 w-4" />
+                    {t(`movie_filters.sort.way.asc`)}
                   </>
                 ) : (
                   <>
-                    <SortDesc className="mr-2 h-4 w-4" /> Desc
+                    <SortDesc className="mr-2 h-4 w-4" />
+                    {t(`movie_filters.sort.way.desc`)}
                   </>
                 )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40 bg-neutral-900 border-neutral-800 text-neutral-200">
-              <DropdownMenuLabel>Order</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {t(`movie_filters.sort.dropdown_way_title`)}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-neutral-800" />
               <DropdownMenuRadioGroup
                 value={sortDirection}
                 onValueChange={(v) => onSortDirectionChange(v as SortDirection)}
               >
                 <DropdownMenuRadioItem value="asc">
-                  <ArrowUpWideNarrow className="mr-2 h-4 w-4" /> Ascending
+                  <SortAsc className="mr-2 h-4 w-4" />
+                  {t(`movie_filters.sort.way.asc`)}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="desc">
-                  <ArrowDownWideNarrow className="mr-2 h-4 w-4" /> Descending
+                  <SortDesc className="mr-2 h-4 w-4" />
+                  {t(`movie_filters.sort.way.desc`)}
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
@@ -220,19 +228,4 @@ export default function MovieFilters({
       </div>
     </div>
   );
-}
-
-function labelForField(field: SortField) {
-  switch (field) {
-    case "title":
-      return "Title";
-    case "year":
-      return "Year";
-    case "duration":
-      return "Duration";
-    case "imdb_rating":
-      return "IMDb rating";
-    default:
-      return field;
-  }
 }

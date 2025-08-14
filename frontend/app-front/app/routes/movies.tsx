@@ -14,8 +14,14 @@ import { getAccessToken } from "services/api/utils";
 import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
 
+interface Order {
+  column: SortField | null;
+  way: SortDirection | null;
+}
+
 interface MoviesData {
   movies: Page<Movie>;
+  order: Order;
 }
 
 interface Movie {
@@ -40,13 +46,26 @@ const DEFAULT_PAGE_SIZE = 40;
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const page = parseInt(url.searchParams.get("page") ?? `${DEFAULT_PAGE}`, 10);
+  const orderColumn = url.searchParams.get("order_column") as SortField | null;
+  const orderWay = url.searchParams.get("order_way") as SortDirection | null;
+
+  let order: Order = {
+    column: orderColumn,
+    way: orderWay,
+  };
 
   let apiResponse: ApiResponse = {};
 
   let moviesData: MoviesData = {} as MoviesData;
 
   try {
-    moviesData.movies = await getMovies(page, DEFAULT_PAGE_SIZE, request);
+    moviesData.movies = await getMovies(
+      page,
+      DEFAULT_PAGE_SIZE,
+      order,
+      request
+    );
+    moviesData.order = order;
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -70,11 +89,14 @@ export default function MoviesPage() {
   const apiResponse: ApiResponse = useLoaderData();
   const fetcher = useFetcher();
   const { t } = useTranslation();
-  const [sortField, setSortField] = useState<SortField>("title");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-
   const moviesData: MoviesData = fetcher.data?.data ?? apiResponse.data;
+  const [sortField, setSortField] = useState<SortField>(
+    moviesData.order?.column ?? "title"
+  );
+  const [sortDirection, setSortDirection] = useState<SortDirection>(
+    moviesData.order.way ?? "asc"
+  );
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
   if (apiResponse.error) {
     return (
@@ -90,6 +112,20 @@ export default function MoviesPage() {
       </div>
     );
   }
+
+  const handleSortColumnChange = (column: SortField) => {
+    setSortField(column);
+    fetcher.load(
+      `/movies?page=${DEFAULT_PAGE}&order_column=${column}&order_way=${sortDirection}`
+    );
+  };
+
+  const handleSortWayChange = (way: SortDirection) => {
+    setSortDirection(way);
+    fetcher.load(
+      `/movies?page=${DEFAULT_PAGE}&order_column=${sortField}&order_way=${way}`
+    );
+  };
 
   const allGenres = useMemo(() => {
     const set = new Set<string>();
@@ -119,15 +155,17 @@ export default function MoviesPage() {
                 selectedGenres={selectedGenres}
                 onGenresChange={setSelectedGenres}
                 sortField={sortField}
-                onSortFieldChange={setSortField}
+                onSortFieldChange={handleSortColumnChange}
                 sortDirection={sortDirection}
-                onSortDirectionChange={setSortDirection}
+                onSortDirectionChange={handleSortWayChange}
                 className="bg-slate-800/50 border-slate-700 rounded-lg mb-6"
               />
               <Pagination
                 itemsPage={moviesData.movies}
                 onPageChange={(page: number) => {
-                  fetcher.load(`/movies?page=${page}`);
+                  fetcher.load(
+                    `/movies?page=${page}&order_column=${sortField}&order_way=${sortDirection}`
+                  );
                 }}
               >
                 <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
