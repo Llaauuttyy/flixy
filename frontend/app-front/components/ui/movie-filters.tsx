@@ -21,6 +21,13 @@ import { useTranslation } from "react-i18next";
 export type OrderColumn = "title" | "year" | "duration" | "imdb_rating";
 export type OrderWay = "asc" | "desc";
 
+const AVAILABLE_COLUMNS: OrderColumn[] = [
+  "title",
+  "year",
+  "duration",
+  "imdb_rating",
+];
+
 type Props = {
   className?: string;
   genres?: string[];
@@ -168,18 +175,11 @@ export default function MovieFilters({
                 value={orderColumn}
                 onValueChange={(v) => onOrderColumnChange(v as OrderColumn)}
               >
-                <DropdownMenuRadioItem value="title">
-                  {t(`movie_filters.order.column.title`)}
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="year">
-                  {t(`movie_filters.order.column.year`)}
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="duration">
-                  {t(`movie_filters.order.column.duration`)}
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="imdb_rating">
-                  {t(`movie_filters.order.column.imdb_rating`)}
-                </DropdownMenuRadioItem>
+                {AVAILABLE_COLUMNS.map((value: OrderColumn) => (
+                  <DropdownMenuRadioItem value={value}>
+                    {t(`movie_filters.order.column.${value}`)}
+                  </DropdownMenuRadioItem>
+                ))}
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
