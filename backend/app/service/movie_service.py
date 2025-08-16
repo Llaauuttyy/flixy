@@ -5,11 +5,12 @@ from app.dto.movie import MovieGetResponse
 from app.constants.message import MOVIE_NOT_FOUND
 
 class MovieService:
-    def get_all_movies(self, db: Database, user_id: int) -> list[MovieGetResponse]:
+    def get_all_movies(self, db: Database, user_id: int, order_column: str, order_way: str) -> list[MovieGetResponse]:
         movies_rating = db.left_join(
             left_model=Movie,
             right_model=Review,
             join_condition=(db.build_condition([Movie.id == Review.movie_id, Review.user_id == user_id])),
+            order_by={"way": order_way, "column": order_column}
         )
 
         return [

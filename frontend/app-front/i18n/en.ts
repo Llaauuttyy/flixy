@@ -57,11 +57,41 @@ export const enTranslation = {
     show_details: "Show movie details...",
   },
   movie_detail: {
+    watched: "Watched",
+    mark_as_watched: "Mark as Watched",
+    dialog: {
+      title: "Mark as Watched",
+      subtitle:
+        "When did you watch this movie? If you don't select a date, it will be marked as watched today.",
+      cancel: "Cancel",
+    },
     directors: "Directors",
     writers: "Writers",
     cast: "Cast",
     reviews_title: "Reviews from flixies",
     review_user: "Your review",
+  },
+  movie_filters: {
+    filter: {
+      button_text: "Genres",
+      dropdown_title: "Filter by genre",
+      clear: "Clear",
+    },
+    order: {
+      button_text: "Sort",
+      dropdown_column_title: "Sort by",
+      dropdown_way_title: "Order",
+      column: {
+        title: "Title",
+        year: "Year",
+        duration: "Duration",
+        imdb_rating: "IMDb rating",
+      },
+      way: {
+        asc: "Asc",
+        desc: "Desc",
+      },
+    },
   },
   recommendations: {
     title: "Explore",

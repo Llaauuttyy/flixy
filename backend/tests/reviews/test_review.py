@@ -1,5 +1,5 @@
 from tests.setup import client
-from app.constants.message import MOVIE_NOT_FOUND, FUTURE_TRAVELER, INSULTING_REVIEW, REVIEW_NOT_FOUND
+from app.constants.message import MOVIE_NOT_FOUND, FUTURE_TRAVELER, INSULTING_REVIEW, REVIEW_NOT_FOUND, UNDELETABLE_REVIEW_ERROR
 from tests.utils import NOT_EXISTENT_MOVIE_ID
 from datetime import datetime, timedelta
 
@@ -82,19 +82,36 @@ def test_review_with_valid_rating_should_return_review():
     assert response_json["rating"] == review_dto["rating"]
     assert response_json["watch_date"] == review_dto["watch_date"]
 
-def test_delete_review_of_existent_review_should_succeed():
+def test_delete_review_text_of_existent_review_should_succeed():
     review_id = 1
 
-    response = client.delete("/review/" + str(review_id))
+    response = client.delete("/review/" + str(review_id) + "/text")
 
     assert response.status_code == 200
 
-def test_delete_review_of_non_existent_review_should_return_not_found():
+def test_delete_review_text_of_non_existent_review_should_return_not_found():
     review_id = 10000
 
-    response = client.delete("/review/" + str(review_id))
+    response = client.delete("/review/" + str(review_id) + "/text")
 
     assert response.status_code == 404
     response_json = response.json()
 
     assert response_json["detail"] == REVIEW_NOT_FOUND
+
+def test_delete_review_of_existent_review_should_succeed():
+    review_id = 2
+
+    response = client.delete("/review/" + str(review_id))
+
+    assert response.status_code == 200
+
+def test_delete_review_of_existent_review_should_fail_when_has_rating_or_text():
+    review_id = 1
+
+    response = client.delete("/review/" + str(review_id))
+
+    assert response.status_code == 409
+    response_json = response.json()
+
+    assert response_json["detail"] == UNDELETABLE_REVIEW_ERROR

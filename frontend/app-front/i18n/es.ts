@@ -59,11 +59,41 @@ export const esTranslation = {
     show_details: "Ver más detalles...",
   },
   movie_detail: {
+    watched: "Vista",
+    mark_as_watched: "Marcar como Vista",
+    dialog: {
+      title: "Marcar como Vista",
+      subtitle:
+        "¿Cuándo viste esta película? Si no seleccionas una fecha, se marcará como vista hoy.",
+      cancel: "Cancelar",
+    },
     directors: "Directores",
     writers: "Guionistas",
     cast: "Elenco",
     reviews_title: "Reseñas de los flixis",
     review_user: "Tu reseña",
+  },
+  movie_filters: {
+    filter: {
+      button_text: "Géneros",
+      dropdown_title: "Filtra por género",
+      clear: "Borrar",
+    },
+    order: {
+      button_text: "Ordenar",
+      dropdown_column_title: "Ordenar por",
+      dropdown_way_title: "Orden",
+      column: {
+        title: "Título",
+        year: "Año",
+        duration: "Duración",
+        imdb_rating: "Puntuación IMDb",
+      },
+      way: {
+        asc: "Asc",
+        desc: "Desc",
+      },
+    },
   },
   recommendations: {
     title: "Explora",

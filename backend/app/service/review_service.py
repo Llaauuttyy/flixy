@@ -4,7 +4,7 @@ from app.model.review import Review
 from app.db.database import Database
 from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO
 from sqlalchemy.exc import IntegrityError
-from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEW_NOT_FOUND, INSULTING_REVIEW
+from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEW_NOT_FOUND, INSULTING_REVIEW, UNDELETABLE_REVIEW_ERROR
 from sqlalchemy.orm import selectinload
 from typing import Tuple, List, Optional
 from datetime import datetime as datetime
@@ -105,12 +105,28 @@ class ReviewService:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
 
+    def delete_review_text(self, db: Database, user_id: int, id: int):
+        try:
+            review_to_delete = db.find_by_multiple(Review, id=id, user_id=user_id)
+
+            if not review_to_delete:
+                raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
+
+            review_to_delete.text = None
+            db.save(review_to_delete)
+        except IntegrityError as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))
+        
     def delete_review(self, db: Database, user_id: int, id: int):
         try:
             review_to_delete = db.find_by_multiple(Review, id=id, user_id=user_id)
 
             if not review_to_delete:
                 raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
+            
+            if review_to_delete.text or review_to_delete.rating:
+                raise HTTPException(status_code=409, detail=UNDELETABLE_REVIEW_ERROR)
 
             db.delete(review_to_delete)
         except IntegrityError as e:
