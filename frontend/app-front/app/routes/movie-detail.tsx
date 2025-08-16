@@ -1,4 +1,4 @@
-import { Play, Plus, Star } from "lucide-react";
+import { Check, Eye, Plus, Star } from "lucide-react";
 import { useFetcher, useLoaderData } from "react-router-dom";
 
 import { HeaderFull } from "components/ui/header-full";
@@ -26,9 +26,26 @@ import type {
 } from "../../services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 
+import { DatePicker } from "components/ui/datepicker";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "components/ui/dialog";
 import { Pagination } from "components/ui/pagination";
+import dayjs from "dayjs";
+import { useState } from "react";
+import {
+  handleReviewCreation,
+  handleReviewDelete,
+} from "services/api/flixy/client/reviews";
 import { getReviewsData } from "services/api/flixy/server/reviews";
 import type {
+  ReviewCreation,
   ReviewDataGet,
   ReviewsData,
 } from "services/api/flixy/types/review";
@@ -90,20 +107,20 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export default function MovieDetail() {
-  let apiResponse: ApiResponse = useLoaderData();
   const { t } = useTranslation();
   const fetcher = useFetcher();
+  const [apiResponse, setApiResponse] = useState<ApiResponse>(useLoaderData());
+  const [watchedDialogOpen, setWatchedDialogOpen] = useState(false);
+  const [watchedDate, setWatchedDate] = useState<dayjs.Dayjs>(
+    dayjs().startOf("day")
+  );
 
   let currentMovieData: MovieDataGet = apiResponse.data.movie || {};
   let userReview: ReviewDataGet = apiResponse.data.reviews.user_review || null;
-  // let currentReviews: ReviewDataGet[] =
-  // apiResponse.data.reviews.reviews.items || {};
 
   let currentReviews: Page<ReviewDataGet> =
     fetcher.data?.data.reviews.reviews ??
     (apiResponse.data.reviews.reviews || {});
-
-  console.log("Current reviews data:", currentReviews);
 
   const getDurationFromMovie = (minutes_str: string): string => {
     let minutes = parseInt(minutes_str, 10);
@@ -122,6 +139,74 @@ export default function MovieDetail() {
     }
 
     return duration;
+  };
+
+  const handleWatchMovie = async () => {
+    const reviewData: ReviewCreation = {
+      movie_id: currentMovieData.id as number,
+      watch_date: watchedDate.toDate(),
+    };
+
+    try {
+      let newUserReview: ReviewDataGet = await handleReviewCreation(
+        apiResponse.accessToken as string,
+        reviewData
+      );
+
+      setApiResponse((prev) => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          reviews: {
+            ...prev.data.reviews,
+            user_review: newUserReview,
+          },
+        },
+      }));
+    } catch (err: Error | any) {
+      console.log("API POST /review: ", err.message);
+
+      setApiResponse((prev) => ({
+        ...prev,
+        error:
+          err instanceof TypeError
+            ? t("exceptions.service_error")
+            : err.message,
+      }));
+    }
+
+    setWatchedDialogOpen(false);
+  };
+
+  const handleUnWatchMovie = async () => {
+    try {
+      await handleReviewDelete(
+        apiResponse.accessToken as string,
+        userReview.id
+      );
+
+      setApiResponse((prev) => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          reviews: {
+            ...prev.data.reviews,
+            user_review: null,
+          },
+        },
+      }));
+      setWatchedDate(dayjs().startOf("day"));
+    } catch (err: Error | any) {
+      console.log("API DELETE /review/:reviewId: ", err.message);
+
+      setApiResponse((prev) => ({
+        ...prev,
+        error:
+          err instanceof TypeError
+            ? t("exceptions.service_error")
+            : err.message,
+      }));
+    }
   };
 
   if (apiResponse.error) {
@@ -218,16 +303,87 @@ export default function MovieDetail() {
                   movieId={Number(currentMovieData.id)}
                   accessToken={String(apiResponse.accessToken)}
                   size={24}
+                  onRatingChange={(rating) =>
+                    setApiResponse((prev) => ({
+                      ...prev,
+                      data: {
+                        ...prev.data,
+                        reviews: {
+                          ...prev.data.reviews,
+                          user_review: {
+                            ...prev.data.reviews.user_review,
+                            rating: rating,
+                          },
+                        },
+                      },
+                    }))
+                  }
                 />
               </div>
               <p className="text-lg leading-relaxed text-[#E0E0E0]">
                 {currentMovieData.plot}
               </p>
               <div className="flex gap-4">
-                <Button className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:from-[#8B5CF6]/90 hover:to-[#EC4899]/90 text-white px-6 py-3 rounded-md text-lg font-semibold">
-                  <Play className="w-5 h-5 mr-2" />
-                  Watch Trailer
-                </Button>
+                {/* Mark as Watched Button */}
+                {userReview ? (
+                  <Button
+                    className="bg-grey-900 text-white px-6 py-3 rounded-md text-lg font-semibold shadow-[inset_0_0_0_2px_#8B5CF6] hover:shadow-[inset_0_0_0_2px_#EC4899]"
+                    disabled={
+                      userReview.text != null || userReview.rating != null
+                    }
+                    onClick={handleUnWatchMovie}
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    {t("movie_detail.watched")}
+                  </Button>
+                ) : (
+                  <Dialog
+                    open={watchedDialogOpen}
+                    onOpenChange={setWatchedDialogOpen}
+                  >
+                    <DialogTrigger asChild>
+                      <Button className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:from-[#8B5CF6]/90 hover:to-[#EC4899]/90 text-white px-6 py-3 rounded-md text-lg font-semibold">
+                        <Eye className="w-5 h-5 mr-2" />
+                        {t("movie_detail.mark_as_watched")}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {t("movie_detail.dialog.title")}
+                        </DialogTitle>
+                        <DialogDescription className="text-slate-400">
+                          {t("movie_detail.dialog.subtitle")}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DatePicker
+                        label={t("review_input.watch_date_input")}
+                        value={watchedDate}
+                        onChange={(newValue) =>
+                          setWatchedDate(newValue as dayjs.Dayjs)
+                        }
+                        maxDate={dayjs().startOf("day")}
+                        format="LL"
+                      />
+                      <DialogFooter>
+                        <Button
+                          variant="outline"
+                          onClick={() => setWatchedDialogOpen(false)}
+                          className="border-slate-600 text-slate-300 hover:text-white bg-transparent"
+                        >
+                          {t("movie_detail.dialog.cancel")}
+                        </Button>
+                        <Button
+                          className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:from-[#8B5CF6]/90 hover:to-[#EC4899]/90 text-white px-6 py-3 rounded-md text-lg font-semibold"
+                          onClick={handleWatchMovie}
+                        >
+                          <Eye className="w-5 h-5 mr-2" />
+                          {t("movie_detail.mark_as_watched")}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
                 <Button
                   variant="outline"
                   className="border-[#202135] text-[#E0E0E0] hover:bg-[#202135]/50 px-6 py-3 rounded-md text-lg font-semibold bg-transparent"
@@ -281,7 +437,19 @@ export default function MovieDetail() {
                 accessToken={String(apiResponse.accessToken)}
                 movieId={Number(currentMovieData.id)}
                 title={String(currentMovieData.title)}
-                userReview={userReview && userReview.text ? userReview : null}
+                userReview={userReview}
+                onChangeReview={(review) =>
+                  setApiResponse((prev) => ({
+                    ...prev,
+                    data: {
+                      ...prev.data,
+                      reviews: {
+                        ...prev.data.reviews,
+                        user_review: review,
+                      },
+                    },
+                  }))
+                }
               />
               <div>
                 <h2 className="text-2xl font-semibold mb-6">
