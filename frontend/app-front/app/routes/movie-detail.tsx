@@ -438,6 +438,18 @@ export default function MovieDetail() {
                 movieId={Number(currentMovieData.id)}
                 title={String(currentMovieData.title)}
                 userReview={userReview}
+                onChangeReview={(review) =>
+                  setApiResponse((prev) => ({
+                    ...prev,
+                    data: {
+                      ...prev.data,
+                      reviews: {
+                        ...prev.data.reviews,
+                        user_review: review,
+                      },
+                    },
+                  }))
+                }
               />
               <div>
                 <h2 className="text-2xl font-semibold mb-6">

@@ -22,6 +22,7 @@ interface ReviewCardProps {
   movieId: number;
   title: string;
   userReview: ReviewDataGet | null;
+  onChangeReview?: (review: ReviewDataGet | null) => void;
 }
 
 export function ReviewInput({
@@ -29,6 +30,7 @@ export function ReviewInput({
   movieId,
   title,
   userReview,
+  onChangeReview,
 }: ReviewCardProps) {
   const { t } = useTranslation();
 
@@ -78,7 +80,10 @@ export function ReviewInput({
     try {
       await handleReviewDeleteText(accessToken, currentReview.id);
 
-      setCurrentReview(null);
+      if (onChangeReview) {
+        onChangeReview(currentReview ? { ...currentReview, text: null } : null);
+      }
+      setCurrentReview((prev) => (prev ? { ...prev, text: null } : null));
     } catch (err: Error | any) {
       console.log("API DELETE /review/:reviewId ", err.message);
 
@@ -120,6 +125,9 @@ export function ReviewInput({
 
       setCurrentReview(newUserReview);
       setIsEditing(false);
+      if (onChangeReview) {
+        onChangeReview(newUserReview);
+      }
     } catch (err: Error | any) {
       console.log("API POST /review: ", err.message);
 
