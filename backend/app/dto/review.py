@@ -18,13 +18,6 @@ class ReviewCreationDTO(BaseModel):
     text: Optional[str] = None
     watch_date: Optional[datetime] = None
 
-    @model_validator(mode='before')
-    def at_least_score_or_text(cls, values):
-        rating, text = values.get("rating"), values.get("text")
-        if rating is None and (text is None or text.strip() == ""):
-            raise ValueError("You must provide at least a rating or a text.")
-        return values
-
 class ReviewGetSingularDTO(ReviewDTO):
     user_name: str
 

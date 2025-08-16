@@ -1,14 +1,11 @@
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "components/ui/datepicker";
 import dayjs from "dayjs";
 import { Edit, Loader2, Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   handleReviewCreation,
-  handleReviewDelete,
+  handleReviewDeleteText,
 } from "services/api/flixy/client/reviews";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 import type {
@@ -54,6 +51,15 @@ export function ReviewInput({
   const [apiDeleteResponse, setApiDeleteResponse] =
     useState<ApiResponse | null>();
 
+  useEffect(() => {
+    setCurrentReview(userReview);
+    setDate(
+      userReview?.watch_date
+        ? dayjs(userReview.watch_date).startOf("day")
+        : dayjs().startOf("day")
+    );
+  }, [userReview]);
+
   const handleEditReview = () => {
     setIsEditing(true);
     setReview(String(currentReview?.text));
@@ -70,7 +76,7 @@ export function ReviewInput({
     let apiResponse: ApiResponse = {};
 
     try {
-      await handleReviewDelete(accessToken, currentReview.id);
+      await handleReviewDeleteText(accessToken, currentReview.id);
 
       setCurrentReview(null);
     } catch (err: Error | any) {
@@ -156,7 +162,7 @@ export function ReviewInput({
     return "text-slate-300";
   };
 
-  if (isEditing || !currentReview) {
+  if (isEditing || !currentReview?.text) {
     return (
       <Card className="bg-slate-800/50 border-slate-700">
         <CardContent className="p-6">
@@ -169,52 +175,13 @@ export function ReviewInput({
                 {" " + t("review_input.share_thoughts")}
               </p>
               <div className="inline-block p-2">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DatePicker"]}>
-                    <DatePicker
-                      label={t("review_input.watch_date_input")}
-                      value={date}
-                      onChange={(newValue) => setDate(newValue as dayjs.Dayjs)}
-                      format="LL"
-                      maxDate={dayjs().startOf("day")}
-                      slotProps={{
-                        textField: {
-                          variant: "outlined",
-                          size: "small",
-                          InputLabelProps: {
-                            sx: {
-                              color: "#cbd5e1",
-                            },
-                          },
-                          InputProps: {
-                            sx: {
-                              color: "#ffffff",
-                              "& .MuiSvgIcon-root": {
-                                color: "#ffffff",
-                              },
-                            },
-                          },
-                          sx: {
-                            "& .MuiOutlinedInput-root": {
-                              "& fieldset": {
-                                borderColor: "#cbd5e1",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: "#cbd5e1",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: "#cbd5e1",
-                              },
-                            },
-                            "& .MuiInputLabel-root": {
-                              color: "#cbd5e1",
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider>
+                <DatePicker
+                  label={t("review_input.watch_date_input")}
+                  value={date}
+                  onChange={(newValue) => setDate(newValue as dayjs.Dayjs)}
+                  format="LL"
+                  maxDate={dayjs().startOf("day")}
+                />
               </div>
             </div>
 

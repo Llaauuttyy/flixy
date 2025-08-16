@@ -56,6 +56,14 @@ export const enTranslation = {
     show_details: "Show movie details...",
   },
   movie_detail: {
+    watched: "Watched",
+    mark_as_watched: "Mark as Watched",
+    dialog: {
+      title: "Mark as Watched",
+      subtitle:
+        "When did you watch this movie? If you don't select a date, it will be marked as watched today.",
+      cancel: "Cancel",
+    },
     directors: "Directors",
     writers: "Writers",
     cast: "Cast",

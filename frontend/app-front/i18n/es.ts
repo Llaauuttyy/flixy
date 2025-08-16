@@ -59,6 +59,14 @@ export const esTranslation = {
     show_details: "Ver más detalles...",
   },
   movie_detail: {
+    watched: "Vista",
+    mark_as_watched: "Marcar como Vista",
+    dialog: {
+      title: "Marcar como Vista",
+      subtitle:
+        "¿Cuándo viste esta película? Si no seleccionas una fecha, se marcará como vista hoy.",
+      cancel: "Cancelar",
+    },
     directors: "Directores",
     writers: "Guionistas",
     cast: "Elenco",

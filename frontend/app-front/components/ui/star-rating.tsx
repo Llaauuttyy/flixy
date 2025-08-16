@@ -6,9 +6,9 @@ import { handleReviewCreation } from "services/api/flixy/client/reviews";
 import type { ReviewCreation } from "services/api/flixy/types/review";
 interface StarRatingProps {
   initialRating: number;
-  // onRatingChange?: (rating: number) => void;
   movieId: number;
   accessToken: string | undefined;
+  onRatingChange?: (rating: number) => void;
   size?: number;
   interactive?: boolean;
 }
@@ -17,6 +17,7 @@ export function StarRating({
   initialRating,
   movieId,
   accessToken,
+  onRatingChange,
   size = 24,
   interactive = true,
 }: StarRatingProps) {
@@ -32,7 +33,14 @@ export function StarRating({
         rating: rating,
       };
 
-      await handleReviewCreation(accessToken, newRating);
+      try {
+        await handleReviewCreation(accessToken, newRating);
+        if (onRatingChange) {
+          onRatingChange(rating);
+        }
+      } catch (err: Error | any) {
+        console.log("API POST /review: ", err.message);
+      }
     }
   };
 
