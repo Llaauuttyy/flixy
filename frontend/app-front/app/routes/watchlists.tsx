@@ -1,7 +1,7 @@
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { Film, Plus, Star, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { getWatchLists } from "services/api/flixy/server/watchlists";
 import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
@@ -88,8 +88,16 @@ export default function WatchListsPage() {
 
   const [isCreation, setIsCreation] = useState(false);
 
-  let watchlists: Page<WatchListFace> =
-    fetcher.data?.data.items ?? apiResponse.data.items;
+  const [watchlists, setWatchlists] = useState<Page<WatchListFace>>(
+    fetcher.data?.data.items ??
+      apiResponse.data.items ?? {
+        items: [],
+        total: 0,
+        page: 1,
+        size: 0,
+        pages: 0,
+      }
+  );
 
   let [newWatchLists, setNewWatchLists] = useState<WatchListFace[]>([]);
 
@@ -101,6 +109,12 @@ export default function WatchListsPage() {
       ? apiResponse.data.total_watchlists
       : 0,
   });
+
+  useEffect(() => {
+    if (fetcher.data?.data.items) {
+      setWatchlists(fetcher.data.data.items);
+    }
+  }, [fetcher.data]);
 
   function handleCreation() {
     setIsCreation(true);
@@ -118,6 +132,28 @@ export default function WatchListsPage() {
       movies: prevData.movies + watchlist.movies.total,
     }));
     setIsCreation(false);
+  }
+
+  function handleWatchListDeletion(watchlist_id: number) {
+    setNewWatchLists((prevWatchlists) =>
+      prevWatchlists.filter((wl) => wl.id !== watchlist_id)
+    );
+    setWatchListsData((prevData) => ({
+      ...prevData,
+      watchlists: prevData.watchlists - 1,
+      movies:
+        prevData.movies -
+        (watchlists.items
+          ? watchlists.items.find((wl) => wl.id === watchlist_id)?.movies
+              .total || 0
+          : 0),
+    }));
+    setWatchlists((prevWatchlists) => ({
+      ...prevWatchlists,
+      items: (prevWatchlists.items ?? []).filter(
+        (wl) => wl.id !== watchlist_id
+      ),
+    }));
   }
 
   function getCreationButtons() {
@@ -173,7 +209,19 @@ export default function WatchListsPage() {
           <HeaderFull />
 
           <main className="overflow-auto w-full mx-auto py-6 px-6 md:px-6">
-            <div className="flex justify-end mb-6">{getCreationButtons()}</div>
+            <div className="flex justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-white mb-2">
+                  Watchlists
+                </h1>
+                <p className="text-gray-300">
+                  Manage your favorite genres and never miss a must-watch again
+                </p>
+              </div>
+              <div className="flex justify-end mb-6">
+                {getCreationButtons()}
+              </div>
+            </div>
             <div className="h-px bg-gray-600 mt-2 mb-4" />
             {isCreation && (
               <WatchListCreator
@@ -241,6 +289,7 @@ export default function WatchListsPage() {
                   key={watchlist.id}
                   accessToken={String(apiResponse.accessToken)}
                   watchlist={watchlist}
+                  onDelete={handleWatchListDeletion}
                 />
               ))}
             </div>
@@ -257,6 +306,7 @@ export default function WatchListsPage() {
                 <WatchList
                   accessToken={String(apiResponse.accessToken)}
                   watchlist={watchlist}
+                  onDelete={handleWatchListDeletion}
                 />
               ))}
             </Pagination>

@@ -43,7 +43,9 @@ export default function WatchListMovies({
   accessToken: string;
 }) {
   const [watchListMovies, setWatchListMovies] = useState<Page<MovieDataGet>>(
-    watchList.movies || { items: [], total: 0, page: 1, size: 0, pages: 0 }
+    watchList.movies?.items
+      ? watchList.movies
+      : { items: [], total: 0, page: 1, size: 0, pages: 0 }
   );
 
   const [showOnlyError, setShowOnlyError] = useState<String>("");

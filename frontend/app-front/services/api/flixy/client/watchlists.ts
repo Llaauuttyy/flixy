@@ -1,4 +1,8 @@
-import type { WatchListCreate, WatchListEdit } from "../types/watchlist";
+import type {
+  WatchListCreate,
+  WatchListDelete,
+  WatchListEdit,
+} from "../types/watchlist";
 
 export async function handleWatchListCreation(
   accessToken: string | undefined,
@@ -39,6 +43,31 @@ export async function handleWatchListEdition(
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(watchlistData.data),
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
+
+export async function handleWatchListDeletion(
+  accessToken: string | undefined,
+  watchlistData: WatchListDelete
+) {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL_CLIENT +
+      `/watchlist/${watchlistData.watchlist_id}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
     }
   );
 

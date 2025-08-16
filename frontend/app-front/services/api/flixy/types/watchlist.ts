@@ -21,6 +21,11 @@ export interface WatchListEdit {
   [key: string]: number | WatchListEditData;
 }
 
+export interface WatchListDelete {
+  watchlist_id: number;
+  [key: string]: number;
+}
+
 export interface WatchListInsights {
   total_movies: number;
   total_watched_movies: number;

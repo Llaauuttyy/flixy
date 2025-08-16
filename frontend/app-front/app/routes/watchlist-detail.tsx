@@ -8,12 +8,18 @@ import utc from "dayjs/plugin/utc";
 import i18n from "i18n/i18n";
 
 import { Badge } from "components/ui/badge";
+import { Button } from "components/ui/button";
 import WatchListMovies from "components/ui/watchlist-movies";
-import { Clock, Eye, Film, Pencil } from "lucide-react";
+import { Clock, Edit, Eye, Film, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
-import { Link, useLoaderData } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Link, useLoaderData, useNavigate } from "react-router-dom";
+import { handleWatchListDeletion } from "services/api/flixy/client/watchlists";
 import { getWatchList } from "services/api/flixy/server/watchlists";
-import type { WatchListGet } from "services/api/flixy/types/watchlist";
+import type {
+  WatchListDelete,
+  WatchListGet,
+} from "services/api/flixy/types/watchlist";
 import { getAccessToken } from "services/api/utils";
 import type { ApiResponse } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/watchlist-detail";
@@ -76,9 +82,55 @@ export default function WatchListsPage() {
 
   dayjs.locale(i18n.language || "en");
 
+  const navigator = useNavigate();
+
+  const { t } = useTranslation();
+
+  const [apiDeleteResponse, setApiDeleteResponse] = useState<ApiResponse>({});
+
   const [watchlist, setWatchlist] = useState<WatchListGet>(
     apiResponse.data || {}
   );
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleEditWatchList = async () => {
+    setIsEditing(true);
+  };
+
+  const handleDeleteWatchList = async () => {
+    setIsDeleting(true);
+
+    let apiDeleteResponse: ApiResponse = {};
+
+    const watchListDelete: WatchListDelete = {
+      watchlist_id: watchlist.id,
+    };
+
+    try {
+      let response = await handleWatchListDeletion(
+        String(apiResponse.accessToken),
+        watchListDelete
+      );
+
+      console.log(response);
+
+      navigator("/watchlists");
+    } catch (err: Error | any) {
+      console.log("API DELETE /watchlist/:watchListId ", err.message);
+
+      if (err instanceof TypeError) {
+        apiDeleteResponse.error = t("exceptions.service_error");
+        setApiDeleteResponse(apiDeleteResponse);
+      }
+
+      apiDeleteResponse.error = err.message;
+      setApiDeleteResponse(apiDeleteResponse);
+    }
+
+    setIsDeleting(false);
+  };
 
   if (apiResponse.error) {
     return (
@@ -107,16 +159,40 @@ export default function WatchListsPage() {
 
         <main className="flex-1 p-6 space-y-8">
           <section>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              {watchlist.name}
-            </h1>
-            {watchlist.description ? (
-              <p className="text-gray-300 mb-4">{watchlist.description}</p>
-            ) : (
-              <p className="italic text-gray-300 mb-4">
-                No description so far.
-              </p>
-            )}
+            <div className="flex items-center justify-between">
+              <div className="grid">
+                <h1 className="text-3xl font-bold text-white mb-2">
+                  {watchlist.name}
+                </h1>
+                {watchlist.description ? (
+                  <p className="text-gray-300 mb-4">{watchlist.description}</p>
+                ) : (
+                  <p className="italic text-gray-300 mb-4">
+                    No description so far.
+                  </p>
+                )}
+                {apiDeleteResponse.error && (
+                  <p className="text-red-400 mb-4">{apiResponse.error}</p>
+                )}
+              </div>
+              <div className="flex item-center">
+                <Button
+                  onClick={handleEditWatchList}
+                  className="mr-1 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                >
+                  <Edit size={30} />
+                </Button>
+                {!isEditing && (
+                  <Button
+                    onClick={handleDeleteWatchList}
+                    disabled={isDeleting}
+                    className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                  >
+                    <Trash size={30} color="red" />
+                  </Button>
+                )}
+              </div>
+            </div>
 
             <div className="flex flex-wrap gap-6 text-sm bg-gray-800 rounded-lg p-4">
               <div className="flex items-center gap-2">
@@ -148,11 +224,15 @@ export default function WatchListsPage() {
             <h2 className="text-xl font-semibold text-white mb-4">
               Movies in this Watchlist
             </h2>
-            <WatchListMovies
-              accessToken={String(apiResponse.accessToken)}
-              isSeeWatchList={true}
-              watchList={watchlist}
-            />
+            {watchlist.movies?.items ? (
+              <WatchListMovies
+                accessToken={String(apiResponse.accessToken)}
+                isSeeWatchList={true}
+                watchList={watchlist}
+              />
+            ) : (
+              <p className="italic text-gray-300 mb-4">No movies so far.</p>
+            )}
           </section>
 
           <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
