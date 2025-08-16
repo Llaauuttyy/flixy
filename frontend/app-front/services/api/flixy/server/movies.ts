@@ -1,10 +1,38 @@
 import { getAccessToken } from "../../utils";
 
-export async function getMovies(page: number, size: number, request: Request) {
+interface Order {
+  column: string | null;
+  way: string | null;
+}
+
+const getOrderParams = (order?: Order) => {
+  let orderParams: string[] = [];
+
+  if (order) {
+    if (order.column) {
+      orderParams.push(`order_column=${order.column}`);
+    }
+    if (order.way) {
+      orderParams.push(`order_way=${order.way}`);
+    }
+  }
+
+  return orderParams.join("&");
+};
+
+export async function getMovies(
+  page: number,
+  size: number,
+  order: Order,
+  request: Request
+) {
   const token = await getAccessToken(request);
 
+  let orderParams = getOrderParams(order);
+
   const response = await fetch(
-    process.env.VITE_API_URL + `/movies?page=${page}&size=${size}`,
+    process.env.VITE_API_URL +
+      `/movies?page=${page}&size=${size}&${orderParams}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
