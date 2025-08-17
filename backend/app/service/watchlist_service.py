@@ -244,7 +244,7 @@ class WatchListService:
 
             for m in movies_to_delete:
                 movie_found = False
-                for cm in ccurrent_movies:
+                for cm in current_movies:
                     if cm.movie_id == m:
                         movie_found = True
                         break

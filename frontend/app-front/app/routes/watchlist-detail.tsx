@@ -7,17 +7,25 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import i18n from "i18n/i18n";
 
+import { AddMovieWatchList } from "components/ui/add-movie-watchlist";
 import { Badge } from "components/ui/badge";
 import { Button } from "components/ui/button";
+import { MaxLengthInput } from "components/ui/max-length-input";
 import WatchListMovies from "components/ui/watchlist-movies";
-import { Clock, Edit, Eye, Film, Pencil, Trash } from "lucide-react";
+import WatchListMoviesDisplay from "components/ui/watchlist-movies-display";
+import { Clock, Edit, Eye, Film, Loader2, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLoaderData, useNavigate } from "react-router-dom";
-import { handleWatchListDeletion } from "services/api/flixy/client/watchlists";
+import {
+  handleWatchListDeletion,
+  handleWatchListEdition,
+} from "services/api/flixy/client/watchlists";
 import { getWatchList } from "services/api/flixy/server/watchlists";
+import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type {
   WatchListDelete,
+  WatchListEdit,
   WatchListGet,
 } from "services/api/flixy/types/watchlist";
 import { getAccessToken } from "services/api/utils";
@@ -87,16 +95,97 @@ export default function WatchListsPage() {
   const { t } = useTranslation();
 
   const [apiDeleteResponse, setApiDeleteResponse] = useState<ApiResponse>({});
+  const [apiEditResponse, setApiEditResponse] = useState<ApiResponse>({});
 
   const [watchlist, setWatchlist] = useState<WatchListGet>(
     apiResponse.data || {}
   );
 
+  const [moviesToDelete, setMoviesToDelete] = useState<MovieDataGet[]>([]);
+  const [moviesToAdd, setMoviesToAdd] = useState<MovieDataGet[]>([]);
+
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleEditWatchList = async () => {
+  const [name, setName] = useState(watchlist.name || "");
+  const [description, setDescription] = useState(watchlist.description || "");
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [nameLimitReached, setNameLimitReached] = useState(false);
+  const [descriptionLimitReached, setDescriptionLimitReached] = useState(false);
+
+  const cancelEditWatchList = async () => {
+    setIsEditing(false);
+    navigator(0);
+  };
+
+  const setEditWatchList = async () => {
     setIsEditing(true);
+  };
+
+  const handleEditWatchList = async () => {
+    setIsLoading(true);
+    let apiEditResponse: ApiResponse = {};
+    let movieIdsToDelete: number[] = moviesToDelete.map((movie) =>
+      Number(movie.id)
+    );
+
+    let watchListData: WatchListEdit = {
+      watchlist_id: watchlist.id,
+      data: {
+        name: name ? name.trim() : undefined,
+        description: description ? description.trim() : undefined,
+        movie_ids_to_delete:
+          movieIdsToDelete.length > 0 ? movieIdsToDelete : undefined,
+      },
+    };
+
+    try {
+      apiEditResponse.data = await handleWatchListEdition(
+        String(apiResponse.accessToken),
+        watchListData
+      );
+
+      navigator(0);
+    } catch (err: Error | any) {
+      console.log("API PATCH /watchlist said: ", err.message);
+
+      if (err instanceof TypeError) {
+        apiEditResponse.error =
+          "Service's not working properly. Please try again later.";
+        setApiEditResponse(apiEditResponse);
+      }
+
+      apiEditResponse.error = err.message;
+      setApiEditResponse(apiEditResponse);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditWatchListMovieDeletion = (movie: MovieDataGet) => {
+    console.log("Edit Parent: Deleting movie:", movie);
+    setMoviesToDelete((prevMovies) => {
+      if (prevMovies.includes(movie)) {
+        return prevMovies.filter((m) => m !== movie);
+      } else {
+        return [...prevMovies, movie];
+      }
+    });
+
+    console.log(moviesToDelete);
+  };
+
+  const handleEditWatchListMovieAddition = (movie: MovieDataGet) => {
+    console.log("Edit Parent: Adding movie:", movie);
+    setMoviesToAdd((prevMovies) => {
+      if (prevMovies.includes(movie)) {
+        return prevMovies.filter((m) => m !== movie);
+      } else {
+        return [...prevMovies, movie];
+      }
+    });
   };
 
   const handleDeleteWatchList = async () => {
@@ -161,10 +250,44 @@ export default function WatchListsPage() {
           <section>
             <div className="flex items-center justify-between">
               <div className="grid">
-                <h1 className="text-3xl font-bold text-white mb-2">
-                  {watchlist.name}
-                </h1>
-                {watchlist.description ? (
+                {isEditing ? (
+                  <div>
+                    <h1 className="text-foreground font-bold">Name</h1>
+                    <MaxLengthInput
+                      id="name"
+                      name="name"
+                      placeholder="watchlist name"
+                      value={name}
+                      length={140}
+                      onChange={(value) => setName(value)}
+                      onLimitReached={(nameLimit) =>
+                        setNameLimitReached(nameLimit)
+                      }
+                      className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
+                    />
+                  </div>
+                ) : (
+                  <h1 className="text-3xl font-bold text-white mb-2">
+                    {watchlist.name}
+                  </h1>
+                )}
+                {isEditing ? (
+                  <div>
+                    <p className="text-foreground font-bold">Description</p>
+                    <MaxLengthInput
+                      id="description"
+                      name="description"
+                      placeholder="watchlist description"
+                      value={description}
+                      length={1000}
+                      onChange={(value) => setDescription(value)}
+                      onLimitReached={(descriptionLimit) =>
+                        setDescriptionLimitReached(descriptionLimit)
+                      }
+                      className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
+                    />
+                  </div>
+                ) : watchlist.description ? (
                   <p className="text-gray-300 mb-4">{watchlist.description}</p>
                 ) : (
                   <p className="italic text-gray-300 mb-4">
@@ -176,12 +299,14 @@ export default function WatchListsPage() {
                 )}
               </div>
               <div className="flex item-center">
-                <Button
-                  onClick={handleEditWatchList}
-                  className="mr-1 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
-                >
-                  <Edit size={30} />
-                </Button>
+                {!isEditing && (
+                  <Button
+                    onClick={setEditWatchList}
+                    className="mr-1 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                  >
+                    <Edit size={30} />
+                  </Button>
+                )}
                 {!isEditing && (
                   <Button
                     onClick={handleDeleteWatchList}
@@ -194,30 +319,32 @@ export default function WatchListsPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-6 text-sm bg-gray-800 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <Film className="w-4 h-4 text-purple-400" />
-                <span className="text-slate-300">
-                  {watchlist.insights.total_movies} movies
-                </span>
+            {!isEditing && (
+              <div className="flex flex-wrap gap-6 text-sm bg-gray-800 rounded-lg p-4">
+                <div className="flex items-center gap-2">
+                  <Film className="w-4 h-4 text-purple-400" />
+                  <span className="text-slate-300">
+                    {watchlist.insights.total_movies} movies
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-purple-400" />
+                  <span className="text-slate-300">
+                    Created {dayjs.utc(watchlist.created_at).fromNow()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Pencil className="w-4 h-4 text-purple-400" />
+                  <span className="text-slate-300">
+                    Updated {dayjs.utc(watchlist.updated_at).fromNow()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-purple-400" />
+                  <span className="text-slate-300">Public</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-purple-400" />
-                <span className="text-slate-300">
-                  Created {dayjs.utc(watchlist.created_at).fromNow()}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Pencil className="w-4 h-4 text-purple-400" />
-                <span className="text-slate-300">
-                  Updated {dayjs.utc(watchlist.updated_at).fromNow()}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4 text-purple-400" />
-                <span className="text-slate-300">Public</span>
-              </div>
-            </div>
+            )}
           </section>
 
           <section>
@@ -229,9 +356,73 @@ export default function WatchListsPage() {
                 accessToken={String(apiResponse.accessToken)}
                 isSeeWatchList={true}
                 watchList={watchlist}
+                isEditWatchList={isEditing}
+                onMovieDeletion={handleEditWatchListMovieDeletion}
               />
             ) : (
               <p className="italic text-gray-300 mb-4">No movies so far.</p>
+            )}
+          </section>
+
+          {isEditing && (
+            <section className="grid">
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Add movies
+              </h2>
+              <div className="flex justify-start">
+                <div className="">
+                  <AddMovieWatchList
+                    showOnly={true}
+                    accessToken={String(apiResponse.accessToken)}
+                    watchListId={watchlist.id}
+                    onMovieSelect={handleEditWatchListMovieAddition}
+                  />
+                </div>
+                <WatchListMoviesDisplay
+                  accessToken={String(apiResponse.accessToken)}
+                  watchlist_id={watchlist.id}
+                  isSeeWatchList={true}
+                  movies={{
+                    items: moviesToAdd,
+                    total: moviesToAdd.length,
+                    page: 1,
+                    size: moviesToAdd.length,
+                    pages: 1,
+                  }}
+                  isEditWatchList={true}
+                  onMovieDeletion={handleEditWatchListMovieAddition}
+                />
+              </div>
+            </section>
+          )}
+
+          <section>
+            {isEditing && (
+              <>
+                <Button
+                  onClick={handleEditWatchList}
+                  disabled={
+                    isLoading || descriptionLimitReached || nameLimitReached
+                  }
+                  className="bg-pink-600 hover:bg-pink-700 disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Saving changes...
+                    </>
+                  ) : (
+                    <>Save changes</>
+                  )}
+                </Button>
+                <Button
+                  onClick={cancelEditWatchList}
+                  variant={"outline"}
+                  className="ml-2 hover:bg-red-700 hover:text-white text-red-500 border-red-500 disabled:opacity-50"
+                >
+                  {t("review_input.cancel_button")}
+                </Button>
+              </>
             )}
           </section>
 

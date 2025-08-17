@@ -6,6 +6,7 @@ interface MaxLengthInputProps {
   name?: string;
   placeholder?: string;
   className?: string;
+  value?: string;
   length: number;
   onChange: (value: string) => void;
   onLimitReached: (hasReachedLimit: boolean) => void;
@@ -16,12 +17,13 @@ export function MaxLengthInput({
   name,
   placeholder,
   className,
+  value,
   length,
   onChange,
   onLimitReached,
 }: MaxLengthInputProps) {
   const inputLimit = length;
-  const [caracters, setCaracters] = useState(0);
+  const [caracters, setCaracters] = useState(value ? value.length : 0);
   const [hasReachedLimit, setHasReachedLimit] = useState(false);
 
   const updateInput = (inputContent: string): void => {
@@ -62,6 +64,7 @@ export function MaxLengthInput({
         id={id}
         name={name}
         placeholder={placeholder}
+        value={value}
         onChange={(e) => {
           updateInput(e.target.value);
           onChange(e.target.value);

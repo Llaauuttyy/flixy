@@ -34,13 +34,17 @@ interface WatchList {
 export default function WatchListMovies({
   showOnly,
   isSeeWatchList = false,
+  isEditWatchList = false,
   watchList,
   accessToken,
+  onMovieDeletion,
 }: {
   showOnly?: boolean;
   isSeeWatchList?: boolean;
+  isEditWatchList?: boolean;
   watchList: WatchList | WatchListGet;
   accessToken: string;
+  onMovieDeletion?: (movie: MovieDataGet) => void;
 }) {
   const [watchListMovies, setWatchListMovies] = useState<Page<MovieDataGet>>(
     watchList.movies?.items
@@ -49,6 +53,13 @@ export default function WatchListMovies({
   );
 
   const [showOnlyError, setShowOnlyError] = useState<String>("");
+
+  function handleMovieDeletion(movie: MovieDataGet) {
+    if (onMovieDeletion) {
+      console.log("Edit: Deleting movie:", movie);
+      onMovieDeletion(movie);
+    }
+  }
 
   function handleMovieAddition(movie: MovieDataGet) {
     if (showOnly) {
@@ -82,6 +93,8 @@ export default function WatchListMovies({
           watchlist_id={watchList.id ? watchList.id : 0}
           isSeeWatchList={isSeeWatchList}
           movies={watchListMovies}
+          isEditWatchList={isEditWatchList}
+          onMovieDeletion={handleMovieDeletion}
         />
         {!isSeeWatchList && (
           <AddMovieWatchList
