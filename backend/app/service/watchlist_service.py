@@ -3,13 +3,13 @@ from app.model.watchlist import WatchList
 from app.model.watchlist_movie import WatchListMovie
 from app.model.user import User
 from app.constants.message import MOVIE_ALREADY_IN_WATCHLIST, MOVIE_NOT_FOUND, WATCHLIST_ALREADY_EXISTS, WATCHLIST_NOT_FOUND, MOVIE_NOT_FOUND_IN_WATCHLIST
-from app.dto.movie import MovieGetResponse
+from app.dto.movie import MovieGetResponse, MovieDTO
 from app.model.review import Review
 from fastapi import HTTPException
 from app.db.database import Database
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload, with_loader_criteria
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from datetime import datetime as datetime
 from fastapi_pagination import Params, paginate
 
@@ -313,3 +313,40 @@ class WatchListService:
         except Exception as e:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
+        
+    def get_movie_from_watchlist(self, db: Database, user_id: int, watchlist_id: int, movie_id: int) -> Optional[MovieDTO]:
+        try:
+            user = db.find_by(User, "id", user_id, options=[
+                selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+                with_loader_criteria(
+                    WatchList,
+                    lambda watchlist: watchlist.id == watchlist_id
+                ),
+            ])
+
+            if not user.watchlists:
+                raise HTTPException(status_code=404, detail=WATCHLIST_NOT_FOUND)
+
+            current_movies = user.watchlists[0].watchlist_movies
+
+            for cm in current_movies:
+                if cm.movie_id == movie_id:
+                    return MovieDTO(
+                        id=cm.movie.id,
+                        title=cm.movie.title,
+                        year=cm.movie.year,
+                        imdb_rating=cm.movie.imdb_rating,
+                        genres=cm.movie.genres,
+                        countries=cm.movie.countries,
+                        duration=cm.movie.duration,
+                        cast=cm.movie.cast,
+                        directors=cm.movie.directors,
+                        writers=cm.movie.writers,
+                        plot=cm.movie.plot,
+                        logo_url=cm.movie.logo_url
+                    )
+                
+            return None
+                    
+        except HTTPException as e:
+            raise HTTPException(status_code=e.status_code, detail=str(e.detail))

@@ -1,7 +1,8 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from app.db.database import Database
 from app.db.database_setup import SessionDep
 from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListsGetResponse, WatchListGetResponse, WatchListEditResponse, WatchListEditionDTO
+from app.dto.movie import MovieDTO
 from app.service.watchlist_service import WatchListService
 from fastapi import APIRouter, Depends, HTTPException, Request, Path
 from fastapi_pagination import Params, paginate
@@ -27,6 +28,15 @@ def get_watchlist(session: SessionDep, request: Request, watchlist_service: Watc
         watchlist, movies = watchlist_service.get_watchlist(Database(session), user_id, watchlist_id)
         watchlist.movies = paginate(movies, params) if movies else movies
         return watchlist
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+
+@watchlist_router.get("/watchlist/{watchlist_id}/movies/{movie_id}")
+def delete_watchlist(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, watchlist_id: int = Path(..., title="watchlist id", ge=1), movie_id: int = Path(..., title="movie id", ge=1)) -> Optional[MovieDTO]:
+    user_id = request.state.user_id
+    try:
+        movie = watchlist_service.get_movie_from_watchlist(Database(session), user_id, watchlist_id, movie_id)
+        return movie
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
 
@@ -56,3 +66,4 @@ def delete_watchlist(session: SessionDep, request: Request, watchlist_service: W
         return {"watchlist_id": watchlist_id}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+    
