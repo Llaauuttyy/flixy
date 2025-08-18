@@ -90,6 +90,11 @@ export default function WatchListMovies({
   return (
     <div>
       <div className="flex items-center">
+        {watchListMovies.total === 0 && !isSeeWatchList && (
+          <div className="italic text-gray-300 mb-4 text-sm">
+            No movies so far.
+          </div>
+        )}
         <WatchListMoviesDisplay
           accessToken={accessToken}
           watchlist_id={watchList.id ? watchList.id : 0}

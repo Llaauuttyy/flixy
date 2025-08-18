@@ -63,11 +63,16 @@ class WatchListService:
 
                 total_movies += 1
 
+            movies_params = Params(
+                page=1,
+                size=params.size,
+            )
+
             watchlists.append(WatchListBase(
                 id=w.id,
                 name=w.name,
                 description=w.description,
-                movies=paginate(watchlists_movies, params),
+                movies=paginate(watchlists_movies, movies_params),
                 created_at=w.created_at,
                 updated_at=w.updated_at
             ))
