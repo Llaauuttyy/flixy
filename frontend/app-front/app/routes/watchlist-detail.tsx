@@ -380,7 +380,7 @@ export default function WatchListsPage() {
               <div className="flex justify-center">
                 <div className="pr-3">
                   <AddMovieWatchList
-                    showOnly={true}
+                    showEdit={true}
                     accessToken={String(apiResponse.accessToken)}
                     watchListId={watchlist.id}
                     onMovieSelect={handleEditWatchListMovieAddition}

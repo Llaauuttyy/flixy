@@ -26,6 +26,12 @@ export interface WatchListDelete {
   [key: string]: number;
 }
 
+export interface WatchListGetMovie {
+  watchlist_id: number;
+  movie_id: number;
+  [key: string]: number;
+}
+
 export interface WatchListInsights {
   total_movies: number;
   total_watched_movies: number;

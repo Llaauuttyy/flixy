@@ -5,12 +5,16 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSubmit } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/client/movies";
-import { handleWatchListEdition } from "services/api/flixy/client/watchlists";
+import {
+  handleGetMovieFromWatchList,
+  handleWatchListEdition,
+} from "services/api/flixy/client/watchlists";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type {
   WatchListEdit,
   WatchListEditData,
+  WatchListGetMovie,
 } from "services/api/flixy/types/watchlist";
 
 interface SearchResultsWatchLists {
@@ -19,6 +23,7 @@ interface SearchResultsWatchLists {
 
 interface AddMovieWatchListProps {
   showOnly?: boolean;
+  showEdit?: boolean;
   accessToken: string;
   watchListId: number;
   onMovieSelect: (movie: MovieDataGet) => void;
@@ -29,6 +34,7 @@ const DEFAULT_PAGE_SIZE = 100;
 
 export function AddMovieWatchList({
   showOnly,
+  showEdit,
   accessToken,
   watchListId,
   onMovieSelect,
@@ -42,6 +48,7 @@ export function AddMovieWatchList({
   const { t } = useTranslation();
 
   const isShowOnly = showOnly ?? false;
+  const isShowEdit = showEdit ?? false;
 
   console.log(watchListId);
 
@@ -60,8 +67,9 @@ export function AddMovieWatchList({
   }
 
   async function handleMovieAddClick(movie: MovieDataGet) {
+    setApiResponseMovieAdd({ success: undefined, error: undefined });
     try {
-      if (!isShowOnly) {
+      if (!isShowOnly && !isShowEdit) {
         const watchListMovieEditData: WatchListEditData = {
           movie_ids_to_add: [Number(movie.id)],
         };
@@ -74,10 +82,28 @@ export function AddMovieWatchList({
           accessToken,
           watchListMovieEdit
         );
-
         setApiResponseMovieAdd({ success });
+        onMovieSelect(movie);
+      } else if (isShowEdit && !isShowOnly) {
+        const watchListGetMovie: WatchListGetMovie = {
+          watchlist_id: watchListId,
+          movie_id: Number(movie.id),
+        };
+
+        const movieFromWatchList: MovieDataGet | null =
+          await handleGetMovieFromWatchList(accessToken, watchListGetMovie);
+
+        if (movieFromWatchList) {
+          setApiResponseMovieAdd({
+            error: "Movie already exists in the watchlist.",
+          });
+        } else {
+          console.log("Movie not in watchlist, adding:", movie);
+          onMovieSelect(movie);
+        }
+      } else {
+        onMovieSelect(movie);
       }
-      onMovieSelect(movie);
     } catch (err: Error | any) {
       console.log("API POST /watchlist/movie said: ", err.message);
 

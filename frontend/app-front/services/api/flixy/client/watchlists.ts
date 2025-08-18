@@ -2,6 +2,7 @@ import type {
   WatchListCreate,
   WatchListDelete,
   WatchListEdit,
+  WatchListGetMovie,
 } from "../types/watchlist";
 
 export async function handleWatchListCreation(
@@ -64,6 +65,31 @@ export async function handleWatchListDeletion(
       `/watchlist/${watchlistData.watchlist_id}`,
     {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
+
+export async function handleGetMovieFromWatchList(
+  accessToken: string | undefined,
+  watchlistData: WatchListGetMovie
+) {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL_CLIENT +
+      `/watchlist/${watchlistData.watchlist_id}/movies/${watchlistData.movie_id}`,
+    {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
