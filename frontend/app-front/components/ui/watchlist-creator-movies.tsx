@@ -75,6 +75,7 @@ export default function WatchListCreatorMovies({
       <div className="flex items-center">
         <WatchListMoviesDisplay
           accessToken={accessToken}
+          isCreateWatchList={true}
           watchlist_id={watchlist.id ? watchlist.id : 0}
           movies={watchListMovies}
         />

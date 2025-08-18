@@ -25,6 +25,7 @@ interface Movie {
 export default function WatchListMoviesDisplay({
   accessToken,
   watchlist_id,
+  isCreateWatchList = false,
   isSeeWatchList = false,
   isEditWatchList = false,
   onMovieDeletion,
@@ -33,6 +34,7 @@ export default function WatchListMoviesDisplay({
 }: {
   accessToken: string;
   watchlist_id: number;
+  isCreateWatchList?: boolean;
   isSeeWatchList?: boolean;
   isEditWatchList?: boolean;
   onMovieDeletion?: (movie: MovieDataGet) => void;
@@ -119,9 +121,15 @@ export default function WatchListMoviesDisplay({
             </div>
           ))}
 
-          <div className="flex items-center justify-center w-12 text-gray-400 text-2xl">
-            <Link to={`/watchlists/${watchlist_id}`}>...</Link>
-          </div>
+          {isCreateWatchList ? (
+            <div className="flex items-center justify-center w-12 text-gray-400 text-2xl">
+              ...
+            </div>
+          ) : (
+            <div className="flex items-center justify-center w-12 text-gray-400 text-2xl">
+              <Link to={`/watchlists/${watchlist_id}`}>...</Link>
+            </div>
+          )}
 
           <MovieCard
             key={movie_page.items[movie_page.items.length - 1].id}
