@@ -1,6 +1,5 @@
 import { Pagination } from "components/ui/pagination";
 import { Trash } from "lucide-react";
-import { useState } from "react";
 import { Link, useFetcher } from "react-router-dom";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { Page } from "services/api/flixy/types/overall";
@@ -29,6 +28,7 @@ export default function WatchListMoviesDisplay({
   isSeeWatchList = false,
   isEditWatchList = false,
   onMovieDeletion,
+  highlightedMovies = [],
   movies,
 }: {
   accessToken: string;
@@ -36,33 +36,26 @@ export default function WatchListMoviesDisplay({
   isSeeWatchList?: boolean;
   isEditWatchList?: boolean;
   onMovieDeletion?: (movie: MovieDataGet) => void;
+  highlightedMovies?: number[];
   movies: Page<MovieDataGet>;
 }) {
   const fetcher = useFetcher();
 
   let movie_page: Page<MovieDataGet> = fetcher.data?.data.movies ?? movies;
 
-  const [highlighted, setHighlighted] = useState<number[]>([]);
-
   function handleMovieDeletion(movie: MovieDataGet) {
     if (onMovieDeletion) {
       onMovieDeletion(movie);
     }
-
-    setHighlighted((prev) =>
-      prev.includes(Number(movie.id))
-        ? prev.filter((id) => id !== Number(movie.id))
-        : [...prev, movie.id as number]
-    );
   }
 
   function deleteButton(movie: MovieDataGet) {
-    const isActive = highlighted.includes(Number(movie.id));
+    const isActive = highlightedMovies.includes(Number(movie.id));
 
     return (
       <Button
         onClick={() => handleMovieDeletion(movie)}
-        className={`m-10 mt-2 rounded-lg border shadow-sm border-slate-700 hover:bg-slate-700 disabled:opacity-50
+        className={`m-10 mt-2 mb-2 rounded-lg border shadow-sm border-slate-700 hover:bg-slate-700 disabled:opacity-50
         ${isActive ? "bg-red-700 text-white" : "bg-slate-800/50 text-card-foreground"}
       `}
       >

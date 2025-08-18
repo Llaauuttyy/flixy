@@ -38,6 +38,7 @@ export default function WatchListMovies({
   watchList,
   accessToken,
   onMovieDeletion,
+  highlightedMovies = [],
 }: {
   showOnly?: boolean;
   isSeeWatchList?: boolean;
@@ -45,6 +46,7 @@ export default function WatchListMovies({
   watchList: WatchList | WatchListGet;
   accessToken: string;
   onMovieDeletion?: (movie: MovieDataGet) => void;
+  highlightedMovies?: number[];
 }) {
   const [watchListMovies, setWatchListMovies] = useState<Page<MovieDataGet>>(
     watchList.movies?.items
@@ -95,6 +97,7 @@ export default function WatchListMovies({
           movies={watchListMovies}
           isEditWatchList={isEditWatchList}
           onMovieDeletion={handleMovieDeletion}
+          highlightedMovies={highlightedMovies}
         />
         {!isSeeWatchList && (
           <AddMovieWatchList

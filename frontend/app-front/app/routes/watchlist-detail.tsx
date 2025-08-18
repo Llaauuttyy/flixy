@@ -117,7 +117,10 @@ export default function WatchListsPage() {
 
   const cancelEditWatchList = async () => {
     setIsEditing(false);
-    navigator(0);
+    setName(watchlist.name || "");
+    setDescription(watchlist.description || "");
+    setMoviesToDelete([]);
+    setMoviesToAdd([]);
   };
 
   const setEditWatchList = async () => {
@@ -130,6 +133,7 @@ export default function WatchListsPage() {
     let movieIdsToDelete: number[] = moviesToDelete.map((movie) =>
       Number(movie.id)
     );
+    let movieIdsToAdd: number[] = moviesToAdd.map((movie) => Number(movie.id));
 
     let watchListData: WatchListEdit = {
       watchlist_id: watchlist.id,
@@ -138,6 +142,7 @@ export default function WatchListsPage() {
         description: description ? description.trim() : undefined,
         movie_ids_to_delete:
           movieIdsToDelete.length > 0 ? movieIdsToDelete : undefined,
+        movie_ids_to_add: movieIdsToAdd.length > 0 ? movieIdsToAdd : undefined,
       },
     };
 
@@ -358,6 +363,9 @@ export default function WatchListsPage() {
                 watchList={watchlist}
                 isEditWatchList={isEditing}
                 onMovieDeletion={handleEditWatchListMovieDeletion}
+                highlightedMovies={moviesToDelete.map((movie) =>
+                  Number(movie.id)
+                )}
               />
             ) : (
               <p className="italic text-gray-300 mb-4">No movies so far.</p>
@@ -369,8 +377,8 @@ export default function WatchListsPage() {
               <h2 className="text-xl font-semibold text-white mb-4">
                 Add movies
               </h2>
-              <div className="flex justify-start">
-                <div className="">
+              <div className="flex justify-center">
+                <div className="pr-3">
                   <AddMovieWatchList
                     showOnly={true}
                     accessToken={String(apiResponse.accessToken)}

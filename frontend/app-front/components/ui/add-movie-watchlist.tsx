@@ -3,7 +3,7 @@ import { Input } from "components/ui/input";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSubmit } from "react-router-dom";
+import { useSubmit } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/client/movies";
 import { handleWatchListEdition } from "services/api/flixy/client/watchlists";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
@@ -13,28 +13,8 @@ import type {
   WatchListEditData,
 } from "services/api/flixy/types/watchlist";
 
-interface SearchResults {
-  movies: Page<Movie>;
-}
-
 interface SearchResultsWatchLists {
   movies: Page<MovieDataGet>;
-}
-
-interface Movie {
-  id: number;
-  title: string;
-  year: number;
-  imdb_rating: number;
-  genres: string;
-  countries: string;
-  duration: number;
-  cast: string;
-  directors: string;
-  writers: string;
-  plot: string;
-  logo_url: string;
-  user_rating: number | null;
 }
 
 interface AddMovieWatchListProps {
@@ -60,7 +40,6 @@ export function AddMovieWatchList({
   const [apiResponseSearch, setApiResponseSearch] = useState<ApiResponse>({});
   const [searchText, setSearchText] = useState("");
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const isShowOnly = showOnly ?? false;
 
