@@ -32,7 +32,7 @@ def get_watchlist(session: SessionDep, request: Request, watchlist_service: Watc
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
 
 @watchlist_router.get("/watchlist/{watchlist_id}/movies/{movie_id}")
-def delete_watchlist(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, watchlist_id: int = Path(..., title="watchlist id", ge=1), movie_id: int = Path(..., title="movie id", ge=1)) -> Optional[MovieDTO]:
+def get_movie_from_watchlist(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, watchlist_id: int = Path(..., title="watchlist id", ge=1), movie_id: int = Path(..., title="movie id", ge=1)) -> Optional[MovieDTO]:
     user_id = request.state.user_id
     try:
         movie = watchlist_service.get_movie_from_watchlist(Database(session), user_id, watchlist_id, movie_id)
