@@ -3,7 +3,6 @@ import { Input } from "components/ui/input";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSubmit } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/client/movies";
 import {
   handleGetMovieFromWatchList,
@@ -39,7 +38,6 @@ export function AddMovieWatchList({
   watchListId,
   onMovieSelect,
 }: AddMovieWatchListProps) {
-  const submit = useSubmit();
   const [apiResponseMovieAdd, setApiResponseMovieAdd] = useState<ApiResponse>(
     {}
   );
@@ -163,7 +161,7 @@ export function AddMovieWatchList({
           className="justify-end bg-transparent border-none text-gray-400 text-sm font-medium cursor-pointer rounded-md transition-all duration-200 hover:bg-slate-800"
         >
           <Plus className="text-gray-400" />
-          Add More
+          {t("add_movie_watchlist_component.add_movie")}
         </Button>
       </div>
     );
@@ -208,7 +206,7 @@ export function AddMovieWatchList({
                     </>
                   ) : (
                     <li className="px-4 py-2 text-gray-500">
-                      No matches found.
+                      {t("add_movie_watchlist_component.no_movies_found")}
                     </li>
                   )}
                 </ul>

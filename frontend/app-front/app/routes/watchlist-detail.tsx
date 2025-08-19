@@ -157,8 +157,7 @@ export default function WatchListsPage() {
       console.log("API PATCH /watchlist said: ", err.message);
 
       if (err instanceof TypeError) {
-        apiEditResponse.error =
-          "Service's not working properly. Please try again later.";
+        apiEditResponse.error = t("exceptions.service_error");
         setApiEditResponse(apiEditResponse);
       }
 
@@ -170,7 +169,6 @@ export default function WatchListsPage() {
   };
 
   const handleEditWatchListMovieDeletion = (movie: MovieDataGet) => {
-    console.log("Edit Parent: Deleting movie:", movie);
     setMoviesToDelete((prevMovies) => {
       if (prevMovies.includes(movie)) {
         return prevMovies.filter((m) => m !== movie);
@@ -183,7 +181,6 @@ export default function WatchListsPage() {
   };
 
   const handleEditWatchListMovieAddition = (movie: MovieDataGet) => {
-    console.log("Edit Parent: Adding movie:", movie);
     setMoviesToAdd((prevMovies) => {
       if (prevMovies.includes(movie)) {
         return prevMovies.filter((m) => m !== movie);
@@ -257,11 +254,13 @@ export default function WatchListsPage() {
               <div className="grid">
                 {isEditing ? (
                   <div>
-                    <h1 className="text-foreground font-bold">Name</h1>
+                    <h1 className="text-foreground font-bold">
+                      {t("watchlist_detail.is_editing.name")}
+                    </h1>
                     <MaxLengthInput
                       id="name"
                       name="name"
-                      placeholder="watchlist name"
+                      placeholder={t("watchlist_creator.name_placeholder")}
                       value={name}
                       length={140}
                       onChange={(value) => setName(value)}
@@ -278,11 +277,15 @@ export default function WatchListsPage() {
                 )}
                 {isEditing ? (
                   <div>
-                    <p className="text-foreground font-bold">Description</p>
+                    <p className="text-foreground font-bold">
+                      {t("watchlist_detail.is_editing.description")}
+                    </p>
                     <MaxLengthInput
                       id="description"
                       name="description"
-                      placeholder="watchlist description"
+                      placeholder={t(
+                        "watchlist_creator.description_placeholder"
+                      )}
                       value={description}
                       length={1000}
                       onChange={(value) => setDescription(value)}
@@ -296,7 +299,7 @@ export default function WatchListsPage() {
                   <p className="text-gray-300 mb-4">{watchlist.description}</p>
                 ) : (
                   <p className="italic text-gray-300 mb-4">
-                    No description so far.
+                    {t("watchlist_detail.no_description")}
                   </p>
                 )}
                 {apiDeleteResponse.error && (
@@ -329,24 +332,29 @@ export default function WatchListsPage() {
                 <div className="flex items-center gap-2">
                   <Film className="w-4 h-4 text-purple-400" />
                   <span className="text-slate-300">
-                    {watchlist.insights.total_movies} movies
+                    {watchlist.insights.total_movies}{" "}
+                    {t("watchlist_detail.details.movies")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-purple-400" />
                   <span className="text-slate-300">
-                    Created {dayjs.utc(watchlist.created_at).fromNow()}
+                    {t("watchlist_detail.details.created")}{" "}
+                    {dayjs.utc(watchlist.created_at).fromNow()}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Pencil className="w-4 h-4 text-purple-400" />
                   <span className="text-slate-300">
-                    Updated {dayjs.utc(watchlist.updated_at).fromNow()}
+                    {t("watchlist_detail.details.updated")}{" "}
+                    {dayjs.utc(watchlist.updated_at).fromNow()}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Eye className="w-4 h-4 text-purple-400" />
-                  <span className="text-slate-300">Public</span>
+                  <span className="text-slate-300">
+                    {t("watchlist_detail.visibility_public")}
+                  </span>
                 </div>
               </div>
             )}
@@ -354,7 +362,7 @@ export default function WatchListsPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">
-              Movies in this Watchlist
+              {t("watchlist_detail.movies_display")}
             </h2>
             {watchlist.movies?.items ? (
               <WatchListMovies
@@ -368,14 +376,16 @@ export default function WatchListsPage() {
                 )}
               />
             ) : (
-              <p className="italic text-gray-300 mb-4">No movies so far.</p>
+              <p className="italic text-gray-300 mb-4">
+                {t("watchlist_detail.no_movies")}
+              </p>
             )}
           </section>
 
           {isEditing && (
             <section className="grid">
               <h2 className="text-xl font-semibold text-white mb-4">
-                Add movies
+                {t("watchlist_detail.is_editing.add_movies")}
               </h2>
               <div className="flex justify-center">
                 <div className="pr-3">
@@ -417,10 +427,10 @@ export default function WatchListsPage() {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 size-4 animate-spin" />
-                      Saving changes...
+                      {t("watchlist_detail.is_editing.saving")}
                     </>
                   ) : (
-                    <>Save changes</>
+                    <>{t("watchlist_detail.is_editing.save")}</>
                   )}
                 </Button>
                 <Button
@@ -438,17 +448,21 @@ export default function WatchListsPage() {
             <div className="bg-slate-800 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Film className="w-5 h-5 text-purple-400" />
-                Watchlist Statistics
+                {t("watchlist_detail.statistics.title")}
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-slate-300">Total Movies</span>
+                  <span className="text-slate-300">
+                    {t("watchlist_detail.statistics.total_movies")}
+                  </span>
                   <span className="text-white font-medium">
                     {watchlist.insights.total_movies}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-300">Watched</span>
+                  <span className="text-slate-300">
+                    {t("watchlist_detail.statistics.watched")}
+                  </span>
                   <span className="text-white font-medium">
                     {watchlist.insights.total_watched_movies}{" "}
                     <span className="text-slate-300 text-sm">
@@ -458,8 +472,7 @@ export default function WatchListsPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-300">
-                    Average
-                    <Badge className="ml-1 bg-yellow-400 text-black font-bold rounded-sm px-1.5 py-0.5">
+                    <Badge className="bg-yellow-400 text-black font-bold rounded-sm px-1.5 py-0.5">
                       IMDb
                     </Badge>{" "}
                     Rating
@@ -481,7 +494,7 @@ export default function WatchListsPage() {
                   <span className="text-slate-300">
                     <Link to={`/profile`}>
                       <span className="text-purple-400 font-bold hover:underline">
-                        Your
+                        {t("watchlist_detail.statistics.your")}
                       </span>{" "}
                     </Link>
                     Rating
@@ -500,8 +513,12 @@ export default function WatchListsPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-300">Visibility</span>
-                  <span className="text-white font-medium">Public</span>
+                  <span className="text-slate-300">
+                    {t("watchlist_detail.visibility")}
+                  </span>
+                  <span className="text-white font-medium">
+                    {t("watchlist_detail.visibility_public")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -509,7 +526,7 @@ export default function WatchListsPage() {
             <div className="bg-slate-800 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-purple-400" />
-                Recent Activity
+                {t("watchlist_detail.activity.title")}
               </h3>
               <div className="space-y-3 text-sm">
                 {watchlist.activity.length !== 0 ? (
@@ -520,7 +537,7 @@ export default function WatchListsPage() {
                           <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                           <Link to={`/movies/${activity.target.id}`}>
                             <span className="text-slate-300">
-                              Added{" "}
+                              {t("watchlist_detail.activity.added")}{" "}
                               <span className="text-purple-400 font-bold hover:underline cursor-pointer">
                                 {activity.target.title}
                               </span>{" "}
@@ -532,7 +549,7 @@ export default function WatchListsPage() {
                   )
                 ) : (
                   <p className="italic text-gray-300 mb-4">
-                    No activity so far.
+                    {t("watchlist_detail.activity.no_activity")}
                   </p>
                 )}
               </div>

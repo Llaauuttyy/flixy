@@ -1,11 +1,7 @@
-import { Clock, Pencil, Trash } from "lucide-react";
-import { Link } from "react-router-dom";
-// import { Pagination } from "components/ui/pagination";
-// import { useTranslation } from "react-i18next";
-// import { useFetcher, useLoaderData } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-// import type { Route } from "./+types/movies";
+import { Clock, Pencil, Trash } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -89,7 +85,8 @@ export default function WatchList({
             </h2>
             <div className="flex items-center gap-4 mt-1">
               <span className="text-sm text-gray-400">
-                {watchlist.movies.total} movies
+                {watchlist.movies.total}{" "}
+                {t("watchlists.general_insights.movies")}
               </span>
               <div className="flex items-center gap-1 text-xs text-gray-500">
                 <Clock className="w-3 h-3" />
@@ -108,7 +105,7 @@ export default function WatchList({
               onClick={() => {}}
               className="mt-5 justify-end bg-transparent hover:underline border-none text-violet-400 text-sm font-medium cursor-pointer px-4 py-2 rounded-md transition-all duration-200 hover:bg-slate-800"
             >
-              See WatchList
+              {t("watchlists.see_watchlist")}
             </Button>
           </Link>
           <Button

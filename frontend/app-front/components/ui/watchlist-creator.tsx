@@ -3,6 +3,7 @@ import { Button } from "./button";
 import { Label } from "./label";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { handleWatchListCreation } from "services/api/flixy/client/watchlists";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
@@ -43,6 +44,8 @@ export default function WatchListCreator({
   accessToken: string;
   onCreation: (watchlist: WatchListFace) => void;
 }) {
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState<String>("");
@@ -128,17 +131,16 @@ export default function WatchListCreator({
             <div className="space-y-2 max-w-3xl">
               <div>
                 <Label htmlFor="name" className="text-foreground font-bold">
-                  Name
+                  {t("watchlist_creator.name")}
                 </Label>
               </div>
               <MaxLengthInput
                 id="name"
                 name="name"
-                placeholder="watchlist name"
+                placeholder={t("watchlist_creator.name_placeholder")}
                 length={140}
                 onChange={(value) => setName(value)}
                 onLimitReached={(nameLimit) => setNameLimitReached(nameLimit)}
-                // required
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
               />
             </div>
@@ -149,13 +151,13 @@ export default function WatchListCreator({
                   htmlFor="description"
                   className="text-foreground font-bold"
                 >
-                  Description
+                  {t("watchlist_creator.description")}
                 </Label>
               </div>
               <MaxLengthInput
                 id="description"
                 name="description"
-                placeholder="watchlist description"
+                placeholder={t("watchlist_creator.description_placeholder")}
                 length={1000}
                 onChange={(value) => setDescription(value)}
                 onLimitReached={(descriptionLimit) =>
@@ -168,7 +170,7 @@ export default function WatchListCreator({
             <div className="space-y-2">
               <div>
                 <Label htmlFor="movies" className="text-foreground font-bold">
-                  Movies
+                  {t("watchlist_creator.movies")}
                 </Label>
                 <WatchListCreatorMovies
                   showOnly={true}
@@ -200,10 +202,10 @@ export default function WatchListCreator({
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />
-                  Creating
+                  {t("watchlist_creator.creating")}
                 </>
               ) : (
-                "Create"
+                t("watchlist_creator.create")
               )}
             </Button>
             {apiResponse.error && (

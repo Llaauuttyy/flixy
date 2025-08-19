@@ -13,6 +13,7 @@ import WatchList from "components/ui/watchlist";
 import WatchListCreator from "components/ui/watchlist-creator";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
+import { useTranslation } from "react-i18next";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import { getAccessToken } from "services/api/utils";
 
@@ -83,6 +84,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function WatchListsPage() {
+  const { t } = useTranslation();
   const apiResponse: ApiResponse = useLoaderData();
   const fetcher = useFetcher();
 
@@ -100,8 +102,6 @@ export default function WatchListsPage() {
   );
 
   let [newWatchLists, setNewWatchLists] = useState<WatchListFace[]>([]);
-
-  console.log("Watchlists: ", watchlists);
 
   const [watchListsData, setWatchListsData] = useState({
     movies: apiResponse.data.total_movies ? apiResponse.data.total_movies : 0,
@@ -165,7 +165,7 @@ export default function WatchListsPage() {
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Create WatchList
+            {t("watchlists.create_button")}
           </Button>
         )}
         {isCreation && (
@@ -174,7 +174,7 @@ export default function WatchListsPage() {
             variant={"outline"}
             className="ml-2 hover:bg-red-700 hover:text-white text-red-500 border-red-500 disabled:opacity-50"
           >
-            Cancel
+            {t("watchlists.cancel_button")}
           </Button>
         )}
       </>
@@ -212,11 +212,9 @@ export default function WatchListsPage() {
             <div className="flex justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-white mb-2">
-                  Watchlists
+                  {t("watchlists.title")}
                 </h1>
-                <p className="text-gray-300">
-                  Manage your favorite genres and never miss a must-watch again
-                </p>
+                <p className="text-gray-300">{t("watchlists.subtitle")}</p>
               </div>
               <div className="flex justify-end mb-6">
                 {getCreationButtons()}
@@ -230,7 +228,9 @@ export default function WatchListsPage() {
               />
             )}
             <div className="flex justify-center mb-6">
-              <p className="text-gray-400 mb-6">No watchlists so far.</p>
+              <p className="text-gray-400 mb-6">
+                {t("watchlists.no_watchlists")}
+              </p>
             </div>
           </main>
         </div>
@@ -247,25 +247,31 @@ export default function WatchListsPage() {
         </div>
         {/* Header */}
         <div className="p-6 pb-3">
-          <h1 className="text-3xl font-bold text-white mb-2">Watchlists</h1>
-          <p className="text-gray-300">
-            Manage your favorite genres and never miss a must-watch again
-          </p>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {t("watchlists.title")}
+          </h1>
+          <p className="text-gray-300">{t("watchlists.subtitle")}</p>
           <div className="flex justify-between">
             {/* <div className="flex justify-end mb-6"> */}
             {/* </div> */}
             <div className="flex justify-start gap-6">
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <Film className="w-4 h-4 text-violet-400" />
-                <span>{watchListsData.movies} movies</span>
+                <span>
+                  {watchListsData.movies}{" "}
+                  {t("watchlists.general_insights.movies")}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <Star className="w-4 h-4 text-violet-400" />
-                <span>{watchListsData.watchlists} watchlists</span>
+                <span>
+                  {watchListsData.watchlists}{" "}
+                  {t("watchlists.general_insights.watchlists")}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <TrendingUp className="w-4 h-4 text-violet-400" />
-                <span>Updated recently</span>
+                <span>{t("watchlists.general_insights.last_activity")}</span>
               </div>
             </div>
             <div className="mt-3 h-px bg-gray-600 mb-6" />
