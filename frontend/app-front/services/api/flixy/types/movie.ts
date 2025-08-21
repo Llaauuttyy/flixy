@@ -14,9 +14,11 @@ export interface MovieDataGet {
   writers: string | undefined;
   plot: string | undefined;
   logo_url: string | undefined;
+  youtube_trailer_id?: string | undefined;
+  is_trailer_reliable?: boolean | undefined;
   user_rating?: number;
   access_token?: string | undefined;
-  [key: string | number]: string | number | null | undefined;
+  [key: string | number]: string | number | null | boolean | undefined;
 }
 
 export interface MovieOverallData {

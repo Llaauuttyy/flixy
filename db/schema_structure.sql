@@ -26,6 +26,8 @@ CREATE TABLE movies (
   writers varchar(512) NOT NULL,
   plot varchar(2048) NOT NULL,
   logo_url varchar(512) NOT NULL,
+  youtube_trailer_id varchar(45) DEFAULT NULL,
+  is_trailer_reliable tinyint DEFAULT NULL,
   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)

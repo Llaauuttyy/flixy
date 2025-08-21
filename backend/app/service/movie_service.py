@@ -27,6 +27,8 @@ class MovieService:
                 writers=movie.writers,
                 plot=movie.plot,
                 logo_url=movie.logo_url,
+                youtube_trailer_id=movie.youtube_trailer_id,
+                is_trailer_reliable=movie.is_trailer_reliable,
                 user_rating=review.rating if review and review.rating else None
             ) for movie, review in movies_rating
         ]
@@ -54,6 +56,8 @@ class MovieService:
                 writers=movie.writers,
                 plot=movie.plot,
                 logo_url=movie.logo_url,
+                youtube_trailer_id=movie.youtube_trailer_id,
+                is_trailer_reliable=movie.is_trailer_reliable,
                 user_rating= review.rating if review and review.rating else None
             ) 
         
