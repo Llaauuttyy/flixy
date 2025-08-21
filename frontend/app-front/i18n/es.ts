@@ -43,6 +43,7 @@ export const esTranslation = {
   sidebar_nav: {
     home: "Inicio",
     movies: "Películas",
+    watchlists: "Listas",
     social: "Social",
     reviews: "Reseñas",
     explore: "Explorar",
@@ -221,5 +222,62 @@ export const esTranslation = {
       },
       no_activity: "Todavía no hay actividad en ningún género.",
     },
+  },
+  watchlists: {
+    title: "Listas",
+    subtitle:
+      "Administra tus géneros favoritos y nunca te pierdas una película imprescindible",
+    create_button: "Crear lista",
+    cancel_button: "Cancelar",
+    no_watchlists: "Aún no hay listas.",
+    general_insights: {
+      movies: "películas",
+      watchlists: "listas",
+      last_activity: "Actualizado recientemente",
+    },
+    see_watchlist: "Ver lista",
+  },
+  watchlist_detail: {
+    is_editing: {
+      name: "Nombre",
+      description: "Descripción",
+      add_movies: "Agregar películas",
+      save: "Guardar cambios",
+      saving: "Guardando cambios...",
+    },
+    no_description: "Sin descripción por ahora.",
+    details: {
+      movies: "películas",
+      created: "Creada",
+      updated: "Actualizada",
+    },
+    movies_display: "Películas en esta lista",
+    no_movies: "Aún no hay películas en esta lista.",
+    statistics: {
+      title: "Estadísticas de la lista",
+      total_movies: "Total de películas",
+      watched: "Vistas",
+      your: "Tu",
+    },
+    visibility: "Visibilidad",
+    visibility_public: "Pública",
+    activity: {
+      title: "Actividad reciente",
+      no_activity: "Aún no hay actividad en esta lista.",
+      added: "agregó",
+    },
+  },
+  watchlist_creator: {
+    name: "Nombre",
+    name_placeholder: "Ingresa el nombre de la lista",
+    description: "Descripción",
+    description_placeholder: "Ingresa la descripción de la lista",
+    movies: "Películas",
+    create: "Crear",
+    creating: "Creando...",
+  },
+  add_movie_watchlist_component: {
+    add_movie: "Agregar más",
+    no_movies_found: "No se encontraron películas.",
   },
 };

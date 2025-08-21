@@ -17,3 +17,13 @@ REVIEW_NOT_FOUND = "Review not found."
 UNDELETABLE_REVIEW_ERROR = "Cannot delete that Review."
 FUTURE_TRAVELER = "Date cannot be in the future."
 INSULTING_REVIEW = "Your review contains insulting content. Try to express yourself and be nice at the same time. It is not that hard!"
+
+# WatchList
+WATCHLIST_ALREADY_EXISTS = "Watchlist with that name already exists."
+WATCHLIST_NOT_FOUND = "Watchlist not found."
+
+def MOVIE_ALREADY_IN_WATCHLIST(movie_id: int) -> str:
+    return f"Movie with ID {movie_id} already in watchlist."
+
+def MOVIE_NOT_FOUND_IN_WATCHLIST(movie_id: int) -> str:
+    return f"Movie with ID {movie_id} not found in watchlist."
