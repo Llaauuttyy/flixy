@@ -27,7 +27,7 @@ def get_recommendations(session: SessionDep, request: Request, recommendation_se
     user_id = request.state.user_id
     
     try:
-        movies = recommendation_service.get_recommendations_ai(Database(session), user_id)
+        movies = recommendation_service.get_ai_recommendations(Database(session), user_id)
         return paginate(movies)
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))

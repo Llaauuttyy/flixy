@@ -6,8 +6,27 @@ from sqlalchemy.orm import selectinload
 from math import log10
 from app.ai_model.decision_forest import DecisionForestTrainModel, characteristic_model
 
+MAX_RECOMMENDATION_RESULTS = 100
+
 class RecommendationService:
-    def get_recommendations(self, db: Database, user_id: int) -> list[Movie]:
+    """
+    Toma el 80% de películas recomendadas por la IA y el 20% de películas recomendadas por el mejor género.
+    Por el momento, quedan primero las películas de IA y después las de mejor género.
+    """
+    def get_recommendations(self, db: Database, user_id: int) -> list[MovieDTO]:
+        best_genre_recommendations = self.get_best_genre_recommendations(db, user_id)
+        ai_recommendations = self.get_ai_recommendations(db, user_id)
+    
+        recommendations = ai_recommendations[:int(MAX_RECOMMENDATION_RESULTS * 0.8)]
+        while len(recommendations) < MAX_RECOMMENDATION_RESULTS:
+            for movie in best_genre_recommendations:
+                if movie not in recommendations and len(recommendations) < MAX_RECOMMENDATION_RESULTS:
+                    recommendations.append(movie)
+            recommendations.extend(ai_recommendations[len(recommendations):MAX_RECOMMENDATION_RESULTS])
+
+        return recommendations
+
+    def get_best_genre_recommendations(self, db: Database, user_id: int) -> list[MovieDTO]:
         user_reviews = db.find_all_by_multiple(
             Review,
             db.build_condition([Review.user_id == user_id]),
@@ -77,7 +96,7 @@ class RecommendationService:
             ) for movie in movies_recommended
         ]
     
-    def get_recommendations_ai(self, db: Database, user_id: int):
+    def get_ai_recommendations(self, db: Database, user_id: int):
         user_reviews = list(db.find_all_by_multiple(
             Review,
             db.build_condition([Review.user_id == user_id]),
