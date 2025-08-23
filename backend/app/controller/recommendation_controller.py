@@ -20,14 +20,3 @@ def get_recommendations(session: SessionDep, request: Request, recommendation_se
         return paginate(movies)
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
-    
-# README: Solo una prueba para ver como responde el modelo 
-@recommendation_router.get("/recommendations/ai")
-def get_recommendations(session: SessionDep, request: Request, recommendation_service: RecommendationServiceDep) -> Page[MovieDTO]:
-    user_id = request.state.user_id
-    
-    try:
-        movies = recommendation_service.get_ai_recommendations(Database(session), user_id)
-        return paginate(movies)
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
