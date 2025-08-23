@@ -4,6 +4,7 @@ from app.model.review import Review
 from app.model.movie import Movie
 from sqlalchemy.orm import selectinload
 from math import log10
+from app.ai_model.decision_forest import DecisionForestTrainModel, characteristic_model
 
 class RecommendationService:
     def get_recommendations(self, db: Database, user_id: int) -> list[Movie]:
@@ -74,4 +75,23 @@ class RecommendationService:
                 plot=movie.plot,
                 logo_url=movie.logo_url
             ) for movie in movies_recommended
+        ]
+    
+    def get_recommendations_ai(self, db: Database, user_id: int):
+        user_reviews = list(db.find_all_by_multiple(
+            Review,
+            db.build_condition([Review.user_id == user_id]),
+            options=[selectinload(Review.movie)]
+        ))
+
+        unwatched_movies = db.find_all_by_multiple(
+            Movie,
+            db.build_condition([Movie.id.notin_([review.movie.id for review in user_reviews])])
+        )
+
+        rated_movies = [DecisionForestTrainModel(review) for review in user_reviews if review.rating is not None]
+
+        return [
+            MovieDTO(**pred)
+            for pred in characteristic_model.predict(user_id, list(unwatched_movies), rated_movies)
         ]
