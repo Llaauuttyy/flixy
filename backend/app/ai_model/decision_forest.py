@@ -87,18 +87,4 @@ class DecisionForestTrainModel:
         self.directors = review.movie.directors
         self.writers = review.movie.writers
 
-class DecisionForestPredictModel:
-    def __init__(self, movie):
-        self.id = movie.id
-        self.title = movie.title
-        self.year = movie.year
-        self.imdb_rating = movie.imdb_rating
-        self.genres = movie.genres
-        self.countries = movie.countries
-        self.duration = movie.duration
-        self.cast = movie.cast
-        self.directors = movie.directors
-        self.writers = movie.writers
-
-
 characteristic_model = DecisionForest()
