@@ -1,7 +1,6 @@
 from datetime import datetime
 import pandas as pd
 from app.dto.movie import MovieDTO
-import tensorflow_decision_forests as tfdf
 from sklearn.model_selection import train_test_split
 
 RETRAIN_PORCENTAGE = 1.25
@@ -37,6 +36,7 @@ def prepare_data(rated_movies):
 # 2. Split entrenamiento y validacion
 # ==================================
 def split_train_validate(df):
+    import tensorflow_decision_forests as tfdf
     train_df, valid_df = train_test_split(df, test_size=0.2, random_state=42)
     ds_train = tfdf.keras.pd_dataframe_to_tf_dataset(train_df, label="rating", task=tfdf.keras.Task.REGRESSION)
     ds_valid = tfdf.keras.pd_dataframe_to_tf_dataset(valid_df, label="rating", task=tfdf.keras.Task.REGRESSION)
@@ -46,6 +46,7 @@ def split_train_validate(df):
 # 3. Entrenar modelo
 # ======================
 def train_model(df_train, df_valid):
+    import tensorflow_decision_forests as tfdf
     model = tfdf.keras.GradientBoostedTreesModel(task=tfdf.keras.Task.REGRESSION)
     model.fit(df_train, validation_data=df_valid)
     return model
@@ -55,6 +56,7 @@ def train_model(df_train, df_valid):
 # 4. Preparacion de datos y predicción
 # =================================
 def predict_ratings(model, unwatched_movies):
+    import tensorflow_decision_forests as tfdf
     predict_df = pd.DataFrame([vars(
         MovieDTO(
             id=m.id,
