@@ -9,3 +9,7 @@ export type RegistrationData = {
   email: FormDataEntryValue | null;
   password: FormDataEntryValue | null;
 };
+
+export type RefreshTokenData = {
+  refresh_token: string | null;
+};

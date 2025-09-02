@@ -10,6 +10,7 @@ class SecurityService:
     def __init__(self):
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self.access_token_expiration_seconds = 3600
+        self.refresh_token_expiration_seconds = 21600
 
     def is_password_valid(self, password: str) -> bool:
         """
@@ -34,10 +35,21 @@ class SecurityService:
         """
         return self.pwd_context.verify(plain_password, hashed_password)
     
-    def create_access_token(self, data: dict):
-        to_encode = data.copy()
-        datetime.now(timezone.utc)
-        expiration = datetime.now(timezone.utc) + timedelta(seconds=self.access_token_expiration_seconds)
-        to_encode.update({"expiration": expiration.isoformat()})
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-        return encoded_jwt
+    def create_tokens(self, data: dict):
+        access_token = encode_token(data, self.access_token_expiration_seconds)
+        refresh_token = encode_token(data, self.refresh_token_expiration_seconds)
+        return access_token, refresh_token
+    
+    def get_id_from_token(self, token: str):
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            return payload.get("id")
+        except jwt.PyJWTError:
+            return None
+
+def encode_token(data: dict, expiration: int):
+    to_encode = data.copy()
+    datetime.now(timezone.utc)
+    expiration = datetime.now(timezone.utc) + timedelta(seconds=expiration)
+    to_encode.update({"expiration": expiration.isoformat()})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

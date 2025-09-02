@@ -1,13 +1,22 @@
 import { redirect } from "react-router";
-import { destroySession, getSession } from "../../session/sessions.server";
+import {
+  destroyAccessSession,
+  destroyRefreshSession,
+  getAccessSession,
+  getRefreshSession,
+} from "../../session/sessions.server";
 import type { Route } from "./+types/signout";
 
 export async function action({ request }: Route.ActionArgs) {
-  const session = await getSession(request.headers.get("Cookie"));
+  const accessSession = await getAccessSession(request.headers.get("Cookie"));
+  const refreshSession = await getRefreshSession(request.headers.get("Cookie"));
 
   return redirect("/login", {
     headers: {
-      "Set-Cookie": await destroySession(session),
+      "Set-Cookie": [
+        await destroyAccessSession(accessSession),
+        await destroyRefreshSession(refreshSession),
+      ].join(", "),
     },
   });
 }

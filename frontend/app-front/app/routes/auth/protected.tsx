@@ -1,14 +1,42 @@
 import { Outlet } from "react-router-dom";
+import { handleRefreshToken } from "services/api/flixy/server/auth";
 import type { Route } from "./+types/protected";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { getSession } = await import("../../session/sessions.server");
+  const {
+    getAccessSession,
+    getRefreshSession,
+    commitAccessSession,
+    commitRefreshSession,
+  } = await import("../../session/sessions.server");
   const { redirect } = await import("react-router");
 
-  const session = await getSession(request.headers.get("Cookie"));
+  const accessSession = await getAccessSession(request.headers.get("Cookie"));
+  const refreshSession = await getRefreshSession(request.headers.get("Cookie"));
 
-  if (!session.has("accessToken")) {
-    return redirect("/login");
+  if (!accessSession.has("accessToken")) {
+    const refreshToken = refreshSession.get("refreshToken");
+    try {
+      const { access_token, refresh_token, expiration_time } =
+        await handleRefreshToken({ refresh_token: refreshToken ?? null });
+
+      accessSession.set("accessToken", access_token);
+      refreshSession.set("refreshToken", refresh_token);
+
+      return redirect("/", {
+        headers: {
+          "Set-Cookie": [
+            await commitAccessSession(accessSession, {
+              maxAge: expiration_time,
+            }),
+            await commitRefreshSession(refreshSession),
+          ].join(", "),
+        },
+      });
+    } catch (error) {
+      console.error("Error refreshing access token:", error);
+      return redirect("/login");
+    }
   }
 
   return null;
