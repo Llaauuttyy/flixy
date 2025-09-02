@@ -52,7 +52,8 @@ class AuthService:
         return LoginResponse(
             access_token=access_token,
             refresh_token=refresh_token,
-            expiration_time=self.security_service.access_token_expiration_seconds
+            access_token_expiration_time=self.security_service.access_token_expiration_seconds,
+            refresh_token_expiration_time=self.security_service.refresh_token_expiration_seconds
         )
     
     def refresh_token(self, refresh_token_dto: RefreshTokenDTO, db: Database) -> LoginResponse:
@@ -65,7 +66,8 @@ class AuthService:
         return LoginResponse(
             access_token=access_token,
             refresh_token=refresh_token,
-            expiration_time=self.security_service.access_token_expiration_seconds
+            access_token_expiration_time=self.security_service.access_token_expiration_seconds,
+            refresh_token_expiration_time=self.security_service.refresh_token_expiration_seconds
         )
     
     def update_password(self, password_update_dto: PasswordUpdateDTO, user_id: int, db: Database):

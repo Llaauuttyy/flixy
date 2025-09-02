@@ -25,7 +25,12 @@ export async function action({ request }: Route.ActionArgs) {
   const password = form.get("password");
 
   try {
-    const { access_token, refresh_token, expiration_time } = await handleLogin({
+    const {
+      access_token,
+      refresh_token,
+      access_token_expiration_time,
+      refresh_token_expiration_time,
+    } = await handleLogin({
       username,
       password,
     });
@@ -37,8 +42,12 @@ export async function action({ request }: Route.ActionArgs) {
     return redirect("/", {
       headers: {
         "Set-Cookie": [
-          await commitAccessSession(accessSession, { maxAge: expiration_time }),
-          await commitRefreshSession(refreshSession),
+          await commitAccessSession(accessSession, {
+            maxAge: access_token_expiration_time,
+          }),
+          await commitRefreshSession(refreshSession, {
+            maxAge: refresh_token_expiration_time,
+          }),
         ].join(", "),
       },
     });

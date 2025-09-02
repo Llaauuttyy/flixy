@@ -17,8 +17,12 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!accessSession.has("accessToken")) {
     const refreshToken = refreshSession.get("refreshToken");
     try {
-      const { access_token, refresh_token, expiration_time } =
-        await handleRefreshToken({ refresh_token: refreshToken ?? null });
+      const {
+        access_token,
+        refresh_token,
+        access_token_expiration_time,
+        refresh_token_expiration_time,
+      } = await handleRefreshToken({ refresh_token: refreshToken ?? null });
 
       accessSession.set("accessToken", access_token);
       refreshSession.set("refreshToken", refresh_token);
@@ -27,9 +31,11 @@ export async function loader({ request }: Route.LoaderArgs) {
         headers: {
           "Set-Cookie": [
             await commitAccessSession(accessSession, {
-              maxAge: expiration_time,
+              maxAge: access_token_expiration_time,
             }),
-            await commitRefreshSession(refreshSession),
+            await commitRefreshSession(refreshSession, {
+              maxAge: refresh_token_expiration_time,
+            }),
           ].join(", "),
         },
       });
