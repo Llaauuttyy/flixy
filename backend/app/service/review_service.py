@@ -1,4 +1,5 @@
 from app.model.user import User
+from app.model.review_like import ReviewLike
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
@@ -129,6 +130,27 @@ class ReviewService:
                 raise HTTPException(status_code=409, detail=UNDELETABLE_REVIEW_ERROR)
 
             db.delete(review_to_delete)
+        except IntegrityError as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))
+        
+    def like_review(self, db: Database, user_id: int, id: int):
+        try:
+            review_to_like = db.find_by(Review, "id", id)
+            user_like = db.find_by(ReviewLike, "id", id)
+
+            if not review_to_like:
+                raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
+            
+            if not user_like:
+                user_like = ReviewLike(user_id=user_id, review_id=id)
+                db.save(user_like)
+                review_to_like.likes += 1
+            else:
+                db.delete(user_like)
+                review_to_like.likes -= 1
+
+            db.save(review_to_like)
         except IntegrityError as e:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
