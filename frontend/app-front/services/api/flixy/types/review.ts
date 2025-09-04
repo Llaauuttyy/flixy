@@ -15,6 +15,7 @@ export interface ReviewDataGet {
   rating: number | null;
   text: string | null;
   watch_date: Date;
+  likes: number;
   updated_at: Date;
   [key: string]: string | number | Date | null;
 }

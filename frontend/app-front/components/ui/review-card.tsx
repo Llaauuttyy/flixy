@@ -11,18 +11,34 @@ import { Card, CardContent } from "./card";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import i18n from "i18n/i18n";
+import { useState } from "react";
+import { handleLikeReview } from "services/api/flixy/client/reviews";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
 interface ReviewCardProps {
   userReview: ReviewDataGet;
+  accessToken: string;
 }
 
-export function ReviewCard({ userReview }: ReviewCardProps) {
+export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
   const { t } = useTranslation();
+  const [likeDisabled, setLikeDisabled] = useState(false);
 
   dayjs.locale(i18n.language || "en");
+
+  const handleLike = async () => {
+    setLikeDisabled(true);
+
+    try {
+      await handleLikeReview(accessToken, userReview.id);
+    } catch (err: Error | any) {
+      console.log("API POST /review/:reviewId/like ", err.message);
+    }
+
+    setLikeDisabled(false);
+  };
 
   return (
     <Card className="bg-slate-800/50 border-slate-700">
@@ -60,9 +76,13 @@ export function ReviewCard({ userReview }: ReviewCardProps) {
             </div>
             <p className="text-slate-300 mb-3">{userReview.text}</p>
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+              <button
+                disabled={likeDisabled}
+                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+                onClick={handleLike}
+              >
                 <ThumbsUp className="w-4 h-4" />
-                <span className="text-sm">{0}</span>
+                <span className="text-sm">{userReview.likes}</span>
               </button>
               <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                 <MessageCircle className="w-4 h-4" />

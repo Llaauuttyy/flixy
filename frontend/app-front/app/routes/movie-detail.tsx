@@ -470,7 +470,10 @@ export default function MovieDetail() {
                       {currentReviews.items
                         .filter((review) => review.text?.trim())
                         .map((review) => (
-                          <ReviewCard userReview={review} />
+                          <ReviewCard
+                            userReview={review}
+                            accessToken={String(apiResponse.accessToken)}
+                          />
                         ))}
                     </div>
                   </Pagination>

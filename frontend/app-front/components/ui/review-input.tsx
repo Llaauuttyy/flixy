@@ -271,7 +271,7 @@ export function ReviewInput({
         {apiDeleteResponse?.error && (
           <p className="text-red-500 mt-4 mb-4">{apiDeleteResponse.error}</p>
         )}
-        <ReviewCard userReview={currentReview} />
+        <ReviewCard userReview={currentReview} accessToken={accessToken} />
       </div>
     );
   }

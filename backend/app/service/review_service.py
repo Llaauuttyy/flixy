@@ -20,6 +20,7 @@ class ReviewService:
             rating=review.rating,
             text=review.text,
             watch_date=review.watch_date,
+            likes=review.likes,
             updated_at=review.updated_at,
             user_name=review.user.name
         )
@@ -137,7 +138,7 @@ class ReviewService:
     def like_review(self, db: Database, user_id: int, id: int):
         try:
             review_to_like = db.find_by(Review, "id", id)
-            user_like = db.find_by(ReviewLike, "id", id)
+            user_like = db.find_by_multiple(ReviewLike, review_id=id, user_id=user_id)
 
             if not review_to_like:
                 raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
