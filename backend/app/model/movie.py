@@ -18,6 +18,8 @@ class Movie(SQLModel, table=True):
     writers: str
     plot: str
     logo_url: str
+    youtube_trailer_id: Optional[str] = None
+    is_trailer_reliable: Optional[bool] = None
     created_at: datetime
     updated_at: datetime
 
