@@ -4,9 +4,31 @@ from app.model.review import Review
 from app.model.movie import Movie
 from sqlalchemy.orm import selectinload
 from math import log10
+from random import random
+from app.ai_model.decision_forest import DecisionForestTrainModel, characteristic_model
+
+MAX_RECOMMENDATION_RESULTS = 100
 
 class RecommendationService:
-    def get_recommendations(self, db: Database, user_id: int) -> list[Movie]:
+    """
+    Toma el 80% de películas recomendadas por la IA y el 20% de películas recomendadas por el mejor género.
+    Por el momento, quedan primero las películas de IA y después las de mejor género.
+    """
+    def get_recommendations(self, db: Database, user_id: int) -> list[MovieDTO]:
+        best_genre_recommendations = self.get_best_genre_recommendations(db, user_id)
+        ai_recommendations = self.get_ai_recommendations(db, user_id)
+    
+        recommendations = []
+        while len(recommendations) < MAX_RECOMMENDATION_RESULTS:
+            rand = random()
+            if rand <= 0.2 and len(best_genre_recommendations) > 0:
+                recommendations.append(best_genre_recommendations.pop(0))
+            else:
+                recommendations.append(ai_recommendations.pop(0))
+
+        return recommendations
+
+    def get_best_genre_recommendations(self, db: Database, user_id: int) -> list[MovieDTO]:
         user_reviews = db.find_all_by_multiple(
             Review,
             db.build_condition([Review.user_id == user_id]),
@@ -74,4 +96,23 @@ class RecommendationService:
                 plot=movie.plot,
                 logo_url=movie.logo_url
             ) for movie in movies_recommended
+        ]
+    
+    def get_ai_recommendations(self, db: Database, user_id: int):
+        user_reviews = list(db.find_all_by_multiple(
+            Review,
+            db.build_condition([Review.user_id == user_id]),
+            options=[selectinload(Review.movie)]
+        ))
+
+        unwatched_movies = db.find_all_by_multiple(
+            Movie,
+            db.build_condition([Movie.id.notin_([review.movie.id for review in user_reviews])])
+        )
+
+        rated_movies = [DecisionForestTrainModel(review) for review in user_reviews if review.rating is not None]
+
+        return [
+            MovieDTO(**pred)
+            for pred in characteristic_model.predict(user_id, list(unwatched_movies), rated_movies)
         ]
