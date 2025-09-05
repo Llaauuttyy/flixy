@@ -22,6 +22,7 @@ interface Order {
 interface MoviesData {
   movies: Page<Movie>;
   order: Order;
+  genres: string[] | null;
 }
 
 interface Movie {
@@ -50,6 +51,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     "order_column"
   ) as OrderColumn | null;
   const orderWay = url.searchParams.get("order_way") as OrderWay | null;
+  const genres = url.searchParams.getAll("genres") as string[] | null;
 
   let order: Order = {
     column: orderColumn,
@@ -65,9 +67,11 @@ export async function loader({ request }: Route.LoaderArgs) {
       page,
       DEFAULT_PAGE_SIZE,
       order,
+      genres,
       request
     );
     moviesData.order = order;
+    moviesData.genres = genres;
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -98,7 +102,9 @@ export default function MoviesPage() {
   const [orderWay, setOrderWay] = useState<OrderWay>(
     moviesData.order.way ?? "asc"
   );
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(
+    moviesData.genres ? moviesData.genres : []
+  );
 
   if (apiResponse.error) {
     return (
@@ -129,6 +135,14 @@ export default function MoviesPage() {
     );
   };
 
+  const handleGenresChange = (genres: string[]) => {
+    setSelectedGenres(genres);
+    const genresParams = genres.map((g) => `genres=${g}`).join("&");
+    fetcher.load(
+      `/movies?page=${DEFAULT_PAGE}&order_column=${orderColumn}&order_way=${orderWay}&${genresParams}`
+    );
+  };
+
   const allGenres = useMemo(() => {
     const set = new Set<string>();
     moviesData.movies.items.forEach((m) =>
@@ -155,7 +169,7 @@ export default function MoviesPage() {
               <MovieFilters
                 genres={allGenres}
                 selectedGenres={selectedGenres}
-                onGenresChange={setSelectedGenres}
+                onGenresChange={handleGenresChange}
                 orderColumn={orderColumn}
                 onOrderColumnChange={handleOrderColumnChange}
                 orderWay={orderWay}

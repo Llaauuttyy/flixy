@@ -74,8 +74,7 @@ class Database:
         left_model,
         right_model,
         join_condition,
-        and_filters: list = None,
-        or_filters: list = None,
+        condition = None,
         order_by = None
     ):
         statement = (
@@ -83,10 +82,9 @@ class Database:
             .join(right_model, join_condition, isouter=True)
         )
 
-        if and_filters:
-            statement = statement.where(and_(*and_filters))
-        if or_filters:
-            statement = statement.where(or_(*or_filters))
+        if condition is not None:
+            statement = statement.where(condition)
+
         if order_by:
             if order_by["way"] == "desc":
                 statement = statement.order_by(desc(getattr(left_model, order_by["column"])))

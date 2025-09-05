@@ -20,19 +20,29 @@ const getOrderParams = (order?: Order) => {
   return orderParams.join("&");
 };
 
+const getGenresParams = (genres: string[] | null) => {
+  if (!genres) {
+    return "";
+  }
+
+  return genres.map((g) => `genres=${g}`).join("&");
+};
+
 export async function getMovies(
   page: number,
   size: number,
   order: Order,
+  genres: string[] | null,
   request: Request
 ) {
   const token = await getAccessToken(request);
 
   let orderParams = getOrderParams(order);
+  let genresParams = getGenresParams(genres);
 
   const response = await fetch(
     process.env.VITE_API_URL +
-      `/movies?page=${page}&size=${size}&${orderParams}`,
+      `/movies?page=${page}&size=${size}&${orderParams}&${genresParams}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
