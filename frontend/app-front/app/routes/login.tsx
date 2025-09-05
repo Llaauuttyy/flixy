@@ -2,7 +2,12 @@ import { MoveRight } from "lucide-react";
 import { data, redirect } from "react-router";
 import { Link } from "react-router-dom";
 import LoginForm from "../../components/login-form";
-import { commitSession, getSession } from "../session/sessions.server";
+import {
+  commitAccessSession,
+  commitRefreshSession,
+  getAccessSession,
+  getRefreshSession,
+} from "../session/sessions.server";
 import type { Route } from "./+types/login";
 
 import { Select } from "components/ui/select";
@@ -12,24 +17,38 @@ import { useTranslation } from "react-i18next";
 import { handleLogin } from "services/api/flixy/server/auth";
 
 export async function action({ request }: Route.ActionArgs) {
-  const session = await getSession(request.headers.get("Cookie"));
+  const accessSession = await getAccessSession(request.headers.get("Cookie"));
+  const refreshSession = await getRefreshSession(request.headers.get("Cookie"));
   const form = await request.formData();
 
   const username = form.get("username");
   const password = form.get("password");
 
   try {
-    const { access_token, expiration_time } = await handleLogin({
+    const {
+      access_token,
+      refresh_token,
+      access_token_expiration_time,
+      refresh_token_expiration_time,
+    } = await handleLogin({
       username,
       password,
     });
     console.log("Login successful:", access_token);
 
-    session.set("accessToken", access_token);
+    accessSession.set("accessToken", access_token);
+    refreshSession.set("refreshToken", refresh_token);
 
     return redirect("/", {
       headers: {
-        "Set-Cookie": await commitSession(session, { maxAge: expiration_time }),
+        "Set-Cookie": [
+          await commitAccessSession(accessSession, {
+            maxAge: access_token_expiration_time,
+          }),
+          await commitRefreshSession(refreshSession, {
+            maxAge: refresh_token_expiration_time,
+          }),
+        ].join(", "),
       },
     });
   } catch (err: Error | TypeError | any) {

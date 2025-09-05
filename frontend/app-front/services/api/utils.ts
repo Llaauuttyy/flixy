@@ -1,8 +1,8 @@
-import { getSession } from "~/session/sessions.server";
+import { getAccessSession } from "~/session/sessions.server";
 
 export const getAccessToken = async (
   request: Request
 ): Promise<string | undefined> => {
-  const session = await getSession(request.headers.get("Cookie"));
+  const session = await getAccessSession(request.headers.get("Cookie"));
   return session.get("accessToken");
 };

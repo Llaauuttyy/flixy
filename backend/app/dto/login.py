@@ -6,4 +6,9 @@ class LoginDTO(BaseModel):
 
 class LoginResponse(BaseModel):
     access_token: str
-    expiration_time: int
+    refresh_token: str
+    access_token_expiration_time: int
+    refresh_token_expiration_time: int
+
+class RefreshTokenDTO(BaseModel):
+    refresh_token: str
