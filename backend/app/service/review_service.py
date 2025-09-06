@@ -93,6 +93,7 @@ class ReviewService:
                 rating=review.rating,
                 text=review.text,
                 watch_date=review.watch_date,
+                likes=review.likes,
                 created_at=review.created_at,
                 user_name = user.name
             )
