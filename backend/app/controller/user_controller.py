@@ -4,7 +4,7 @@ from app.db.database_setup import SessionDep
 from app.service.user_service import UserService
 from app.dto.user import UserDTO, UserUpdateDTO
 from app.dto.insight import InsightDTO
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Path, Request, HTTPException
 from fastapi_pagination import Page, paginate
 
 user_router = APIRouter()
@@ -45,3 +45,11 @@ def get_insights(session: SessionDep, request: Request, user_service: UserServic
         return insights
     except HTTPException as http_exc:
         raise HTTPException(status_code=http_exc.status_code, detail=http_exc.detail)
+    
+@user_router.post("/user/{id}/follow")
+def follow_user(request: Request, session: SessionDep, user_service: UserServiceDep, id: int = Path(..., title="id", ge=1)):
+    follower_id = request.state.user_id
+    try:
+        user_service.follow_user(follower_id, id, Database(session))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

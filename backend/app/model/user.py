@@ -14,3 +14,11 @@ class User(SQLModel, table=True):
     watchlists: List["WatchList"] = Relationship(back_populates="user")
     watchlist_movies: List["WatchListMovie"] = Relationship(back_populates="user")
     review_likes: List["ReviewLike"] = Relationship(back_populates="user")
+    followers: List["UserRelationship"] = Relationship(
+        back_populates="followed",
+        sa_relationship_kwargs={"foreign_keys": "[UserRelationship.followed_id]"},
+    )
+    following: List["UserRelationship"] = Relationship(
+        back_populates="follower",
+        sa_relationship_kwargs={"foreign_keys": "[UserRelationship.follower_id]"},
+    )

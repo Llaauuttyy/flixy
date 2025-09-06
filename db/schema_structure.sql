@@ -86,3 +86,14 @@ CREATE TABLE review_likes (
   CONSTRAINT review_likes_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT review_likes_ibfk_2 FOREIGN KEY (review_id) REFERENCES reviews (id) ON DELETE CASCADE
 );
+
+CREATE TABLE user_relationships (
+  id int NOT NULL AUTO_INCREMENT,
+  follower_id int NOT NULL,
+  followed_id int NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY follower_id (follower_id, followed_id),
+  CONSTRAINT user_relationships_ibfk_1 FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT user_relationships_ibfk_2 FOREIGN KEY (followed_id) REFERENCES users (id) ON DELETE CASCADE
+);

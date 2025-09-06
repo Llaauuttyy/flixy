@@ -4,6 +4,7 @@ from app.dto.user import UserDTO, UserUpdateDTO
 from app.constants.message import EXISTENT_USERNAME_ERROR, USER_NOT_FOUND
 from app.dto.insight import InsightDTO, Genre
 from app.model.review import Review
+from app.model.user_relationship import UserRelationship
 from sqlalchemy.orm import selectinload
 
 class UserService:
@@ -13,7 +14,12 @@ class UserService:
     
     def get_user_by_id(self, db: Database, user_id: int) -> UserDTO:
         user = db.find_by(User, "id", user_id)
-        return UserDTO(id=user.id, name=user.name, username=user.username, email=user.email)
+        return UserDTO(
+            id=user.id,
+            name=user.name,
+            username=user.username,
+            email=user.email
+        )
     
     def update_user_data(self, user_dto: UserUpdateDTO, user_id: int, db: Database) -> UserDTO:
         user_to_update = db.find_by(User, "id", user_id)
@@ -103,4 +109,22 @@ class UserService:
         search_conditions = db.build_condition([User.name.ilike(f"%{search_query}%"),User.username.ilike(f"%{search_query}%")], "OR")
         conditions = db.build_condition([search_conditions, User.id != user_id])
         users = db.find_all_by_multiple(User, conditions)
-        return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email) for user in users]
+        return [UserDTO(
+                id=user.id,
+                name=user.name,
+                username=user.username,
+                email=user.email,
+                followed_by_user=db.exists_by_multiple(UserRelationship, follower_id=user_id, followed_id=user.id)
+            ) for user in users]
+    
+    def follow_user(self, follower_id: int, followed_id: int, db: Database):
+        relation = db.find_by_multiple(UserRelationship, follower_id=follower_id, followed_id=followed_id)
+        followed = db.find_by(User, "id", followed_id)
+
+        if not followed:
+            raise Exception(USER_NOT_FOUND)
+        
+        if relation:
+            db.delete(relation)
+        else:
+            db.save(UserRelationship(follower_id=follower_id, followed_id=followed_id))
