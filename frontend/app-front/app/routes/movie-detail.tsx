@@ -393,6 +393,17 @@ export default function MovieDetail() {
                 </Button>
               </div>
               <Separator className="bg-[#202135]" />
+
+              {currentMovieData.youtube_trailer_id && (
+                <>
+                  <iframe
+                    className="h-130 w-full rounded-lg shadow-lg"
+                    src={`https://www.youtube.com/embed/${currentMovieData.youtube_trailer_id}`}
+                  ></iframe>
+                  <Separator className="bg-[#202135]" />
+                </>
+              )}
+
               {/* Cast & Crew */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="bg-gray-800 border-gray-700 text-[#E0E0E0]">

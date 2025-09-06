@@ -4,6 +4,7 @@ from app.model.review import Review
 from app.model.movie import Movie
 from sqlalchemy.orm import selectinload
 from math import log10
+from random import random
 from app.ai_model.decision_forest import DecisionForestTrainModel, characteristic_model
 
 MAX_RECOMMENDATION_RESULTS = 100
@@ -17,12 +18,13 @@ class RecommendationService:
         best_genre_recommendations = self.get_best_genre_recommendations(db, user_id)
         ai_recommendations = self.get_ai_recommendations(db, user_id)
     
-        recommendations = ai_recommendations[:int(MAX_RECOMMENDATION_RESULTS * 0.8)]
+        recommendations = []
         while len(recommendations) < MAX_RECOMMENDATION_RESULTS:
-            for movie in best_genre_recommendations:
-                if movie not in recommendations and len(recommendations) < MAX_RECOMMENDATION_RESULTS:
-                    recommendations.append(movie)
-            recommendations.extend(ai_recommendations[len(recommendations):MAX_RECOMMENDATION_RESULTS])
+            rand = random()
+            if rand <= 0.2 and len(best_genre_recommendations) > 0:
+                recommendations.append(best_genre_recommendations.pop(0))
+            else:
+                recommendations.append(ai_recommendations.pop(0))
 
         return recommendations
 
