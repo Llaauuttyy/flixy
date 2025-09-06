@@ -11,7 +11,8 @@ class ReviewDTO(BaseModel):
     text: Optional[str] = None
     watch_date: datetime
     likes: int
-    updated_at: datetime
+    liked_by_user: bool = False
+    created_at: datetime
 
 class ReviewCreationDTO(BaseModel):
     movie_id: int

@@ -25,6 +25,7 @@ interface ReviewCardProps {
 export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
   const { t } = useTranslation();
   const [likeDisabled, setLikeDisabled] = useState(false);
+  const [currentReview, setCurrentReview] = useState(userReview);
 
   dayjs.locale(i18n.language || "en");
 
@@ -32,7 +33,8 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
     setLikeDisabled(true);
 
     try {
-      await handleLikeReview(accessToken, userReview.id);
+      const review = await handleLikeReview(accessToken, currentReview.id);
+      setCurrentReview(review);
     } catch (err: Error | any) {
       console.log("API POST /review/:reviewId/like ", err.message);
     }
@@ -47,18 +49,18 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
           <Avatar>
             <AvatarImage src={"/placeholder.svg?height=32&width=32"} />
             <AvatarFallback className="bg-slate-700 text-white">
-              {userReview.user_name[0]?.toUpperCase() || "NN"}
+              {currentReview.user_name[0]?.toUpperCase() || "NN"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <span className="font-medium">{userReview.user_name}</span>
+              <span className="font-medium">{currentReview.user_name}</span>
               <span className="text-sm text-slate-400">
-                {dayjs.utc(userReview.updated_at).fromNow()}
+                {dayjs.utc(currentReview.created_at).fromNow()}
               </span>
-              {userReview.rating && (
+              {currentReview.rating && (
                 <div className="flex items-center gap-1">
-                  {Array.from({ length: Number(userReview.rating) }).map(
+                  {Array.from({ length: Number(currentReview.rating) }).map(
                     (_, i) => (
                       <Star
                         key={i}
@@ -71,18 +73,33 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
               )}
               <Badge variant="secondary" className="bg-gray-700 text-gray-300">
                 <MonitorPlay className="pr-2" size={24} />{" "}
-                {dayjs.utc(userReview.watch_date).fromNow()}
+                {dayjs.utc(currentReview.watch_date).fromNow()}
               </Badge>
             </div>
-            <p className="text-slate-300 mb-3">{userReview.text}</p>
+            <p className="text-slate-300 mb-3">{currentReview.text}</p>
             <div className="flex items-center gap-4">
               <button
                 disabled={likeDisabled}
                 className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
                 onClick={handleLike}
               >
-                <ThumbsUp className="w-4 h-4" />
-                <span className="text-sm">{userReview.likes}</span>
+                <ThumbsUp
+                  className="w-4 h-4"
+                  fill={
+                    currentReview.liked_by_user
+                      ? "var(--color-purple-400)"
+                      : "none"
+                  }
+                />
+                <span
+                  className={`text-sm ${
+                    currentReview.liked_by_user
+                      ? "text-purple-400 font-bold"
+                      : ""
+                  }`}
+                >
+                  {currentReview.likes}
+                </span>
               </button>
               <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                 <MessageCircle className="w-4 h-4" />

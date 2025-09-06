@@ -86,4 +86,6 @@ export async function handleLikeReview(
   if (!response.ok) {
     throw new Error(`${response_json.detail}`);
   }
+
+  return response_json;
 }

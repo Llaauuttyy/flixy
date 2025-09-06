@@ -12,7 +12,8 @@ from datetime import datetime as datetime
 from app.external.moderation_assistant import Moderator
 
 class ReviewService:
-    def set_up_review_singular_dto(self, review: Review) -> ReviewGetSingularDTO:
+    def set_up_review_singular_dto(self, review: Review, user_id: int, db: Database) -> ReviewGetSingularDTO:
+        liked_by_user = db.exists_by_multiple(ReviewLike, review_id=review.id, user_id=user_id)
         return ReviewGetSingularDTO(
             id=review.id,
             user_id=review.user_id,
@@ -21,7 +22,8 @@ class ReviewService:
             text=review.text,
             watch_date=review.watch_date,
             likes=review.likes,
-            updated_at=review.updated_at,
+            created_at=review.created_at,
+            liked_by_user=liked_by_user,
             user_name=review.user.name
         )
 
@@ -38,13 +40,13 @@ class ReviewService:
             return (None, [])
 
         if current_user_review:
-            current_user_review = self.set_up_review_singular_dto(current_user_review)
+            current_user_review = self.set_up_review_singular_dto(current_user_review, user_id, db)
 
         if reviews:
             reviews_singular = list()
             for review in reviews:
                 reviews_singular.append(
-                    self.set_up_review_singular_dto(review)
+                    self.set_up_review_singular_dto(review, user_id, db)
                 )
 
             reviews = reviews_singular
@@ -91,7 +93,7 @@ class ReviewService:
                 rating=review.rating,
                 text=review.text,
                 watch_date=review.watch_date,
-                updated_at=review.updated_at,
+                created_at=review.created_at,
                 user_name = user.name
             )
 
@@ -135,7 +137,7 @@ class ReviewService:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
         
-    def like_review(self, db: Database, user_id: int, id: int):
+    def like_review(self, db: Database, user_id: int, id: int) -> ReviewGetSingularDTO:
         try:
             review_to_like = db.find_by(Review, "id", id)
             user_like = db.find_by_multiple(ReviewLike, review_id=id, user_id=user_id)
@@ -152,6 +154,7 @@ class ReviewService:
                 review_to_like.likes -= 1
 
             db.save(review_to_like)
+            return self.set_up_review_singular_dto(review_to_like, user_id, db)
         except IntegrityError as e:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))

@@ -16,8 +16,9 @@ export interface ReviewDataGet {
   text: string | null;
   watch_date: Date;
   likes: number;
+  liked_by_user: boolean;
   updated_at: Date;
-  [key: string]: string | number | Date | null;
+  [key: string]: string | number | Date | boolean | null;
 }
 
 export interface ReviewsData {
