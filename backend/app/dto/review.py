@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, model_validator, Field
+from pydantic import BaseModel, Field
 from datetime import datetime as datetime
 from fastapi_pagination import Page
 
@@ -10,7 +10,9 @@ class ReviewDTO(BaseModel):
     rating: Optional[int] = Field(None, ge=0, le=5)
     text: Optional[str] = None
     watch_date: datetime
-    updated_at: datetime
+    likes: int
+    liked_by_user: bool = False
+    created_at: datetime
 
 class ReviewCreationDTO(BaseModel):
     movie_id: int

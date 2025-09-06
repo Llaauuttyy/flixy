@@ -66,3 +66,26 @@ export async function handleReviewDelete(
     throw new Error(`${response_json.detail}`);
   }
 }
+
+export async function handleLikeReview(
+  accessToken: string | undefined,
+  reviewId: number
+) {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL_CLIENT + `/review/${reviewId}/like`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
