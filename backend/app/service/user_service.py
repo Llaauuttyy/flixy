@@ -5,6 +5,8 @@ from app.constants.message import EXISTENT_USERNAME_ERROR, USER_NOT_FOUND
 from app.dto.insight import InsightDTO, Genre
 from app.model.review import Review
 from app.model.user_relationship import UserRelationship
+from app.dto.review import ReviewDTO
+from app.dto.movie import MovieDTO
 from sqlalchemy.orm import selectinload
 
 class UserService:
@@ -43,6 +45,7 @@ class UserService:
     
     def get_user_insights(self, db: Database, user_id: int) -> InsightDTO:
         user = db.find_by(User, "id", user_id, options=[selectinload(User.reviews).selectinload(Review.movie)])
+        all_reviews = db.find_all_by_multiple(Review, db.build_condition([Review.user_id == user_id], [selectinload(Review.movie)]))
 
         genres = dict()
         total_movies_watched = 0
@@ -94,6 +97,32 @@ class UserService:
 
             total_average_rating = round(total_sum_ratings / total_rated_movies, 1)
         
+        most_liked_review = max(all_reviews, key=lambda r: r.likes, default=None)
+        most_liked_review_dto = ReviewDTO(
+            id=most_liked_review.id,
+            user_id=most_liked_review.user_id,
+            movie_id=most_liked_review.movie_id,
+            rating=most_liked_review.rating,
+            text=most_liked_review.text,
+            watch_date=most_liked_review.watch_date,
+            likes=most_liked_review.likes,
+            created_at=most_liked_review.created_at,
+            movie=MovieDTO(
+                id=most_liked_review.movie.id,
+                title=most_liked_review.movie.title,
+                year=most_liked_review.movie.year,
+                imdb_rating=most_liked_review.movie.imdb_rating,
+                genres=most_liked_review.movie.genres,
+                countries=most_liked_review.movie.countries,
+                duration=most_liked_review.movie.duration,
+                cast=most_liked_review.movie.cast,
+                directors=most_liked_review.movie.directors,
+                writers=most_liked_review.movie.writers,
+                plot=most_liked_review.movie.plot,
+                logo_url=most_liked_review.movie.logo_url,
+            )
+        ) if most_liked_review else None
+
         return InsightDTO(
             user_id=user_id,
             genres=list(genres.values()),
@@ -101,6 +130,8 @@ class UserService:
             total_ratings=total_rated_movies,
             total_movies_watched=total_movies_watched,
             total_time_watched=total_time_watched,
+            total_likes=sum(r.likes for r in (list(all_reviews) if all_reviews else [])),
+            most_liked_review=most_liked_review_dto,
             total_average_rating=total_average_rating,
             reviewed_movies_percentage=round((total_reviews / total_movies_watched) * 100, 0) if total_movies_watched > 0 else 0.0
         )

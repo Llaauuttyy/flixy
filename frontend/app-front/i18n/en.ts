@@ -195,6 +195,14 @@ export const enTranslation = {
             days: "days of cinema",
           },
         },
+        total_likes: {
+          title: "Total likes received",
+          description: "Across all reviews",
+        },
+        most_liked_review: {
+          title: "Most liked review",
+          description: "Across all reviews",
+        },
       },
       genre_statistics: {
         title: "Average by Genre",
