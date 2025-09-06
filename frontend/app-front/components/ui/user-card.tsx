@@ -1,18 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import utc from "dayjs/plugin/utc";
-import { useTranslation } from "react-i18next";
-
-import "dayjs/locale/en";
-import "dayjs/locale/es";
-import i18n from "i18n/i18n";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { handleUserFollow } from "services/api/flixy/client/user-data-client";
 import { Button } from "./button";
-
-dayjs.extend(relativeTime);
-dayjs.extend(utc);
 
 interface UserCardProps {
   user: any;
@@ -23,8 +13,6 @@ export function UserCard({ user, accessToken }: UserCardProps) {
   const { t } = useTranslation();
   const [followDisabled, setFollowDisabled] = useState(false);
   const [currentUser, setCurrentUser] = useState(user);
-
-  dayjs.locale(i18n.language || "en");
 
   const handleFollowUser = async (userId: number) => {
     setFollowDisabled(true);
