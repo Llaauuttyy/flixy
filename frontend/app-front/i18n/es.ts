@@ -116,6 +116,7 @@ export const esTranslation = {
     user_followers: "seguidores",
     user_reviews: "reseñas",
     user_follow_button: "Seguir",
+    user_unfollow_button: "Dejar de seguir",
   },
   not_found: {
     title_oops: "¡Uy!",

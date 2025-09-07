@@ -6,6 +6,7 @@ class UserDTO(BaseModel):
     name: str
     username: str
     email: EmailStr
+    followed_by_user: bool = False
 
 class UserUpdateDTO(BaseModel):
     name: str = None

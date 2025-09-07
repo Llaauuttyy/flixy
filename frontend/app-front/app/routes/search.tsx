@@ -1,10 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { Badge } from "components/ui/badge";
-import { Button } from "components/ui/button";
 import { HeaderFull } from "components/ui/header-full";
 import { MovieCard } from "components/ui/movie-card";
 import { Pagination } from "components/ui/pagination";
 import { SidebarNav } from "components/ui/sidebar-nav";
+import { UserCard } from "components/ui/user-card";
 import { Film, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
@@ -202,54 +201,11 @@ export default function SearchPage() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {searchResults.users.items.map((user) => (
-                        <div
+                        <UserCard
                           key={user.id}
-                          className="bg-slate-800 rounded-lg p-4 hover:bg-slate-750 transition-colors cursor-pointer"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Avatar className="w-12 h-12">
-                              <AvatarImage
-                                src={user.avatar || "/placeholder.svg"}
-                              />
-                              <AvatarFallback className="bg-pink-500">
-                                {user.name
-                                  .split(" ")
-                                  .map((n: any) => n[0])
-                                  .join("")}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-medium">{user.name}</h3>
-                                {user.verified && (
-                                  <div className="w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
-                                    <span className="text-white text-xs">
-                                      ✓
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              <p className="text-sm text-slate-400">
-                                @{user.username}
-                              </p>
-                              <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-                                <span>
-                                  {user.followers.toLocaleString()}{" "}
-                                  {t("search.user_followers")}
-                                </span>
-                                <span>
-                                  {user.reviews} {t("search.user_reviews")}
-                                </span>
-                              </div>
-                            </div>
-                            <Button
-                              size="sm"
-                              className="bg-pink-500 hover:bg-pink-600 text-white"
-                            >
-                              {t("search.user_follow_button")}
-                            </Button>
-                          </div>
-                        </div>
+                          user={user}
+                          accessToken={String(apiResponse.accessToken)}
+                        />
                       ))}
                     </div>
                   </Pagination>

@@ -49,3 +49,25 @@ export async function handlePasswordChange(
     throw new Error(`${response_json.detail}`);
   }
 }
+
+export async function handleUserFollow(
+  accessToken: string | undefined,
+  userId: number
+) {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL_CLIENT + `/user/${userId}/follow`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+}

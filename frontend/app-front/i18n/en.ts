@@ -113,6 +113,7 @@ export const enTranslation = {
     user_followers: "followers",
     user_reviews: "reviews",
     user_follow_button: "Follow",
+    user_unfollow_button: "Unfollow",
   },
   not_found: {
     title_oops: "Oops!",
