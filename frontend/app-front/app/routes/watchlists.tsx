@@ -17,22 +17,6 @@ import { useTranslation } from "react-i18next";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import { getAccessToken } from "services/api/utils";
 
-interface Movie {
-  id: number;
-  title: string;
-  year: number;
-  imdb_rating: number;
-  genres: string;
-  countries: string;
-  duration: number;
-  cast: string;
-  directors: string;
-  writers: string;
-  plot: string;
-  logo_url: string;
-  user_rating: number | null;
-}
-
 interface WatchListFace {
   id: number;
   name: string;

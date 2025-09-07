@@ -62,6 +62,9 @@ export const esTranslation = {
   movie_detail: {
     watched: "Vista",
     mark_as_watched: "Marcar como Vista",
+    add_to_watchlist: "Agregar a la Lista",
+    no_watchlists: "Aún no hay listas.",
+    create_watchlist: "Crear Lista",
     dialog: {
       title: "Marcar como Vista",
       subtitle:
