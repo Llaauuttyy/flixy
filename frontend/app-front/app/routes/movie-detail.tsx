@@ -1,5 +1,5 @@
 import { Check, Eye, Plus, Star } from "lucide-react";
-import { useFetcher, useLoaderData } from "react-router-dom";
+import { Link, useFetcher, useLoaderData } from "react-router-dom";
 
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
@@ -18,6 +18,10 @@ import type { Route } from "./+types/movie-detail";
 
 import { StarRating } from "components/ui/star-rating";
 import { useTranslation } from "react-i18next";
+import {
+  getWatchLists,
+  handleWatchListEdition,
+} from "services/api/flixy/client/watchlists";
 import { getAccessToken } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type {
@@ -38,7 +42,7 @@ import {
 } from "components/ui/dialog";
 import { Pagination } from "components/ui/pagination";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   handleReviewCreation,
   handleReviewDelete,
@@ -49,9 +53,13 @@ import type {
   ReviewDataGet,
   ReviewsData,
 } from "services/api/flixy/types/review";
+import type { WatchListEdit } from "services/api/flixy/types/watchlist";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 3;
+
+const DEFAULT_PAGE_WATCHLISTS = 1;
+const DEFAULT_PAGE_SIZE_WATCHLISTS = 5;
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   let movieData: MovieDataGet = {} as MovieDataGet;
@@ -115,6 +123,22 @@ export default function MovieDetail() {
     dayjs().startOf("day")
   );
 
+  const [addingToWatchList, setAddingToWatchList] = useState(false);
+  const [userWatchLists, setUserWatchLists] = useState<
+    { id: number; name: string }[]
+  >([]);
+  const [pageWatchLists, setPageWatchLists] = useState(DEFAULT_PAGE_WATCHLISTS);
+  const [sizeWatchLists, setSizeWatchLists] = useState(
+    DEFAULT_PAGE_SIZE_WATCHLISTS
+  );
+  const [apiResponseWatchLists, setApiResponseWatchLists] =
+    useState<ApiResponse>({});
+  const [apiAddMovieResponse, setApiAddMovieResponse] = useState<ApiResponse>(
+    {}
+  );
+  const [reachWatchListsEnd, setReachWatchListsEnd] = useState(false);
+  const loadingWatchListsRef = useRef<boolean>(false);
+
   let currentMovieData: MovieDataGet = apiResponse.data.movie || {};
   let userReview: ReviewDataGet = apiResponse.data.reviews.user_review || null;
 
@@ -139,6 +163,115 @@ export default function MovieDetail() {
     }
 
     return duration;
+  };
+
+  const switchAddWatchList = () => {
+    setAddingToWatchList(!addingToWatchList);
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLUListElement>) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+
+    if (
+      !loadingWatchListsRef.current &&
+      scrollTop + clientHeight >= scrollHeight - 10
+    ) {
+      loadingWatchListsRef.current = true;
+
+      const nextPage = pageWatchLists + 1;
+      setPageWatchLists(nextPage);
+
+      console.log("Reached the bottom, loading more watchlists...", nextPage);
+
+      handleGetWatchLists(nextPage).finally(() => {
+        loadingWatchListsRef.current = false;
+      });
+    }
+  };
+
+  const handleAddMovieToWatchList = async (watchListId: number) => {
+    console.log("Adding movie to watchlist ID: ", watchListId);
+    setApiAddMovieResponse({
+      data: undefined,
+      error: undefined,
+      success: undefined,
+    });
+
+    const movieId: number = Number(currentMovieData.id);
+
+    const watchListData: WatchListEdit = {
+      watchlist_id: watchListId,
+      data: {
+        movie_ids_to_add: [movieId],
+      },
+    };
+
+    try {
+      const response = await handleWatchListEdition(
+        String(apiResponse.accessToken),
+        watchListData
+      );
+
+      console.log("Movie added to watchlist: ", response);
+      setApiAddMovieResponse({
+        data: response,
+        error: undefined,
+        success: "Movie added to watchlist successfully.",
+      });
+    } catch (err: unknown) {
+      console.log("API PATCH /watchlist said: ", (err as Error).message);
+
+      if (err instanceof TypeError) {
+        setApiAddMovieResponse({
+          data: undefined,
+          error: t("exceptions.service_error"),
+          success: undefined,
+        });
+      } else {
+        setApiAddMovieResponse({
+          data: undefined,
+          error: (err as Error).message,
+          success: undefined,
+        });
+      }
+    }
+  };
+
+  const handleGetWatchLists = async (
+    page: number = DEFAULT_PAGE_WATCHLISTS
+  ) => {
+    let watchLists = {} as ApiResponse;
+    try {
+      watchLists.data = await getWatchLists(
+        apiResponse.accessToken as string,
+        page,
+        sizeWatchLists
+      );
+
+      setApiResponseWatchLists(watchLists);
+
+      console.log("Watchlists: ", watchLists);
+      if (!watchLists.data.items || watchLists.data.items.items.length === 0) {
+        console.log("No more watchlists to load.");
+        setReachWatchListsEnd(true);
+      }
+
+      let newUserWatchLists = watchLists.data.items.items.map(
+        (watchlist: any) => ({
+          id: watchlist.id,
+          name: watchlist.name,
+        })
+      );
+
+      setUserWatchLists((prev) => [...prev, ...newUserWatchLists]);
+    } catch (err: Error | any) {
+      console.log("API GET /watchlists: ", err.message);
+
+      watchLists.error =
+        err instanceof TypeError ? t("exceptions.service_error") : err.message;
+
+      setApiResponseWatchLists(watchLists);
+    }
   };
 
   const handleWatchMovie = async () => {
@@ -323,6 +456,14 @@ export default function MovieDetail() {
               <p className="text-lg leading-relaxed text-[#E0E0E0]">
                 {currentMovieData.plot}
               </p>
+              {apiAddMovieResponse.error && (
+                <p className="text-red-400 mb-4">{apiAddMovieResponse.error}</p>
+              )}
+              {apiAddMovieResponse.success && (
+                <p className="text-green-400 mb-4">
+                  {apiAddMovieResponse.success}
+                </p>
+              )}
               <div className="flex gap-4">
                 {/* Mark as Watched Button */}
                 {userReview ? (
@@ -342,7 +483,7 @@ export default function MovieDetail() {
                     onOpenChange={setWatchedDialogOpen}
                   >
                     <DialogTrigger asChild>
-                      <Button className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:from-[#8B5CF6]/90 hover:to-[#EC4899]/90 text-white px-6 py-3 rounded-md text-lg font-semibold">
+                      <Button className="border-[#202135] px-6 py-3 text-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                         <Eye className="w-5 h-5 mr-2" />
                         {t("movie_detail.mark_as_watched")}
                       </Button>
@@ -374,7 +515,7 @@ export default function MovieDetail() {
                           {t("movie_detail.dialog.cancel")}
                         </Button>
                         <Button
-                          className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:from-[#8B5CF6]/90 hover:to-[#EC4899]/90 text-white px-6 py-3 rounded-md text-lg font-semibold"
+                          className="border-[#202135] px-6 py-3 text-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                           onClick={handleWatchMovie}
                         >
                           <Eye className="w-5 h-5 mr-2" />
@@ -384,20 +525,70 @@ export default function MovieDetail() {
                     </DialogContent>
                   </Dialog>
                 )}
-                <Button
-                  variant="outline"
-                  className="border-[#202135] text-[#E0E0E0] hover:bg-[#202135]/50 px-6 py-3 rounded-md text-lg font-semibold bg-transparent"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Add to Watchlist
-                </Button>
+                <div className="relative inline-block">
+                  <Button
+                    onClick={() => {
+                      if (!addingToWatchList) {
+                        handleGetWatchLists();
+                      } else {
+                        setUserWatchLists([]);
+                        setPageWatchLists(DEFAULT_PAGE_WATCHLISTS);
+                        setReachWatchListsEnd(false);
+                      }
+                      switchAddWatchList();
+                    }}
+                    variant="outline"
+                    className="border-[#202135] px-6 py-3 text-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    {t("movie_detail.add_to_watchlist")}
+                  </Button>
+
+                  {addingToWatchList && (
+                    <ul
+                      onScroll={(e) => {
+                        if (!reachWatchListsEnd) handleScroll(e);
+                      }}
+                      className="absolute top-full left-0 mt-2 w-56 max-h-45 bg-gray-800 border border-gray-700 rounded-md shadow-lg overflow-y-auto z-[9999]"
+                    >
+                      <li className="px-1 py-1 hover:bg-gray-700 cursor-pointer text-gray-300 z-[9999]">
+                        <Link className="px-3 py-2" to="/watchlists">
+                          <Plus size={20} className="inline " />{" "}
+                          {t("movie_detail.create_watchlist")}
+                        </Link>
+                      </li>
+                      <Separator className="bg-purple-400" />
+                      {userWatchLists.length > 0 ? (
+                        userWatchLists.map((watchlist) => (
+                          <li
+                            key={watchlist.id}
+                            className="flex hover:bg-gray-700 cursor-pointer text-gray-300 z-[9999]"
+                          >
+                            <Button
+                              className="px-2 py-2 w-full h-full justify-start"
+                              onClick={() =>
+                                handleAddMovieToWatchList(watchlist.id)
+                              }
+                            >
+                              {watchlist.name}
+                            </Button>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="px-4 py-2 text-gray-500">
+                          {t("movie_detail.no_watchlists")}
+                        </li>
+                      )}
+                    </ul>
+                  )}
+                </div>
               </div>
               <Separator className="bg-[#202135]" />
 
               {currentMovieData.youtube_trailer_id && (
                 <>
                   <iframe
-                    className="h-130 w-full rounded-lg shadow-lg"
+                    className={`h-130 w-full rounded-lg shadow-lg z-1`}
                     src={`https://www.youtube.com/embed/${currentMovieData.youtube_trailer_id}`}
                   ></iframe>
                   <Separator className="bg-[#202135]" />

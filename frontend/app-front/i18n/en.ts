@@ -59,6 +59,9 @@ export const enTranslation = {
   movie_detail: {
     watched: "Watched",
     mark_as_watched: "Mark as Watched",
+    add_to_watchlist: "Add to Watchlist",
+    no_watchlists: "No watchlists so far.",
+    create_watchlist: "Create Watchlist",
     dialog: {
       title: "Mark as Watched",
       subtitle:

@@ -5,6 +5,30 @@ import type {
   WatchListGetMovie,
 } from "../types/watchlist";
 
+export async function getWatchLists(
+  accessToken: string | undefined,
+  page: number,
+  size: number
+) {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL_CLIENT +
+      `/watchlists?page=${page}&size=${size}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
+
 export async function handleWatchListCreation(
   accessToken: string | undefined,
   watchlistData: WatchListCreate
