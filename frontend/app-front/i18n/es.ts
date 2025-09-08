@@ -284,4 +284,24 @@ export const esTranslation = {
     add_movie: "Agregar más",
     no_movies_found: "No se encontraron películas.",
   },
+  confirmation_box: {
+    default: {
+      title: "¿Estás seguro?",
+      subtitle: "Esta acción no se puede deshacer.",
+      cancel: "Cancelar",
+      accept: "Aceptar",
+    },
+    review: {
+      title: "¿Eliminar reseña?",
+      subtitle: "Tu opinión es valorada, ¿estás seguro de eliminarla?",
+      cancel: "Cancelar",
+      accept: "Sí, eliminar reseña",
+    },
+    watchlist: {
+      title: "¿Eliminar lista?",
+      subtitle: "Tu lista será eliminada permanentemente.",
+      cancel: "Cancelar",
+      accept: "Eliminar",
+    },
+  },
 };
