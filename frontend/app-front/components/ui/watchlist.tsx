@@ -15,6 +15,7 @@ import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { WatchListDelete } from "services/api/flixy/types/watchlist";
 import { Button } from "./button";
+import { ConfirmationBox } from "./confirmation-box";
 import WatchListMovies from "./watchlist-movies";
 
 dayjs.extend(relativeTime);
@@ -45,6 +46,12 @@ export default function WatchList({
 
   const [apiResponse, setApiDeleteResponse] = useState<ApiResponse>({});
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleConfirmationBox = (value: boolean) => {
+    if (value) {
+      handleDeleteWatchList();
+    }
+  };
 
   const handleDeleteWatchList = async () => {
     setIsDeleting(true);
@@ -108,13 +115,20 @@ export default function WatchList({
               {t("watchlists.see_watchlist")}
             </Button>
           </Link>
-          <Button
-            onClick={handleDeleteWatchList}
-            disabled={isDeleting}
-            className="mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+          <ConfirmationBox
+            isAccepted={(value) => handleConfirmationBox(value)}
+            title={t("confirmation_box.watchlist.title")}
+            subtitle={t("confirmation_box.watchlist.subtitle")}
+            cancelText={t("confirmation_box.watchlist.cancel")}
+            acceptText={t("confirmation_box.watchlist.accept")}
           >
-            <Trash size={30} color="red" />
-          </Button>
+            <Button
+              disabled={isDeleting}
+              className="mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+            >
+              <Trash size={30} color="red" />
+            </Button>
+          </ConfirmationBox>
         </div>
       </div>
 

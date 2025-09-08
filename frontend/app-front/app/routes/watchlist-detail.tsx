@@ -10,6 +10,7 @@ import i18n from "i18n/i18n";
 import { AddMovieWatchList } from "components/ui/add-movie-watchlist";
 import { Badge } from "components/ui/badge";
 import { Button } from "components/ui/button";
+import { ConfirmationBox } from "components/ui/confirmation-box";
 import { MaxLengthInput } from "components/ui/max-length-input";
 import WatchListMovies from "components/ui/watchlist-movies";
 import WatchListMoviesDisplay from "components/ui/watchlist-movies-display";
@@ -190,6 +191,12 @@ export default function WatchListsPage() {
     });
   };
 
+  const handleConfirmationBox = (value: boolean) => {
+    if (value) {
+      handleDeleteWatchList();
+    }
+  };
+
   const handleDeleteWatchList = async () => {
     setIsDeleting(true);
 
@@ -316,13 +323,20 @@ export default function WatchListsPage() {
                   </Button>
                 )}
                 {!isEditing && (
-                  <Button
-                    onClick={handleDeleteWatchList}
-                    disabled={isDeleting}
-                    className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                  <ConfirmationBox
+                    isAccepted={(value) => handleConfirmationBox(value)}
+                    title={t("confirmation_box.watchlist.title")}
+                    subtitle={t("confirmation_box.watchlist.subtitle")}
+                    cancelText={t("confirmation_box.watchlist.cancel")}
+                    acceptText={t("confirmation_box.watchlist.accept")}
                   >
-                    <Trash size={30} color="red" />
-                  </Button>
+                    <Button
+                      disabled={isDeleting}
+                      className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                    >
+                      <Trash size={30} color="red" />
+                    </Button>
+                  </ConfirmationBox>
                 )}
               </div>
             </div>

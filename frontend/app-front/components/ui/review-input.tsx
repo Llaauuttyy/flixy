@@ -14,6 +14,7 @@ import type {
 } from "services/api/flixy/types/review";
 import { Button } from "./button";
 import { Card, CardContent } from "./card";
+import { ConfirmationBox } from "./confirmation-box";
 import { ReviewCard } from "./review-card";
 import { Textarea } from "./textarea";
 
@@ -66,6 +67,12 @@ export function ReviewInput({
     setIsEditing(true);
     setReview(String(currentReview?.text));
     setCaracters(String(currentReview?.text).length);
+  };
+
+  const handleConfirmationBox = (value: boolean) => {
+    if (value) {
+      handleDeleteReview();
+    }
   };
 
   const handleDeleteReview = async () => {
@@ -259,13 +266,20 @@ export function ReviewInput({
             >
               <Edit size={30} />
             </Button>
-            <Button
-              onClick={handleDeleteReview}
-              disabled={isDeleting}
-              className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+            <ConfirmationBox
+              isAccepted={(value) => handleConfirmationBox(value)}
+              title={t("confirmation_box.review.title")}
+              subtitle={t("confirmation_box.review.subtitle")}
+              cancelText={t("confirmation_box.review.cancel")}
+              acceptText={t("confirmation_box.review.accept")}
             >
-              <Trash size={30} color="red" />
-            </Button>
+              <Button
+                disabled={isDeleting}
+                className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+              >
+                <Trash size={30} color="red" />
+              </Button>
+            </ConfirmationBox>
           </div>
         </div>
         {apiDeleteResponse?.error && (
