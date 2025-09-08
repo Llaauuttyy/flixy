@@ -203,6 +203,18 @@ def get_watchlists_data():
         description="This is the first test watchlist."
     ))
 
+    watchlists.append(WatchList(
+        user_id=1,
+        name="Watchlist Test 2",
+        description="This is the second test watchlist."
+    ))
+
+    watchlists.append(WatchList(
+        user_id=1,
+        name="Watchlist Test 3",
+        description="This is the third test watchlist."
+    ))
+
     watchlists_movies = []
 
     watchlists_movies.append(WatchListMovie(
@@ -218,6 +230,12 @@ def get_watchlists_data():
     watchlists_movies.append(WatchListMovie(
         watchlist_id=1,
         movie_id=3,
+        user_id=1
+    ))
+
+    watchlists_movies.append(WatchListMovie(
+        watchlist_id=3,
+        movie_id=1,
         user_id=1
     ))
 
