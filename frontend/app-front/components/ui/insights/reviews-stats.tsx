@@ -1,4 +1,4 @@
-import { Heart, ThumbsUp, Trophy } from "lucide-react";
+import { ThumbsUp, Trophy } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { UserInsights } from "services/api/flixy/types/user";
 import { Card, CardContent, CardHeader, CardTitle } from "../card";
@@ -17,7 +17,7 @@ export function ReviewsStats({ userInsights }: ReviewsStatsProps) {
           <CardTitle className="text-sm font-medium text-slate-300">
             {t("profile.insights.overall_stats.total_likes.title")}
           </CardTitle>
-          <Heart className="h-4 w-4 text-green-400" />
+          <ThumbsUp className="h-4 w-4 text-purple-400" />
         </CardHeader>
         <CardContent className="flex flex-col justify-around h-[125px]">
           <div className="text-2xl font-bold text-white">

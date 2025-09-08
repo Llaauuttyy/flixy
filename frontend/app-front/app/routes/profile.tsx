@@ -120,8 +120,6 @@ export default function MovieInsights() {
   let apiResponse: ApiResponse = useLoaderData();
   let userInsights: UserInsights = apiResponse.data || null;
 
-  console.log(userInsights);
-
   if (apiResponse.error) {
     return (
       <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
