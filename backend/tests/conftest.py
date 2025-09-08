@@ -1,6 +1,8 @@
 from app.model.user import User
 from app.model.movie import Movie
 from app.model.review import Review
+from app.model.watchlist import WatchList
+from app.model.watchlist_movie import WatchListMovie
 import pytest
 from sqlalchemy import event
 from sqlmodel import SQLModel, Session, text
@@ -68,6 +70,10 @@ def add_tests_data(session):
 
     reviews = get_reviews_data()
     session.add_all(reviews)
+
+    watchlists, watchlists_movies = get_watchlists_data()
+    session.add_all(watchlists)
+    session.add_all(watchlists_movies)
 
     session.commit()
 
@@ -187,3 +193,32 @@ def get_reviews_data():
     ))
 
     return reviews
+
+def get_watchlists_data():
+    watchlists = []
+
+    watchlists.append(WatchList(
+        user_id=1,
+        name="Watchlist Test 1",
+        description="This is the first test watchlist."
+    ))
+
+    watchlists_movies = []
+
+    watchlists_movies.append(WatchListMovie(
+        watchlist_id=1,
+        movie_id=1,
+        user_id=1
+    ))
+    watchlists_movies.append(WatchListMovie(
+        watchlist_id=1,
+        movie_id=2,
+        user_id=1
+    ))
+    watchlists_movies.append(WatchListMovie(
+        watchlist_id=1,
+        movie_id=3,
+        user_id=1
+    ))
+
+    return watchlists, watchlists_movies
