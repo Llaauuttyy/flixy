@@ -4,7 +4,7 @@ on:
     branches:
       - dev
       - main
-      - "*cypress*"
+      - '*cypress*'
   pull_request:
     branches:
       - dev
