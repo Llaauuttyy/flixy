@@ -1,3 +1,4 @@
+import type { MovieDataGet } from "./movie";
 import type { Page } from "./overall";
 
 export interface ReviewCreation {
@@ -18,7 +19,8 @@ export interface ReviewDataGet {
   likes: number;
   liked_by_user: boolean;
   updated_at: Date;
-  [key: string]: string | number | Date | boolean | null;
+  movie: MovieDataGet;
+  [key: string]: string | number | Date | boolean | MovieDataGet | null;
 }
 
 export interface ReviewsData {

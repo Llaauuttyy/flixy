@@ -4,6 +4,7 @@ import { FeaturedGenres } from "components/ui/insights/featured-genres";
 import { GenreStatistics } from "components/ui/insights/genre-statistics";
 import { OverallStats } from "components/ui/insights/overall-stats";
 import { QuickStats } from "components/ui/insights/quick-stats";
+import { ReviewsStats } from "components/ui/insights/reviews-stats";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { BookOpen, Clock, Eye, List } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -119,8 +120,6 @@ export default function MovieInsights() {
   let apiResponse: ApiResponse = useLoaderData();
   let userInsights: UserInsights = apiResponse.data || null;
 
-  console.log(userInsights);
-
   if (apiResponse.error) {
     return (
       <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">
@@ -158,6 +157,7 @@ export default function MovieInsights() {
 
         {/* Stats Overview */}
         <OverallStats userInsights={userInsights} />
+        <ReviewsStats userInsights={userInsights} />
 
         {/* Genre Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 pb-0">

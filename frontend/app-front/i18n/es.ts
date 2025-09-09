@@ -202,6 +202,14 @@ export const esTranslation = {
             days: "días de cine",
           },
         },
+        total_likes: {
+          title: "Total apoyos recibidos",
+          description: "Entre todas tus reseñas",
+        },
+        most_liked_review: {
+          title: "Reseña más apoyada",
+          description: "Entre todas tus reseñas",
+        },
       },
       genre_statistics: {
         title: "Promedio por Género",

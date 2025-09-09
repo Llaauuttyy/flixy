@@ -1,4 +1,5 @@
 from typing import Optional
+from app.dto.movie import MovieDTO
 from pydantic import BaseModel, Field
 from datetime import datetime as datetime
 from fastapi_pagination import Page
@@ -13,6 +14,7 @@ class ReviewDTO(BaseModel):
     likes: int
     liked_by_user: bool = False
     created_at: datetime
+    movie: Optional[MovieDTO] = None
 
 class ReviewCreationDTO(BaseModel):
     movie_id: int

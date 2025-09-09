@@ -1,4 +1,5 @@
 import type { MovieGenre } from "./movie";
+import type { ReviewDataGet } from "./review";
 
 export interface UserDataGet {
   error?: string | null;
@@ -30,6 +31,8 @@ export interface UserInsights {
   total_ratings: number;
   total_movies_watched: number;
   total_time_watched: number;
+  total_likes: number;
+  most_liked_review: ReviewDataGet | null;
   total_average_rating: number;
   reviewed_movies_percentage: number;
 }
