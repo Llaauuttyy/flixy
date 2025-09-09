@@ -19,6 +19,7 @@ jobs:
           # Records to Cypress Cloud
           record: true
           parallel: true # Runs test in parallel using settings above
+        working-directory: ./frontend/app-front
         env:
           CYPRESS_FRONT_URL: http://localhost:5555
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
