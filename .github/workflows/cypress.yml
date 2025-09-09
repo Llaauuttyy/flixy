@@ -10,7 +10,7 @@ on:
       - dev
 
 jobs:
-  e2e:
+  cypress-run:
     runs-on: ubuntu-latest
     services:
       db:
