@@ -22,7 +22,7 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     return false;
   }
 
-  if (err.message.includes("/refresh_token")) {
+  if (err.message.includes("refresh token")) {
     return false;
   }
 });
