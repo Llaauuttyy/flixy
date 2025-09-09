@@ -1,11 +1,4 @@
 describe("Login should fail when wrong credentials", () => {
-  beforeEach(() => {
-    cy.intercept("POST", "/refresh_token", {
-      statusCode: 200,
-      body: { accessToken: "fake-token" },
-    }).as("refreshToken");
-  });
-
   it("passes", () => {
     cy.visit("/");
 

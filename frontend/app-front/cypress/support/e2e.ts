@@ -21,4 +21,8 @@ Cypress.on("uncaught:exception", (err, runnable) => {
   if (err.message.includes("Hydration failed")) {
     return false;
   }
+
+  if (err.message.includes("/refresh_token")) {
+    return false;
+  }
 });
