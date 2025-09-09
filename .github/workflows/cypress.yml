@@ -6,13 +6,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2] # Uses 2 parallel instances
+        containers: [1] # Uses 1 parallel instances
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Install dependencies
         run: npm install
         working-directory: ./frontend/app-front
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: ./frontend/app-front
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
