@@ -72,7 +72,7 @@ jobs:
           wait-on-timeout: 180
           record: true
           parallel: false
-        working-directory: ./frontend/app-front
+          working-directory: ./frontend/app-front
         env:
           VITE_API_URL: http://127.0.0.1:8000
           VITE_API_URL_CLIENT: http://localhost:8000
