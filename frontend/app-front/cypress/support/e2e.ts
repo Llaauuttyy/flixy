@@ -22,11 +22,7 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     return false;
   }
 
-  if (err.message.includes("Minified React error")) {
-    return false;
-  }
-
-  if (err.message.includes("refresh token")) {
+  if (err.message.includes("Minified React error #418")) {
     return false;
   }
 });
