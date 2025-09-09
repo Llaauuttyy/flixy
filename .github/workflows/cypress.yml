@@ -50,9 +50,10 @@ jobs:
           export DB_PWD=root
           export DB_HOST=127.0.0.1
           export DBE_PORT=3306
-          uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
+          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           echo "Waiting for backend to be ready..."
           npx wait-on http://127.0.0.1:8000/docs
+        working-directory: /backend
 
       - name: Install frontend dependencies
         run: npm install
