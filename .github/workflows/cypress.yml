@@ -1,5 +1,13 @@
 name: Cypress Tests
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
 
 jobs:
   e2e:
@@ -27,7 +35,7 @@ jobs:
       - name: Wait for DB
         run: |
           echo "Waiting for MySQL to be ready..."
-          for i in {1..5}; do
+          for i in {1..20}; do
             mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -proot >/dev/null 2>&1 && break
             echo "Waiting..."
             sleep 3
@@ -54,6 +62,8 @@ jobs:
           export DB_HOST=127.0.0.1
           export DBE_PORT=3306
           uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
+          echo "Waiting for backend to be ready..."
+          npx wait-on http://127.0.0.1:8000/docs
 
       - name: Install frontend dependencies
         run: npm install
@@ -67,8 +77,8 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: npm start
-          wait-on: "http://localhost:3000 http://127.0.0.1:8000"
-          wait-on-timeout: 30
+          wait-on: "http://localhost:3000 http://127.0.0.1:8000/docs"
+          wait-on-timeout: 180
           record: true
           parallel: false
         working-directory: ./frontend/app-front
