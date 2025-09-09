@@ -279,4 +279,24 @@ export const enTranslation = {
     add_movie: "Add More",
     no_movies_found: "No movies found.",
   },
+  confirmation_box: {
+    default: {
+      title: "Are you sure?",
+      subtitle: "This action cannot be undone.",
+      cancel: "Cancel",
+      accept: "Accept",
+    },
+    review: {
+      title: "Delete review?",
+      subtitle: "Your opinion is valuable. Are you sure you want to delete it?",
+      cancel: "Cancel",
+      accept: "Yes, delete review",
+    },
+    watchlist: {
+      title: "Delete watchlist?",
+      subtitle: "Your watchlist will be gone forever.",
+      cancel: "Cancel",
+      accept: "Delete",
+    },
+  },
 };
