@@ -30,5 +30,7 @@ jobs:
           parallel: true # Runs test in parallel using settings above
           working-directory: ./frontend/app-front
         env:
+          VITE_API_URL: http://localhost:3000
+          VITE_API_URL_CLIENT: http://localhost:3000
           CYPRESS_FRONT_URL: http://localhost:3000
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
