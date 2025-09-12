@@ -97,3 +97,47 @@ CREATE TABLE user_relationships (
   CONSTRAINT user_relationships_ibfk_1 FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT user_relationships_ibfk_2 FOREIGN KEY (followed_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+-- unlock_conditions
+-- {
+--   "target_field": "reviews_count",
+--   "value": 10,
+-- }
+CREATE TABLE achievements (
+  id int NOT NULL AUTO_INCREMENT,
+  name varchar(128) NOT NULL,
+  description varchar(512) NOT NULL,
+  icon_name varchar(64) NOT NULL,
+  unlock_conditions JSON NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE (name)
+);
+
+-- Achievements
+INSERT INTO achievements (name, description, icon_name, unlock_conditions)
+VALUES
+('Prolific Critic', 'More than 200 reviews written', 'IconName', 
+ '{"target_field": "total_reviews", "value": 200}'),
+
+('Spotlight Reviewer', 'More than 20 likes on one review', 'IconName', 
+ '{"target_field": "most_liked_review_likes", "value": 20}'),
+
+('Movie Marathon', 'More than 1000 movies watched', 'IconName', 
+ '{"target_field": "total_movies_watched", "value": 1000}'),
+
+('Dedicated Cinephile', 'More than 3000 hours watched', 'IconName', 
+ '{"target_field": "total_time_watched", "value": 3000}');
+
+
+CREATE TABLE user_achievements (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  achievement_id int NOT NULL,
+  unlocked_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY user_id (user_id, achievement_id),
+  CONSTRAINT user_achievements_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT user_achievements_ibfk_2 FOREIGN KEY (achievement_id) REFERENCES achievements (id) ON DELETE CASCADE
+)
