@@ -16,5 +16,6 @@ class InsightDTO(BaseModel):
     total_time_watched: Optional[int] = 0 # minutes.
     total_likes: Optional[int] = 0
     most_liked_review: Optional[ReviewDTO] = None
+    most_liked_review_likes: Optional[int] = 0
     total_average_rating: Optional[float] = 0.0
     reviewed_movies_percentage: Optional[float] = 0.0 # Reviewed Movies (of Watched).

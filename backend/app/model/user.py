@@ -1,6 +1,8 @@
 from typing import List
 from sqlmodel import Field, SQLModel, Relationship
 
+from app.model.user_achievement import UserAchievement
+
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
@@ -22,3 +24,7 @@ class User(SQLModel, table=True):
         back_populates="follower",
         sa_relationship_kwargs={"foreign_keys": "[UserRelationship.follower_id]"},
     )
+
+    achievements: list[UserAchievement] = Relationship(back_populates="user")
+
+

@@ -52,6 +52,7 @@ class UserService:
 
         all_reviews = list(db.find_all_by_multiple(Review, db.build_condition([Review.user_id == user_id], [selectinload(Review.movie)])))
 
+        # Pasar los minutos a horas para hacer el calculo del achievement.
         return build_insight_dto(user_id, genres, totals, all_reviews)
 
     def search_users(self, db: Database, search_query: str, user_id: int):
@@ -134,6 +135,9 @@ def build_insight_dto(user_id: int, genres: list[Genre], totals: dict, all_revie
         round((totals["reviews"] / totals["movies_watched"]) * 100, 0) if totals["movies_watched"] > 0 else 0.0
     )
 
+    most_liked_review = get_most_liked_review(all_reviews)
+    most_liked_review_likes = most_liked_review.likes if most_liked_review else 0
+
     return InsightDTO(
         user_id=user_id,
         genres=genres,
@@ -142,7 +146,8 @@ def build_insight_dto(user_id: int, genres: list[Genre], totals: dict, all_revie
         total_movies_watched=totals["movies_watched"],
         total_time_watched=totals["time_watched"],
         total_likes=get_total_likes(all_reviews),
-        most_liked_review=get_most_liked_review(all_reviews),
+        most_liked_review=most_liked_review,
+        most_liked_review_likes=most_liked_review_likes,
         total_average_rating=average_rating,
         reviewed_movies_percentage=reviewed_movies_percentage
     )
