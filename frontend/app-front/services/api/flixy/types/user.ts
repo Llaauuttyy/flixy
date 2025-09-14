@@ -27,6 +27,7 @@ export type PasswordData = {
 export interface UserInsights {
   id: number;
   genres: MovieGenre[];
+  achievements: UserAchievement[];
   total_reviews: number;
   total_ratings: number;
   total_movies_watched: number;
@@ -35,4 +36,13 @@ export interface UserInsights {
   most_liked_review: ReviewDataGet | null;
   total_average_rating: number;
   reviewed_movies_percentage: number;
+}
+
+export interface UserAchievement {
+  name: string;
+  description: string;
+  icon_name: string;
+  color: string;
+  unlocked: boolean;
+  unlocked_at: Date;
 }

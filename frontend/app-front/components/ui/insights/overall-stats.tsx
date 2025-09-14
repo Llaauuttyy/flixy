@@ -73,11 +73,11 @@ export function OverallStats({ userInsights }: OverallStatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-white">
-            {Math.round(userInsights.total_time_watched / 60).toLocaleString()}h
+            {Math.round(userInsights.total_time_watched).toLocaleString()}h
           </div>
           <p className="text-xs text-slate-400 mt-1">
             {(() => {
-              const days = userInsights.total_time_watched / (60 * 24);
+              const days = userInsights.total_time_watched / 24;
               if (days < 1)
                 return t(
                   "profile.insights.overall_stats.time.description.less_than_a_day"
