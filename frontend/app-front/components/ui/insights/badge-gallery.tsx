@@ -1,10 +1,14 @@
+// import * as Icons from "lucide-react";
 import * as Icons from "lucide-react";
 import { Award } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { UserAchievement } from "services/api/flixy/types/user";
+import { BadgeIcon } from "../../utils";
 import { Badge } from "../badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../card";
+
 type IconName = keyof typeof Icons;
+// type IconName = keyof typeof Icons;
 
 interface BadgeGalleryProps {
   achievementsInsights: UserAchievement[];
@@ -13,12 +17,12 @@ interface BadgeGalleryProps {
 export function BadgeGallery({ achievementsInsights }: BadgeGalleryProps) {
   const { t } = useTranslation();
 
-  function BadgeIcon({ iconName }: { iconName: IconName }) {
-    const LucideIcon = Icons[iconName] as React.ComponentType<{
-      size?: number;
-    }>;
-    return LucideIcon ? <LucideIcon size={24} /> : null;
-  }
+  // function BadgeIcon({ iconName }: { iconName: IconName }) {
+  //   const LucideIcon = Icons[iconName] as React.ComponentType<{
+  //     size?: number;
+  //   }>;
+  //   return LucideIcon ? <LucideIcon size={24} /> : null;
+  // }
 
   function getBadgeLockedColor(unlocked: boolean) {
     if (unlocked) {

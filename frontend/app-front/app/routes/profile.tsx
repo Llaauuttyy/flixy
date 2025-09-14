@@ -6,7 +6,6 @@ import { OverallStats } from "components/ui/insights/overall-stats";
 import { QuickStats } from "components/ui/insights/quick-stats";
 import { ReviewsStats } from "components/ui/insights/reviews-stats";
 import { SidebarNav } from "components/ui/sidebar-nav";
-import { BookOpen, Clock, Eye, List } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router";
 import { getUserInsights } from "services/api/flixy/server/user-data";
@@ -41,37 +40,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function MovieInsights() {
   const { t } = useTranslation();
-
-  const badges = [
-    {
-      name: "Prolific Critic",
-      description: "More than 200 reviews written",
-      icon: BookOpen,
-      earned: true,
-      color: "bg-gradient-to-r from-purple-500 to-pink-500",
-    },
-    {
-      name: "Movie Marathon",
-      description: "More than 1000 movies watched",
-      icon: Eye,
-      earned: true,
-      color: "bg-gradient-to-r from-blue-500 to-cyan-500",
-    },
-    {
-      name: "Expert Curator",
-      description: "More than 50 lists created",
-      icon: List,
-      earned: false,
-      color: "bg-gradient-to-r from-yellow-500 to-orange-500",
-    },
-    {
-      name: "Dedicated Cinephile",
-      description: "More than 3000 hours watched",
-      icon: Clock,
-      earned: true,
-      color: "bg-gradient-to-r from-green-500 to-emerald-500",
-    },
-  ];
 
   let apiResponse: ApiResponse = useLoaderData();
   let userInsights: UserInsights = apiResponse.data || null;
