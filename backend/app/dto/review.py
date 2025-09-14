@@ -1,5 +1,6 @@
 from typing import Optional
 from app.dto.movie import MovieDTO
+from app.dto.achievement import AchievementDTO
 from pydantic import BaseModel, Field
 from datetime import datetime as datetime
 from fastapi_pagination import Page
@@ -25,6 +26,9 @@ class ReviewCreationDTO(BaseModel):
 class ReviewGetSingularDTO(ReviewDTO):
     user_name: str
 
+class ReviewGetSingularAchievementsDTO(ReviewGetSingularDTO):
+    achievements: list[AchievementDTO] = []
+
 class ReviewGetResponse(BaseModel):
-    user_review: Optional[ReviewGetSingularDTO] = None
-    reviews: Page[ReviewGetSingularDTO]
+    user_review: Optional[ReviewGetSingularAchievementsDTO] = None
+    reviews: Page[ReviewGetSingularAchievementsDTO]

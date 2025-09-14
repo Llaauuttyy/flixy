@@ -55,9 +55,13 @@ class Database:
         statement = select(model).where(and_(*conditions))
         return self.db_session.exec(statement).first() is not None
     
-    def find_by_multiple(self, model, **filters):
+    def find_by_multiple(self, model, options=None, **filters):
         conditions = [getattr(model, field) == value for field, value in filters.items()]
         statement = select(model).where(and_(*conditions))
+
+        if options:
+            statement = statement.options(*options)
+        
         return self.db_session.exec(statement).first()
     
     def find_all_by_multiple(self, model, conditions, options=None, order_by=None):

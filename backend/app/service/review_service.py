@@ -1,9 +1,11 @@
 from app.model.user import User
 from app.model.review_like import ReviewLike
+from app.model.user_achievement import UserAchievement
+from app.dto.achievement import AchievementDTO
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
-from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO
+from app.dto.review import ReviewCreationDTO, ReviewGetSingularAchievementsDTO, ReviewGetSingularDTO
 from sqlalchemy.exc import IntegrityError
 from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEW_NOT_FOUND, INSULTING_REVIEW, UNDELETABLE_REVIEW_ERROR
 from sqlalchemy.orm import selectinload
@@ -26,27 +28,65 @@ class ReviewService:
             liked_by_user=liked_by_user,
             user_name=review.user.name
         )
+    
+    def set_up_review_singular_achievements_dto(self, review: Review, user_id: int, db: Database) -> ReviewGetSingularAchievementsDTO:
+        liked_by_user = db.exists_by_multiple(ReviewLike, review_id=review.id, user_id=user_id)
 
-    def get_all_reviews(self, db: Database, user_id: int, movie_id: int) -> Tuple[Optional[ReviewGetSingularDTO], List[ReviewGetSingularDTO]]:
-        current_user_review = db.find_by_multiple(Review, movie_id=movie_id, user_id=user_id)
+        achievements = review.user.achievements
+        achievement_dtos = list()
+
+        for user_achievement in achievements:
+            achievement = user_achievement.achievement
+            achievement_dtos.append(
+                AchievementDTO(
+                    name=achievement.name,
+                    description=achievement.description,
+                    icon_name=achievement.icon_name,
+                    color=achievement.color,
+                    unlocked=True,
+                    unlocked_at=user_achievement.unlocked_at
+                )
+            )
+
+        return ReviewGetSingularAchievementsDTO(
+            id=review.id,
+            user_id=review.user_id,
+            movie_id=review.movie_id,
+            rating=review.rating,
+            text=review.text,
+            watch_date=review.watch_date,
+            likes=review.likes,
+            created_at=review.created_at,
+            liked_by_user=liked_by_user,
+            user_name=review.user.name,
+            achievements=achievement_dtos
+        )
+
+    def get_all_reviews(self, db: Database, user_id: int, movie_id: int) -> Tuple[Optional[ReviewGetSingularAchievementsDTO], List[ReviewGetSingularAchievementsDTO]]:
+        current_user_review = db.find_by_multiple(
+            Review, 
+            options=[selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement)], 
+            movie_id=movie_id, 
+            user_id=user_id
+        )
         
         reviews = db.find_all(
             Review,
             db.build_condition([Review.movie_id == movie_id, Review.user_id != user_id]),
-            [selectinload(Review.user)]
+            [selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement)]
         )
 
         if not current_user_review and not reviews:
             return (None, [])
 
         if current_user_review:
-            current_user_review = self.set_up_review_singular_dto(current_user_review, user_id, db)
+            current_user_review = self.set_up_review_singular_achievements_dto(current_user_review, user_id, db)
 
         if reviews:
             reviews_singular = list()
             for review in reviews:
                 reviews_singular.append(
-                    self.set_up_review_singular_dto(review, user_id, db)
+                    self.set_up_review_singular_achievements_dto(review, user_id, db)
                 )
 
             reviews = reviews_singular
@@ -138,7 +178,7 @@ class ReviewService:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
         
-    def like_review(self, db: Database, user_id: int, id: int) -> ReviewGetSingularDTO:
+    def like_review(self, db: Database, user_id: int, id: int) -> ReviewGetSingularAchievementsDTO:
         try:
             review_to_like = db.find_by(Review, "id", id)
             user_like = db.find_by_multiple(ReviewLike, review_id=id, user_id=user_id)
@@ -155,7 +195,7 @@ class ReviewService:
                 review_to_like.likes -= 1
 
             db.save(review_to_like)
-            return self.set_up_review_singular_dto(review_to_like, user_id, db)
+            return self.set_up_review_singular_achievements_dto(review_to_like, user_id, db)
         except IntegrityError as e:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
