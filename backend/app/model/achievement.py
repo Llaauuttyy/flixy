@@ -9,6 +9,7 @@ class Achievement(SQLModel, table=True):
     name: str
     description: str
     icon_name: str
+    color: str
     unlock_conditions: str
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)

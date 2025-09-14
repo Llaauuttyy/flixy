@@ -4,6 +4,7 @@ from app.db.database_setup import SessionDep
 from app.service.user_service import UserService
 from app.dto.user import UserDTO, UserUpdateDTO
 from app.dto.insight import InsightDTO
+from app.dto.achievement import AchievementsDTO
 from fastapi import APIRouter, Depends, Path, Request, HTTPException
 from fastapi_pagination import Page, paginate
 
@@ -51,5 +52,13 @@ def follow_user(request: Request, session: SessionDep, user_service: UserService
     follower_id = request.state.user_id
     try:
         user_service.follow_user(follower_id, id, Database(session))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@user_router.get("/user/achievements")
+def get_achievements(session: SessionDep, request: Request, user_service: UserServiceDep) -> AchievementsDTO:
+    user_id = request.state.user_id
+    try:
+        return user_service.get_user_achievements(Database(session), user_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

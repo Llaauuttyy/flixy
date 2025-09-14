@@ -12,7 +12,6 @@ class UserAchievement(SQLModel, table=True):
     user_id: int = Field(foreign_key="users.id")
     achievement_id: int = Field(foreign_key="achievements.id")
     unlocked_at: datetime = Field(default_factory=datetime.now)
-    unlock_conditions: str
 
     user: Optional["User"] = Relationship(back_populates="achievements")
     achievement: Optional[Achievement] = Relationship(back_populates="user_achievements")

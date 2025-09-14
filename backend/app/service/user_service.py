@@ -1,5 +1,6 @@
 from typing import Optional
 from app.model.user import User
+from app.model.achievement import Achievement
 from app.db.database import Database
 from app.dto.user import UserDTO, UserUpdateDTO
 from app.constants.message import EXISTENT_USERNAME_ERROR, USER_NOT_FOUND
@@ -8,7 +9,11 @@ from app.model.review import Review
 from app.model.user_relationship import UserRelationship
 from app.dto.review import ReviewDTO
 from app.dto.movie import MovieDTO
+from app.model.user_achievement import UserAchievement
+from app.model.achievement import Achievement
+from app.dto.achievement import AchievementsDTO, AchievementDTO
 from sqlalchemy.orm import selectinload
+import json
 
 class UserService:
     def get_all_users(self, db: Database) -> list[UserDTO]:
@@ -53,7 +58,8 @@ class UserService:
         all_reviews = list(db.find_all_by_multiple(Review, db.build_condition([Review.user_id == user_id], [selectinload(Review.movie)])))
 
         # Pasar los minutos a horas para hacer el calculo del achievement.
-        return build_insight_dto(user_id, genres, totals, all_reviews)
+        insight_dto = build_insight_dto_pre_achievements(user_id, genres, totals, all_reviews)
+        return build_insight_dto(db, insight_dto)
 
     def search_users(self, db: Database, search_query: str, user_id: int):
         search_conditions = db.build_condition([User.name.ilike(f"%{search_query}%"),User.username.ilike(f"%{search_query}%")], "OR")
@@ -78,6 +84,36 @@ class UserService:
             db.delete(relation)
         else:
             db.save(UserRelationship(follower_id=follower_id, followed_id=followed_id))
+
+    def get_user_achievements(self, db: Database, user_id: int) -> AchievementsDTO:
+        user = db.find_by(User, "id", user_id, options=[selectinload(User.achievements).selectinload(UserAchievement.achievement)])
+
+        user_achievements = user.achievements
+        achievements = db.find_all(Achievement)
+
+        print(achievements)
+
+        achievement_dtos = []
+
+        for achievement in achievements:
+            dto = AchievementDTO(
+                name=achievement.name,
+                description=achievement.description,
+                icon_name=achievement.icon_name,
+                color=achievement.color,
+                unlocked=False,
+                unlocked_at=None
+            )
+            for user_achievement in user_achievements:
+                if achievement.id == user_achievement.achievement.id:
+                    dto.unlocked = True
+                    dto.unlocked_at = user_achievement.unlocked_at
+
+            achievement_dtos.append(dto)
+
+        return AchievementsDTO(
+            achievements=achievement_dtos
+        )
 
 # Funciones auxiliares para mejorar legibilidad
 
@@ -129,7 +165,7 @@ def process_genres(genres: dict) -> list[Genre]:
         )
     return processed
 
-def build_insight_dto(user_id: int, genres: list[Genre], totals: dict, all_reviews: list[Review]) -> InsightDTO:
+def build_insight_dto_pre_achievements(user_id: int, genres: list[Genre], totals: dict, all_reviews: list[Review]) -> InsightDTO:
     average_rating = round(totals["sum_ratings"] / totals["rated_movies"], 1) if totals["rated_movies"] > 0 else 0.0
     reviewed_movies_percentage = (
         round((totals["reviews"] / totals["movies_watched"]) * 100, 0) if totals["movies_watched"] > 0 else 0.0
@@ -141,10 +177,11 @@ def build_insight_dto(user_id: int, genres: list[Genre], totals: dict, all_revie
     return InsightDTO(
         user_id=user_id,
         genres=genres,
+        achievements=[],
         total_reviews=totals["reviews"],
         total_ratings=totals["rated_movies"],
         total_movies_watched=totals["movies_watched"],
-        total_time_watched=totals["time_watched"],
+        total_time_watched=round(totals["time_watched"] / 60),
         total_likes=get_total_likes(all_reviews),
         most_liked_review=most_liked_review,
         most_liked_review_likes=most_liked_review_likes,
@@ -152,6 +189,51 @@ def build_insight_dto(user_id: int, genres: list[Genre], totals: dict, all_revie
         reviewed_movies_percentage=reviewed_movies_percentage
     )
 
+def build_insight_dto(db: Database, insight_dto: InsightDTO) -> InsightDTO:
+    achievements = db.find_all(Achievement)
+    
+    achivements_unlocked = []
+
+    user_achievements = db.find_all(UserAchievement, UserAchievement.user_id==insight_dto.user_id, options=[selectinload(UserAchievement.achievement)])
+    for ua in user_achievements:
+        achivements_unlocked.append(AchievementDTO(
+            name=ua.achievement.name,
+            description=ua.achievement.description,
+            icon_name=ua.achievement.icon_name,
+            color=ua.achievement.color,
+            unlocked=True,
+            unlocked_at=ua.unlocked_at
+        ))
+
+    achivements_to_unlock = []
+    if achivements_unlocked:
+        achivements_to_unlock = [a for a in achievements if all(a.name != au.name for au in achivements_unlocked)]
+    else:
+        achivements_to_unlock = achievements
+    
+    for achievement in achivements_to_unlock:
+        dto = AchievementDTO(
+            name=achievement.name,
+            description=achievement.description,
+            icon_name=achievement.icon_name,
+            color=achievement.color,
+            unlocked=False,
+            unlocked_at=None
+        )   
+
+        unlock_conditions = json.loads(achievement.unlock_conditions)
+        if getattr(insight_dto, unlock_conditions.get("target_field")) >= unlock_conditions.get("value"):
+            dto.unlocked = True
+            
+            new_user_achievement = UserAchievement(user_id=insight_dto.user_id, achievement_id=achievement.id)
+            dto.unlocked_at = new_user_achievement.unlocked_at
+            
+            db.save(new_user_achievement)
+
+        achivements_unlocked.append(dto)
+
+    insight_dto.achievements = achivements_unlocked
+    return insight_dto
 
 def get_most_liked_review(reviews: list[Review]) -> Optional[ReviewDTO]:
     most_liked_review = max(reviews, key=lambda r: r.likes, default=None)

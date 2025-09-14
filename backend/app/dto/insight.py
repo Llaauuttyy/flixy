@@ -1,5 +1,6 @@
 from typing import Optional
 from app.dto.review import ReviewDTO
+from app.dto.achievement import AchievementDTO
 from pydantic import BaseModel
 
 class Genre(BaseModel):
@@ -10,6 +11,7 @@ class Genre(BaseModel):
 class InsightDTO(BaseModel):
     user_id: int
     genres: Optional[list[Genre]] = []
+    achievements: list[AchievementDTO]
     total_reviews: Optional[int] = 0
     total_ratings: Optional[int] = 0
     total_movies_watched: Optional[int] = 0 # <= sum(Genre.movies_watched). Since a movie can have multiple genres
