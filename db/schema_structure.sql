@@ -108,6 +108,7 @@ CREATE TABLE achievements (
   name varchar(128) NOT NULL,
   description varchar(512) NOT NULL,
   icon_name varchar(64) NOT NULL,
+  color varchar(45) NOT NULL,
   unlock_conditions JSON NOT NULL,
   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -118,16 +119,16 @@ CREATE TABLE achievements (
 -- Achievements
 INSERT INTO achievements (name, description, icon_name, unlock_conditions)
 VALUES
-('Prolific Critic', 'More than 200 reviews written', 'IconName', 
+('Prolific Critic', 'More than 200 reviews written', 'BookOpen', 'purple',
  '{"target_field": "total_reviews", "value": 200}'),
 
-('Spotlight Reviewer', 'More than 20 likes on one review', 'IconName', 
+('Spotlight Reviewer', 'More than 20 likes on one review', 'Sparkles', 'yellow',
  '{"target_field": "most_liked_review_likes", "value": 20}'),
 
-('Movie Marathon', 'More than 1000 movies watched', 'IconName', 
+('Movie Marathon', 'More than 1000 movies watched', 'Eye', 'blue',
  '{"target_field": "total_movies_watched", "value": 1000}'),
 
-('Dedicated Cinephile', 'More than 3000 hours watched', 'IconName', 
+('Dedicated Cinephile', 'More than 3000 hours watched', 'Clock', 'green',
  '{"target_field": "total_time_watched", "value": 3000}');
 
 
