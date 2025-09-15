@@ -12,7 +12,6 @@ import * as Icons from "lucide-react";
 
 type IconName = keyof typeof Icons;
 
-import { BadgeIcon } from "components/utils";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import i18n from "i18n/i18n";
@@ -83,19 +82,7 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
               </Badge>
               {currentReview.achievements.length > 0 &&
                 currentReview.achievements.map((achievement) => (
-                  <div
-                    key={achievement.name}
-                    className="relative group inline-block"
-                  >
-                    <div>
-                      <BadgeIcon iconName={achievement.icon_name as IconName} />
-                    </div>
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 hidden group-hover:block z-10">
-                      <div className="w-max">
-                        <SingularBadge badge={achievement} />
-                      </div>
-                    </div>
-                  </div>
+                  <SingularBadge badge={achievement} />
                 ))}
             </div>
             <p className="text-slate-300 mb-3">{currentReview.text}</p>

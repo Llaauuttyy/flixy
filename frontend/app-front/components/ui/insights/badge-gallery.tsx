@@ -3,7 +3,7 @@ import * as Icons from "lucide-react";
 import { Award } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { UserAchievement } from "services/api/flixy/types/user";
-import { BadgeIcon } from "../../utils";
+import { BadgeIcon, getBadgeColor } from "../../utils";
 import { Badge } from "../badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../card";
 
@@ -16,13 +16,6 @@ interface BadgeGalleryProps {
 
 export function BadgeGallery({ achievementsInsights }: BadgeGalleryProps) {
   const { t } = useTranslation();
-
-  // function BadgeIcon({ iconName }: { iconName: IconName }) {
-  //   const LucideIcon = Icons[iconName] as React.ComponentType<{
-  //     size?: number;
-  //   }>;
-  //   return LucideIcon ? <LucideIcon size={24} /> : null;
-  // }
 
   function getBadgeLockedColor(unlocked: boolean) {
     if (unlocked) {
@@ -54,7 +47,9 @@ export function BadgeGallery({ achievementsInsights }: BadgeGalleryProps) {
                 <div className="flex flex-col items-center text-center space-y-3">
                   <div
                     className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                      badge.unlocked ? `bg-${badge.color}-600` : "bg-slate-700"
+                      badge.unlocked
+                        ? `${getBadgeColor(badge.color)}`
+                        : "bg-slate-700"
                     }`}
                   >
                     {BadgeIcon({ iconName: badge.icon_name as IconName })}
