@@ -1,17 +1,17 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from app.db.database import Database
 from app.db.database_setup import SessionDep
 from app.service.review_service import ReviewService
 from app.dto.review import ReviewCreationDTO, ReviewGetSingularAchievementsDTO, ReviewGetSingularDTO, ReviewGetResponse
-from fastapi import APIRouter, Depends, Path, HTTPException, Request
+from fastapi import APIRouter, Depends, Path, HTTPException, Request, Query
 from fastapi_pagination import Params, paginate
 
 review_router = APIRouter()
 
 ReviewServiceDep = Annotated[ReviewService, Depends(lambda: ReviewService())]
 
-@review_router.get("/review/{movie_id}")
-def get_reviews(session: SessionDep, request: Request, review_service: ReviewServiceDep, movie_id: int = Path(..., title="movie id", ge=1), params: Params = Depends()) -> ReviewGetResponse:
+@review_router.get("/review")
+def get_reviews(session: SessionDep, request: Request, review_service: ReviewServiceDep, movie_id: Optional[int] = Query(None, ge=1, title="movie id"), params: Params = Depends()) -> ReviewGetResponse:
     user_id = request.state.user_id
 
     try:
