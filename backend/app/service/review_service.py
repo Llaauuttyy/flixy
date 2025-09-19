@@ -87,8 +87,6 @@ class ReviewService:
         current_user_review = None
         reviews = []
 
-        print(f"Value is: {movie_id}")
-        
         if movie_id:
             current_user_review = db.find_by_multiple(
                 Review,
@@ -115,8 +113,6 @@ class ReviewService:
                 db.build_condition([Review.user_id == user_id]),
                 [selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement), selectinload(Review.movie)]
             )
-
-        print(reviews)
 
         if reviews:
             reviews_singular = list()
