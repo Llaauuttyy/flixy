@@ -1,10 +1,10 @@
-import { Badge } from "components/ui/badge";
 import { HeaderFull } from "components/ui/header-full";
 import { MovieCard } from "components/ui/movie-card";
+import MovieHeaderData from "components/ui/movie-header-data";
 import { ReviewCard } from "components/ui/review-card";
-import { Separator } from "components/ui/separator";
+import { ReviewInput } from "components/ui/review-input";
 import { SidebarNav } from "components/ui/sidebar-nav";
-import { Star } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router";
 import { getAllUserReviewsData } from "services/api/flixy/server/reviews";
@@ -55,6 +55,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function ReviewsPage() {
   const apiResponse: ApiResponse = useLoaderData();
   const { t } = useTranslation();
+  const [isReviewCreation, setIsReviewCreation] = useState(false);
+
+  const handleReviewCreation = () => {
+    setIsReviewCreation(true);
+  };
 
   if (apiResponse.error) {
     return (
@@ -101,58 +106,10 @@ export default function ReviewsPage() {
                 <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-purple-500/40 to-transparent self-stretch min-h-[400px]"></div>
 
                 <div className="lg:w-2/3 flex-1">
-                  {/* Movie Details */}
-                  {/* TODO: HACER COMPONENTE MovieDetails. */}
-                  <div className="md:col-span-2 space-y-6">
-                    <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-                      {review.movie.title}
-                    </h1>
-                    <div className="flex items-center gap-4 text-[#A0A0A0]">
-                      <span className="text-lg"> {review.movie.year} </span>
-                      <Separator
-                        orientation="vertical"
-                        className="h-6 bg-[#202135]"
-                      />
-                      <span className="text-lg">
-                        {/* {getDurationFromMovie(String(review.movie.duration))} */}
-                      </span>
-                      <Separator
-                        orientation="vertical"
-                        className="h-6 bg-[#202135]"
-                      />
-                      <div className="flex items-center gap-1">
-                        <Star className="w-5 h-5 fill-[#FFD700] text-[#FFD700]" />
-                        <span className="text-lg font-semibold">
-                          {review.movie.imdb_rating}
-                        </span>
-                        <span className="text-sm">/10</span>{" "}
-                        <Badge className="ml-2 bg-yellow-400 text-black font-bold rounded-sm px-1.5 py-0.5">
-                          IMDb
-                        </Badge>
-                      </div>
-                      <Separator
-                        orientation="vertical"
-                        className="h-6 bg-[#202135]"
-                      />
-                      <div className="flex items-center gap-1">
-                        <span className="text-lg">
-                          {String(review.movie.countries).split(",")[0]}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 pb-5">
-                      {String(review.movie.genres)
-                        .split(",")
-                        .map((genre: string, index: number) => (
-                          <Badge
-                            key={index}
-                            className="bg-[#202135] text-[#E0E0E0] hover:bg-[#202135]/80"
-                          >
-                            {genre.trim()}
-                          </Badge>
-                        ))}
-                    </div>
+                  <div className="pb-5">
+                    <MovieHeaderData movie={review.movie} />
                   </div>
+
                   {review.text ? (
                     <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/20 backdrop-blur-sm rounded-2xl border border-gray-700/30 p-8 shadow-xl hover:shadow-purple-500/10 transition-all duration-300">
                       {/* Review Header */}
@@ -245,9 +202,30 @@ export default function ReviewsPage() {
                         </p>
                       </div>
 
-                      <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25">
-                        Escribir Review
-                      </button>
+                      {/* <Link
+                        to={`/movies/${review.movie.id}`}
+                        state={{ fromReviewButton: true }}
+                      >
+                        <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25">
+                          Escribir Review
+                        </button>
+                      </Link> */}
+
+                      {!isReviewCreation ? (
+                        <button
+                          onClick={handleReviewCreation}
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25"
+                        >
+                          Escribir Review
+                        </button>
+                      ) : (
+                        <ReviewInput
+                          accessToken={String(apiResponse.accessToken)}
+                          movieId={Number(review.movie.id)}
+                          title={String(review.movie.title)}
+                          userReview={review}
+                        />
+                      )}
 
                       <div className="mt-6 flex items-center justify-center space-x-4 text-gray-500 text-sm">
                         <div className="flex items-center space-x-1">

@@ -130,6 +130,8 @@ export function ReviewInput({
         reviewData
       );
 
+      newUserReview.achievements = currentReview?.achievements || [];
+
       setCurrentReview(newUserReview);
       setIsEditing(false);
       if (onChangeReview) {
