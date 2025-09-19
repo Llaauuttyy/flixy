@@ -57,7 +57,7 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
             <div className="flex items-center gap-3 mb-2">
               <span className="font-medium">{currentReview.user_name}</span>
               <span className="text-sm text-slate-400">
-                {dayjs.utc(currentReview.created_at).fromNow()}
+                {dayjs.utc(currentReview.updated_at).fromNow()}
               </span>
               {currentReview.rating && (
                 <div className="flex items-center gap-1">
