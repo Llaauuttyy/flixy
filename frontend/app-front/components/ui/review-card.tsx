@@ -8,10 +8,6 @@ import { useTranslation } from "react-i18next";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { Card, CardContent } from "./card";
 
-import * as Icons from "lucide-react";
-
-type IconName = keyof typeof Icons;
-
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import i18n from "i18n/i18n";

@@ -1,7 +1,6 @@
 import { HeaderFull } from "components/ui/header-full";
 import { MovieCard } from "components/ui/movie-card";
 import MovieHeaderData from "components/ui/movie-header-data";
-import { ReviewCard } from "components/ui/review-card";
 import { ReviewInput } from "components/ui/review-input";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { useState } from "react";
@@ -38,7 +37,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     apiResponse.data = reviewsData;
 
     return apiResponse;
-  } catch (err) {
+  } catch (err: Error | any) {
     console.log("API GET /review said: ", err.message);
 
     if (err instanceof TypeError) {
@@ -56,6 +55,7 @@ export default function ReviewsPage() {
   const apiResponse: ApiResponse = useLoaderData();
   const { t } = useTranslation();
   const [isReviewCreation, setIsReviewCreation] = useState(false);
+  const [isReviewPresent, setIsReviewPresent] = useState(false);
 
   const handleReviewCreation = () => {
     setIsReviewCreation(true);
@@ -110,67 +110,14 @@ export default function ReviewsPage() {
                     <MovieHeaderData movie={review.movie} />
                   </div>
 
-                  {review.text ? (
-                    <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/20 backdrop-blur-sm rounded-2xl border border-gray-700/30 p-8 shadow-xl hover:shadow-purple-500/10 transition-all duration-300">
-                      {/* Review Header */}
-                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-bold text-white/90 tracking-wide">
-                          Tu Review
-                        </h3>
-                        <div className="flex items-center space-x-2 px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/30">
-                          <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                          <span className="text-purple-300 text-sm font-medium">
-                            Publicada
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Review Content */}
-                      <div className="mb-6">
-                        <ReviewCard
-                          userReview={review}
-                          accessToken={String(apiResponse.accessToken)}
-                        />
-                      </div>
-
-                      {/* Review Footer */}
-                      <div className="flex items-center justify-between pt-6 border-t border-gray-600/30">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-lg font-bold">
-                              ★
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-gray-300 text-sm font-medium">
-                              Review verificada
-                            </p>
-                            <p className="text-gray-500 text-xs">
-                              Visible para la comunidad
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2 text-gray-400 text-sm">
-                          <svg
-                            className="w-4 h-4"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          <span>
-                            Hace{" "}
-                            {review.created_at
-                              ? new Date(review.created_at).toLocaleDateString()
-                              : "poco tiempo"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                  {review.text || isReviewPresent ? (
+                    <ReviewInput
+                      accessToken={String(apiResponse.accessToken)}
+                      movieId={Number(review.movie.id)}
+                      title={String(review.movie.title)}
+                      userReview={review}
+                      onChangeReview={() => setIsReviewCreation(false)}
+                    />
                   ) : review.watch_date ? (
                     /* New conditional logic for when there's watch_date but no review text */
                     <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/10 backdrop-blur-sm rounded-2xl border border-gray-600/20 p-8 text-center">
@@ -202,15 +149,6 @@ export default function ReviewsPage() {
                         </p>
                       </div>
 
-                      {/* <Link
-                        to={`/movies/${review.movie.id}`}
-                        state={{ fromReviewButton: true }}
-                      >
-                        <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25">
-                          Escribir Review
-                        </button>
-                      </Link> */}
-
                       {!isReviewCreation ? (
                         <button
                           onClick={handleReviewCreation}
@@ -219,11 +157,13 @@ export default function ReviewsPage() {
                           Escribir Review
                         </button>
                       ) : (
+                        // TODO: Ver cómo editar review al crearla para poder mostrarla y al eliminarla que desaparezca ReviewInput.
                         <ReviewInput
                           accessToken={String(apiResponse.accessToken)}
                           movieId={Number(review.movie.id)}
                           title={String(review.movie.title)}
                           userReview={review}
+                          onChangeReview={() => setIsReviewPresent(true)}
                         />
                       )}
 
