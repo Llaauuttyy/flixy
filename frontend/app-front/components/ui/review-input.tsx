@@ -322,10 +322,7 @@ export function ReviewInput({
                 />
               </svg>
               <span>
-                Hace{" "}
-                {userReview?.updated_at
-                  ? new Date(userReview.updated_at).toLocaleDateString()
-                  : "poco tiempo"}
+                {new Date(String(userReview?.created_at)).toLocaleDateString()}
               </span>
             </div>
           </div>
