@@ -246,6 +246,7 @@ def get_most_liked_review(reviews: list[Review]) -> Optional[ReviewDTO]:
         watch_date=most_liked_review.watch_date,
         likes=most_liked_review.likes,
         created_at=most_liked_review.created_at,
+        updated_at=most_liked_review.updated_at,
         movie=MovieGetResponse(
             id=most_liked_review.movie.id,
             title=most_liked_review.movie.title,

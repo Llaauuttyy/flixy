@@ -26,6 +26,7 @@ class ReviewService:
             watch_date=review.watch_date,
             likes=review.likes,
             created_at=review.created_at,
+            updated_at=review.updated_at,
             liked_by_user=liked_by_user,
             user_name=review.user.name
         )
@@ -77,6 +78,7 @@ class ReviewService:
             watch_date=review.watch_date,
             likes=review.likes,
             created_at=review.created_at,
+            updated_at=review.updated_at,
             liked_by_user=liked_by_user,
             user_name=review.user.name,
             movie=movie,
@@ -167,6 +169,7 @@ class ReviewService:
                 watch_date=review.watch_date,
                 likes=review.likes,
                 created_at=review.created_at,
+                updated_at=review.updated_at,
                 user_name = user.name
             )
 

@@ -15,6 +15,7 @@ class ReviewDTO(BaseModel):
     likes: int
     liked_by_user: bool = False
     created_at: datetime
+    updated_at: datetime
     movie: Optional[MovieGetResponse] = None
 
 class ReviewCreationDTO(BaseModel):
