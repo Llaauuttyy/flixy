@@ -29,22 +29,13 @@ export function ReviewDetailHandler({
   const { t } = useTranslation();
   const [reviews, setReviews] = useState(reviewsPage.items ?? []);
 
-  const [isReviewCreation, setIsReviewCreation] = useState(false);
-  const [isReviewPresent, setIsReviewPresent] = useState(false);
+  const [currentReviewBeingCreated, setCurrentReviewBeingCreated] =
+    useState<number>(0);
 
   dayjs.locale(i18n.language || "en");
 
   const handleReviewChange = (review: ReviewDataGet | null) => {
     if (!review) return;
-
-    if (review.text && isReviewCreation) {
-      setIsReviewCreation(false);
-      //   setIsReviewPresent(true);
-    } else {
-      //   setIsReviewPresent(false);
-    }
-
-    setIsReviewCreation(!isReviewCreation);
 
     const updatedReviews = reviews.map((r) =>
       r.id === review.id
@@ -55,6 +46,8 @@ export function ReviewDetailHandler({
           }
         : r
     );
+
+    setCurrentReviewBeingCreated(0);
 
     setReviews(updatedReviews);
   };
@@ -129,15 +122,14 @@ export function ReviewDetailHandler({
                     </p>
                   </div>
 
-                  {!isReviewCreation ? (
+                  {currentReviewBeingCreated != review.id ? (
                     <button
-                      onClick={() => setIsReviewCreation(true)}
+                      onClick={() => setCurrentReviewBeingCreated(review.id)}
                       className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25"
                     >
                       Escribir Review
                     </button>
                   ) : (
-                    // TODO: Ver cómo editar review al crearla para poder mostrarla y al eliminarla que desaparezca ReviewInput.
                     <div className="text-start">
                       <ReviewInput
                         accessToken={String(accessToken)}
