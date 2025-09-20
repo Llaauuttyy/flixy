@@ -111,13 +111,15 @@ export function ReviewDetailHandler({
                       </svg>
                     </div>
                     <h4 className="text-2xl font-bold text-white/90 mb-3">
-                      ¡Viste la película!
+                      {t("review_detail_handler_component.you_watched_movie")}
                     </h4>
                     <p className="text-gray-400 text-lg mb-2">
-                      ¿Por qué no darle una review?
+                      {t(
+                        "review_detail_handler_component.give_review_question"
+                      )}
                     </p>
                     <p className="text-gray-500 text-sm">
-                      Visto el{" "}
+                      {t("review_detail_handler_component.whatched_on")}{" "}
                       {new Date(review.watch_date).toLocaleDateString()}
                     </p>
                   </div>
@@ -127,7 +129,7 @@ export function ReviewDetailHandler({
                       onClick={() => setCurrentReviewBeingCreated(review.id)}
                       className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25"
                     >
-                      Escribir Review
+                      {t("review_detail_handler_component.write_review_button")}
                     </button>
                   ) : (
                     <div className="text-start">
@@ -155,7 +157,9 @@ export function ReviewDetailHandler({
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>Película vista</span>
+                      <span>
+                        {t("review_detail_handler_component.movie_watched")}
+                      </span>
                     </div>
                     <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
                     <div className="flex items-center space-x-1">
@@ -170,36 +174,13 @@ export function ReviewDetailHandler({
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>Review pendiente</span>
+                      <span>
+                        {t("review_detail_handler_component.pending_review")}
+                      </span>
                     </div>
                   </div>
                 </div>
-              ) : (
-                /* Default state when no review and no watch_date */
-                <div className="bg-gradient-to-br from-gray-800/20 to-gray-900/10 backdrop-blur-sm rounded-2xl border border-gray-600/10 p-8 text-center">
-                  <div className="w-16 h-16 bg-gray-700/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg
-                      className="w-8 h-8 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                      />
-                    </svg>
-                  </div>
-                  <h4 className="text-lg font-medium text-gray-400 mb-2">
-                    Sin review aún
-                  </h4>
-                  <p className="text-gray-600 text-sm">
-                    Comparte tu opinión sobre esta película
-                  </p>
-                </div>
-              )}
+              ) : null}
             </div>
           </div>
           <Separator className="bg-[#202135]" />

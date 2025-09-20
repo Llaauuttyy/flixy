@@ -265,13 +265,13 @@ export function ReviewInput({
           {/* Review Header */}
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-2xl font-bold text-white/90 tracking-wide">
-              Tu Review
+              {t("review_input.your_review")}
             </h3>
             <div className="flex items-center gap-4">
               <div className="flex items-center space-x-2 px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/30">
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
                 <span className="text-purple-300 text-sm font-medium">
-                  Publicada
+                  {t("review_input.published")}
                 </span>
               </div>
               <div className="flex gap-[10px]">
@@ -306,10 +306,10 @@ export function ReviewInput({
               </div>
               <div>
                 <p className="text-gray-300 text-sm font-medium">
-                  Review verificada
+                  {t("review_input.verified")}
                 </p>
                 <p className="text-gray-500 text-xs">
-                  Visible para la comunidad
+                  {t("review_input.visible")}
                 </p>
               </div>
             </div>

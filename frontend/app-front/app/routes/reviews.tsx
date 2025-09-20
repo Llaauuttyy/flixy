@@ -92,7 +92,13 @@ export default function ReviewsPage() {
       <div className="flex-1 overflow-y-auto">
         <HeaderFull />
         {/* Movies Section */}
-        <main className="pl-6">
+        <main className="p-6">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              {t("reviews.title")}
+            </h1>
+            <p className="text-gray-300">{t("reviews.subtitle")}</p>
+          </div>
           <div>
             {reviews.items && reviews.items.length !== 0 && (
               <Pagination

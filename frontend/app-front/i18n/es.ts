@@ -141,6 +141,10 @@ export const esTranslation = {
     review_button: "Publicar reseña",
     review_analizying: "Analizando reseña...",
     cancel_button: "Cancelar",
+    your_review: "Tu reseña",
+    published: "Publicada",
+    verified: "Reseña verificada",
+    visible: "Visible para la comunidad",
   },
   settings: {
     title: "Configuración",
@@ -311,5 +315,19 @@ export const esTranslation = {
       cancel: "Cancelar",
       accept: "Eliminar",
     },
+  },
+  reviews: {
+    title: "Reseñas",
+    subtitle:
+      "Organiza tus reseñas de películas y nunca pierdas de vista tus opiniones",
+  },
+
+  review_detail_handler_component: {
+    you_watched_movie: "¡Viste esta película!",
+    give_review_question: "¿Por qué no darle una reseña?",
+    whatched_on: "Vista el",
+    write_review_button: "Escribir reseña",
+    movie_watched: "Película vista",
+    pending_review: "Reseña pendiente",
   },
 };
