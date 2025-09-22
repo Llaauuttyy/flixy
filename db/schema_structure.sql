@@ -42,6 +42,7 @@ CREATE TABLE reviews (
   watch_date timestamp NULL DEFAULT NULL,
   likes int DEFAULT 0,
   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  visible_updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY user_id (user_id, movie_id),

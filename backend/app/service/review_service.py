@@ -26,7 +26,7 @@ class ReviewService:
             watch_date=review.watch_date,
             likes=review.likes,
             created_at=review.created_at,
-            updated_at=review.updated_at,
+            updated_at=review.visible_updated_at,
             liked_by_user=liked_by_user,
             user_name=review.user.name
         )
@@ -78,7 +78,7 @@ class ReviewService:
             watch_date=review.watch_date,
             likes=review.likes,
             created_at=review.created_at,
-            updated_at=review.updated_at,
+            updated_at=review.visible_updated_at,
             liked_by_user=liked_by_user,
             user_name=review.user.name,
             movie=movie,
@@ -136,6 +136,7 @@ class ReviewService:
                 raise Exception(INSULTING_REVIEW)
             
             existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)
+
             if existing_review:
                 if review_dto.text:
                     existing_review.text = review_dto.text
@@ -144,6 +145,7 @@ class ReviewService:
                 if review_dto.watch_date:
                     existing_review.watch_date = review_dto.watch_date
 
+                existing_review.visible_updated_at = datetime.now()
                 db.save(existing_review)
                 review = existing_review
             else:
@@ -155,6 +157,7 @@ class ReviewService:
                     text=review_dto.text,
                     watch_date=review_dto.watch_date if review_dto.watch_date else curent_date,
                 )
+
                 db.save(new_review)
                 review = new_review
 
@@ -169,7 +172,7 @@ class ReviewService:
                 watch_date=review.watch_date,
                 likes=review.likes,
                 created_at=review.created_at,
-                updated_at=review.updated_at,
+                updated_at=review.visible_updated_at,
                 user_name = user.name
             )
 
@@ -193,6 +196,8 @@ class ReviewService:
                 raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
 
             review_to_delete.text = None
+            review_to_delete.visible_updated_at = datetime.now()
+
             db.save(review_to_delete)
         except IntegrityError as e:
             db.rollback()

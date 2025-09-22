@@ -14,6 +14,7 @@ class Review(SQLModel, table=True):
     watch_date: datetime
     likes: int = Field(default=0)
     created_at: datetime = Field(default_factory=datetime.now)
+    visible_updated_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 
     user: Optional["User"] = Relationship(back_populates="reviews")
