@@ -83,7 +83,9 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
               )}
               <Badge variant="secondary" className="bg-gray-700 text-gray-300">
                 <MonitorPlay className="pr-2" size={24} />{" "}
-                {dayjs.utc(currentReview.watch_date).fromNow()}
+                {new Date(
+                  String(currentReview.watch_date)
+                ).toLocaleDateString()}
               </Badge>
               {currentReview.achievements.length > 0 &&
                 currentReview.achievements.map((achievement) => (
