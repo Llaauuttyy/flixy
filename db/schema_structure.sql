@@ -117,7 +117,7 @@ CREATE TABLE achievements (
 );
 
 -- Achievements
-INSERT INTO achievements (name, description, icon_name, unlock_conditions)
+INSERT INTO achievements (name, description, icon_name, color, unlock_conditions)
 VALUES
 ('Prolific Critic', 'More than 200 reviews written', 'BookOpen', 'purple',
  '{"target_field": "total_reviews", "value": 200}'),
