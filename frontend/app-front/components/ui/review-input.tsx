@@ -36,7 +36,7 @@ export function ReviewInput({
   const { t } = useTranslation();
 
   const reviewLimit = 1000;
-  const [review, setReview] = useState("");
+  const [review, setReview] = useState<string>("");
   const [caracters, setCaracters] = useState(0);
   const [hasReachedLimit, setHasReachedLimit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -91,6 +91,7 @@ export function ReviewInput({
         onChangeReview(currentReview ? { ...currentReview, text: null } : null);
       }
       setCurrentReview((prev) => (prev ? { ...prev, text: null } : null));
+      setReview("");
     } catch (err: Error | any) {
       console.log("API DELETE /review/:reviewId ", err.message);
 
