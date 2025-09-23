@@ -188,6 +188,13 @@ class ReviewService:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
 
+    def remove_review_likes(self, db: Database, review_to_delete: Review):
+        review_likes = db.find_all(ReviewLike, ReviewLike.review_id == review_to_delete.id)
+
+        for like in review_likes:
+            db.remove(like)
+            review_to_delete.likes = 0
+        
     def delete_review_text(self, db: Database, user_id: int, id: int):
         try:
             review_to_delete = db.find_by_multiple(Review, id=id, user_id=user_id)
@@ -197,6 +204,8 @@ class ReviewService:
 
             review_to_delete.text = None
             review_to_delete.visible_updated_at = datetime.now()
+
+            self.remove_review_likes(db, review_to_delete)
 
             db.save(review_to_delete)
         except IntegrityError as e:
@@ -212,6 +221,8 @@ class ReviewService:
             
             if review_to_delete.text or review_to_delete.rating:
                 raise HTTPException(status_code=409, detail=UNDELETABLE_REVIEW_ERROR)
+
+            self.remove_review_likes(db, review_to_delete)
 
             db.delete(review_to_delete)
         except IntegrityError as e:
