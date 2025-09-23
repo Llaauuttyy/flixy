@@ -92,6 +92,7 @@ export function ReviewInput({
       }
       setCurrentReview((prev) => (prev ? { ...prev, text: null } : null));
       setReview("");
+      setCaracters(0);
     } catch (err: Error | any) {
       console.log("API DELETE /review/:reviewId ", err.message);
 
