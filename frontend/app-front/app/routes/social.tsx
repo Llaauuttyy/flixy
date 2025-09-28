@@ -11,7 +11,9 @@ import {
   CardTitle,
 } from "components/ui/card";
 import { HeaderFull } from "components/ui/header-full";
+import { Pagination } from "components/ui/pagination";
 import { SidebarNav } from "components/ui/sidebar-nav";
+import { UserCard } from "components/ui/user-card";
 import {
   BookOpen,
   Calendar,
@@ -23,12 +25,83 @@ import {
   Users,
 } from "lucide-react";
 import { Suspense, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useFetcher, useLoaderData } from "react-router-dom";
+import {
+  getUserFollowers,
+  getUserFollowing,
+} from "services/api/flixy/server/user-data";
+import type { ApiResponse, Page } from "services/api/flixy/types/overall";
+import type { UserData } from "services/api/flixy/types/user";
+import { getAccessToken } from "services/api/utils";
+import type { Route } from "./+types/social";
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_FOLLOWERS_PAGE_SIZE = 1;
+const DEFAULT_FOLLOWING_PAGE_SIZE = 1;
+
+interface FollowResults {
+  followers: Page<UserData>;
+  following: Page<UserData>;
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+
+  const followersPage = parseInt(
+    url.searchParams.get("followers") ?? `${DEFAULT_PAGE}`,
+    5
+  );
+  const followingPage = parseInt(
+    url.searchParams.get("following") ?? `${DEFAULT_PAGE}`,
+    5
+  );
+
+  let apiResponse: ApiResponse = {};
+  let followResults = {} as FollowResults;
+
+  try {
+    followResults.followers = await getUserFollowers(
+      followersPage,
+      DEFAULT_FOLLOWERS_PAGE_SIZE,
+      request
+    );
+
+    followResults.following = await getUserFollowing(
+      followingPage,
+      DEFAULT_FOLLOWING_PAGE_SIZE,
+      request
+    );
+
+    console.log("Follow Results: ", followResults);
+
+    apiResponse.accessToken = await getAccessToken(request);
+
+    apiResponse.data = followResults;
+    return apiResponse;
+  } catch (err: Error | any) {
+    console.log(
+      "API GET /user/followers | GET /user/following said: ",
+      err.message
+    );
+
+    if (err instanceof TypeError) {
+      apiResponse.error =
+        "Service's not working properly. Please try again later.";
+      return apiResponse;
+    }
+
+    apiResponse.error = err.message;
+    return apiResponse;
+  }
+}
 
 export default function SocialPage() {
-  const [activeTab, setActiveTab] = useState("reviews");
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
+
+  const apiResponse: ApiResponse = useLoaderData();
+  const fetcher = useFetcher();
+  const followResults: FollowResults = fetcher.data?.data ?? apiResponse.data;
 
   return (
     <html lang="en">
@@ -81,7 +154,7 @@ export default function SocialPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                   <Card
-                    className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors"
+                    className="bg-slate-800/50 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors"
                     onClick={() => {
                       setShowFollowing(true);
                       setShowFollowers(false);
@@ -98,7 +171,7 @@ export default function SocialPage() {
                     </CardContent>
                   </Card>
                   <Card
-                    className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors"
+                    className="bg-slate-800/50 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors"
                     onClick={() => {
                       setShowFollowers(true);
                       setShowFollowing(false);
@@ -114,7 +187,7 @@ export default function SocialPage() {
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-slate-800/50 border-gray-700">
                     <CardContent className="p-4">
                       <div className="flex items-center space-x-2">
                         <Film className="h-5 w-5 text-purple-400" />
@@ -127,7 +200,7 @@ export default function SocialPage() {
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-slate-800/50 border-gray-700">
                     <CardContent className="p-4">
                       <div className="flex items-center space-x-2">
                         <Heart className="h-5 w-5 text-red-400" />
@@ -143,192 +216,99 @@ export default function SocialPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                   {/* Main Content */}
                   <div className="lg:col-span-3">
-                    {showFollowers && (
-                      <Card className="bg-gray-800 border-gray-700 mb-6">
-                        <CardHeader>
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-white">
-                              Followers
-                            </CardTitle>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setShowFollowers(false)}
-                              className="text-gray-400 hover:text-white"
-                            >
-                              ✕
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-3">
-                            {[
-                              {
-                                name: "Sarah Wilson",
-                                username: "@sarahw",
-                                movies: 456,
-                                mutual: 12,
-                              },
-                              {
-                                name: "Mike Chen",
-                                username: "@mikechen",
-                                movies: 234,
-                                mutual: 8,
-                              },
-                              {
-                                name: "Emma Rodriguez",
-                                username: "@emmarodz",
-                                movies: 678,
-                                mutual: 15,
-                              },
-                              {
-                                name: "David Kim",
-                                username: "@davidk",
-                                movies: 123,
-                                mutual: 6,
-                              },
-                              {
-                                name: "Lisa Thompson",
-                                username: "@lisat",
-                                movies: 345,
-                                mutual: 9,
-                              },
-                            ].map((user, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between p-3 rounded-lg border border-gray-700 bg-gray-800"
+                    {showFollowers &&
+                      followResults.followers.items.length != 0 && (
+                        <Card className="bg-slate-800/50 border-gray-700 mb-6">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <CardTitle className="text-white">
+                                Followers
+                              </CardTitle>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowFollowers(false)}
+                                className="text-gray-400 hover:text-white"
                               >
-                                <div className="flex items-center space-x-3">
-                                  <Avatar>
-                                    <AvatarFallback className="bg-gray-700 text-gray-300">
-                                      {user.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div>
-                                    <p className="font-medium text-white">
-                                      {user.name}
-                                    </p>
-                                    <p className="text-sm text-gray-400">
-                                      {user.username} • {user.movies} movies •{" "}
-                                      {user.mutual} mutual friends
-                                    </p>
-                                  </div>
+                                ✕
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              <Pagination
+                                itemsPage={followResults.followers}
+                                onPageChange={(page: number) => {
+                                  fetcher.load(
+                                    `/social?followers=${page}&following=${followResults.following.page}`
+                                  );
+                                }}
+                              >
+                                <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
+                                  {followResults.followers.items.map(
+                                    (follower) => (
+                                      <UserCard
+                                        key={follower.id}
+                                        user={follower}
+                                        accessToken={String(
+                                          apiResponse.accessToken
+                                        )}
+                                      />
+                                    )
+                                  )}
                                 </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white bg-transparent"
-                                >
-                                  View Profile
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
+                              </Pagination>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
 
-                    {showFollowing && (
-                      <Card className="bg-gray-800 border-gray-700 mb-6">
-                        <CardHeader>
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-white">
-                              Following
-                            </CardTitle>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setShowFollowing(false)}
-                              className="text-gray-400 hover:text-white"
-                            >
-                              ✕
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-3">
-                            {[
-                              {
-                                name: "Christopher Nolan",
-                                username: "@cnolan",
-                                movies: 12,
-                                verified: true,
-                              },
-                              {
-                                name: "Film Critics United",
-                                username: "@filmcritics",
-                                movies: 2456,
-                                verified: true,
-                              },
-                              {
-                                name: "Alex Martinez",
-                                username: "@alexm",
-                                movies: 567,
-                                mutual: 23,
-                              },
-                              {
-                                name: "Cinema Paradiso",
-                                username: "@cinemaparadiso",
-                                movies: 1234,
-                                verified: true,
-                              },
-                              {
-                                name: "Rachel Green",
-                                username: "@rachelg",
-                                movies: 234,
-                                mutual: 18,
-                              },
-                            ].map((user, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between p-3 rounded-lg border border-gray-700 bg-gray-800"
+                    {showFollowing &&
+                      followResults.following.items.length != 0 && (
+                        <Card className="bg-slate-800/50 border-gray-700 mb-6">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <CardTitle className="text-white">
+                                Following
+                              </CardTitle>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowFollowing(false)}
+                                className="text-gray-400 hover:text-white"
                               >
-                                <div className="flex items-center space-x-3">
-                                  <Avatar>
-                                    <AvatarFallback className="bg-gray-700 text-gray-300">
-                                      {user.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div>
-                                    <div className="flex items-center space-x-2">
-                                      <p className="font-medium text-white">
-                                        {user.name}
-                                      </p>
-                                      {user.verified && (
-                                        <Badge
-                                          variant="secondary"
-                                          className="text-xs bg-blue-600 text-white"
-                                        >
-                                          ✓
-                                        </Badge>
-                                      )}
-                                    </div>
-                                    <p className="text-sm text-gray-400">
-                                      {user.username} • {user.movies} movies
-                                      {user.mutual &&
-                                        ` • ${user.mutual} mutual friends`}
-                                    </p>
-                                  </div>
+                                ✕
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              <Pagination
+                                itemsPage={followResults.following}
+                                onPageChange={(page: number) => {
+                                  fetcher.load(
+                                    `/social?followers=${followResults.followers.page}&following=${page}`
+                                  );
+                                }}
+                              >
+                                <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
+                                  {followResults.following.items.map(
+                                    (follow) => (
+                                      <UserCard
+                                        key={follow.id}
+                                        user={follow}
+                                        accessToken={String(
+                                          apiResponse.accessToken
+                                        )}
+                                      />
+                                    )
+                                  )}
                                 </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white bg-transparent"
-                                >
-                                  View Profile
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
+                              </Pagination>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
 
                     <div className="space-y-6">
                       {/* Recent Reviews Section */}
