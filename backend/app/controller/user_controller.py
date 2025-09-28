@@ -62,3 +62,12 @@ def get_achievements(session: SessionDep, request: Request, user_service: UserSe
         return user_service.get_user_achievements(Database(session), user_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@user_router.get("/user/followers")
+def get_followers(session: SessionDep, request: Request, user_service: UserServiceDep) -> Page[UserDTO]:
+    user_id = request.state.user_id
+    try:
+        followers = user_service.get_user_followers(Database(session), user_id)
+        return paginate(followers)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

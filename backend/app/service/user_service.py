@@ -90,6 +90,18 @@ class UserService:
             follower.following += 1
             db.save(UserRelationship(follower_id=follower_id, followed_id=followed_id))
 
+    def get_user_followers(self, db: Database, user_id: int) -> list[UserDTO]:
+        followers = db.find_all_by_multiple(UserRelationship, db.build_condition([UserRelationship.followed_id == user_id]), options=[selectinload(UserRelationship.follower)])
+        return [UserDTO(
+            id=relation.follower.id,
+            name=relation.follower.name,
+            username=relation.follower.username,
+            email=relation.follower.email,
+            followers=relation.follower.followers,
+            following=relation.follower.following,
+            followed_by_user=True
+        ) for relation in followers]
+
     def get_user_achievements(self, db: Database, user_id: int) -> AchievementsDTO:
         user = db.find_by(User, "id", user_id, options=[selectinload(User.achievements).selectinload(UserAchievement.achievement)])
 
