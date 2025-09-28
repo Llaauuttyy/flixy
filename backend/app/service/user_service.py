@@ -90,17 +90,30 @@ class UserService:
             follower.following += 1
             db.save(UserRelationship(follower_id=follower_id, followed_id=followed_id))
 
-    def get_user_followers(self, db: Database, user_id: int) -> list[UserDTO]:
-        followers = db.find_all_by_multiple(UserRelationship, db.build_condition([UserRelationship.followed_id == user_id]), options=[selectinload(UserRelationship.follower)])
+    def get_user_relationship(self, db: Database, user_id: int, condition, relation: str) -> list[UserDTO]:
+        relationships = db.find_all_by_multiple(UserRelationship, db.build_condition([condition]), options=[selectinload(UserRelationship.follower), selectinload(UserRelationship.followed)])
+        
+        relations = []
+        if relation == "followers":
+            relations = [rel.follower for rel in relationships]
+        else:
+            relations = [rel.followed for rel in relationships]
+
         return [UserDTO(
-            id=relation.follower.id,
-            name=relation.follower.name,
-            username=relation.follower.username,
-            email=relation.follower.email,
-            followers=relation.follower.followers,
-            following=relation.follower.following,
-            followed_by_user=True
-        ) for relation in followers]
+            id=rel.id,
+            name=rel.name,
+            username=rel.username,
+            email=rel.email,
+            followers=rel.followers,
+            following=rel.following,
+            followed_by_user=db.exists_by_multiple(UserRelationship, follower_id=user_id, followed_id=rel.id)
+        ) for rel in relations]
+    
+    def get_user_followers(self, db: Database, user_id: int) -> list[UserDTO]:
+        return self.get_user_relationship(db, user_id, UserRelationship.followed_id == user_id, "followers")
+    
+    def get_user_following(self, db: Database, user_id: int) -> list[UserDTO]:
+        return self.get_user_relationship(db, user_id, UserRelationship.follower_id == user_id, "following")
 
     def get_user_achievements(self, db: Database, user_id: int) -> AchievementsDTO:
         user = db.find_by(User, "id", user_id, options=[selectinload(User.achievements).selectinload(UserAchievement.achievement)])

@@ -71,3 +71,12 @@ def get_followers(session: SessionDep, request: Request, user_service: UserServi
         return paginate(followers)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@user_router.get("/user/following")
+def get_following(session: SessionDep, request: Request, user_service: UserServiceDep) -> Page[UserDTO]:
+    user_id = request.state.user_id
+    try:
+        following = user_service.get_user_following(Database(session), user_id)
+        return paginate(following)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
