@@ -76,13 +76,18 @@ class UserService:
     def follow_user(self, follower_id: int, followed_id: int, db: Database):
         relation = db.find_by_multiple(UserRelationship, follower_id=follower_id, followed_id=followed_id)
         followed = db.find_by(User, "id", followed_id)
+        follower = db.find_by(User, "id", follower_id)
 
         if not followed:
             raise Exception(USER_NOT_FOUND)
         
         if relation:
+            followed.followers -= 1
+            follower.following -= 1
             db.delete(relation)
         else:
+            followed.followers += 1
+            follower.following += 1
             db.save(UserRelationship(follower_id=follower_id, followed_id=followed_id))
 
     def get_user_achievements(self, db: Database, user_id: int) -> AchievementsDTO:
