@@ -17,13 +17,13 @@ import {
   Calendar,
   Film,
   Heart,
-  MapPin,
   Settings,
   Star,
   UserPlus,
   Users,
 } from "lucide-react";
 import { Suspense, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function SocialPage() {
   const [activeTab, setActiveTab] = useState("reviews");
@@ -53,14 +53,16 @@ export default function SocialPage() {
                         <h1 className="text-3xl font-bold text-white">
                           John Doe
                         </h1>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white bg-transparent"
-                        >
-                          <Settings className="h-4 w-4 mr-2" />
-                          Edit Profile
-                        </Button>
+                        <Link to={`/settings`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white bg-transparent"
+                          >
+                            <Settings className="h-4 w-4 mr-2" />
+                            Edit Profile
+                          </Button>
+                        </Link>
                       </div>
                       <p className="text-gray-300 mb-3">
                         Passionate cinephile and film critic. Love exploring
@@ -68,10 +70,6 @@ export default function SocialPage() {
                         hidden gems and thought-provoking stories.
                       </p>
                       <div className="flex items-center space-x-4 text-sm text-gray-400">
-                        <div className="flex items-center space-x-1">
-                          <MapPin className="h-4 w-4" />
-                          <span>Los Angeles, CA</span>
-                        </div>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4" />
                           <span>Joined March 2022</span>
@@ -494,87 +492,6 @@ export default function SocialPage() {
                                   <span className="font-medium text-white">
                                     {movie.rating}
                                   </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      {/* Watchlist Section */}
-                      <Card className="bg-gray-800 border-gray-700">
-                        <CardHeader>
-                          <CardTitle className="text-white">
-                            Watchlist
-                          </CardTitle>
-                          <CardDescription className="text-gray-400">
-                            Films I'm excited to see soon
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-3">
-                            {[
-                              {
-                                title: "Dune: Part Two",
-                                year: "2024",
-                                priority: "High",
-                                addedDate: "3 days ago",
-                              },
-                              {
-                                title: "The Zone of Interest",
-                                year: "2023",
-                                priority: "High",
-                                addedDate: "1 week ago",
-                              },
-                              {
-                                title: "Poor Things",
-                                year: "2023",
-                                priority: "Medium",
-                                addedDate: "2 weeks ago",
-                              },
-                              {
-                                title: "Killers of the Flower Moon",
-                                year: "2023",
-                                priority: "High",
-                                addedDate: "3 weeks ago",
-                              },
-                              {
-                                title: "The Holdovers",
-                                year: "2023",
-                                priority: "Medium",
-                                addedDate: "1 month ago",
-                              },
-                            ].map((movie, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between p-3 rounded-lg border border-gray-600 bg-gray-700"
-                              >
-                                <div>
-                                  <p className="font-medium text-white">
-                                    {movie.title}
-                                  </p>
-                                  <p className="text-sm text-gray-400">
-                                    {movie.year} • Added {movie.addedDate}
-                                  </p>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <Badge
-                                    variant="secondary"
-                                    className={`text-xs ${
-                                      movie.priority === "High"
-                                        ? "bg-red-600 text-white"
-                                        : "bg-gray-600 text-gray-300"
-                                    }`}
-                                  >
-                                    {movie.priority}
-                                  </Badge>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white bg-transparent"
-                                  >
-                                    Mark as Watched
-                                  </Button>
                                 </div>
                               </div>
                             ))}
