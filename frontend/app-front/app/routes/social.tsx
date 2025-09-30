@@ -165,7 +165,9 @@ export default function SocialPage() {
                         <Users className="h-5 w-5 text-blue-400" />
                         <div>
                           <p className="text-sm text-gray-400">Following</p>
-                          <p className="text-2xl font-bold text-white">156</p>
+                          <p className="text-2xl font-bold text-white">
+                            {followResults.following.total}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -182,7 +184,9 @@ export default function SocialPage() {
                         <UserPlus className="h-5 w-5 text-green-400" />
                         <div>
                           <p className="text-sm text-gray-400">Followers</p>
-                          <p className="text-2xl font-bold text-white">89</p>
+                          <p className="text-2xl font-bold text-white">
+                            {followResults.followers.total}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
