@@ -60,7 +60,7 @@ export function UserCard({ user, accessToken }: UserCardProps) {
               {t("search.user_followers")}
             </span>
             <span>
-              {currentUser.reviews} {t("search.user_reviews")}
+              {currentUser.reviews || 0} {t("search.user_reviews")}
             </span>
           </div>
         </div>
