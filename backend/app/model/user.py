@@ -13,7 +13,7 @@ class User(SQLModel, table=True):
     password: str
     followers: int = Field(default=0)
     following: int = Field(default=0)
-    about_me: str
+    about_me: str = Field(default="")
 
     reviews: List["Review"] = Relationship(back_populates="user")
     watchlists: List["WatchList"] = Relationship(back_populates="user")
