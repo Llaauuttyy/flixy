@@ -7,9 +7,12 @@ export function FeaturedMovie() {
     <div className="relative h-[500px] rounded-lg overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/cinematic-movie-scene.png')" }}
+        style={{
+          backgroundImage:
+            "url('https://m.media-amazon.com/images/M/MV5BMzc1NGQ1NzQtY2I2ZS00NzE4LWI4ZDQtNWRiNmIyMzUwZmFmXkEyXkFqcGdeQXVyMjI4MjA5MzA@.jpg')",
+        }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent-80" />
       </div>
 
       <div className="relative h-full flex items-center px-8">
