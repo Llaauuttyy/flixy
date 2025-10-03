@@ -28,7 +28,8 @@ class ReviewService:
             created_at=review.created_at,
             updated_at=review.visible_updated_at,
             liked_by_user=liked_by_user,
-            user_name=review.user.name
+            name=review.user.name,
+            user_name=review.user.username
         )
     
     def set_up_review_singular_achievements_dto(self, review: Review, user_id: int, db: Database) -> ReviewGetSingularAchievementsDTO:
@@ -80,7 +81,8 @@ class ReviewService:
             created_at=review.created_at,
             updated_at=review.visible_updated_at,
             liked_by_user=liked_by_user,
-            user_name=review.user.name,
+            name=review.user.name,
+            user_name=review.user.username,
             movie=movie,
             achievements=achievement_dtos
         )
@@ -173,7 +175,8 @@ class ReviewService:
                 likes=review.likes,
                 created_at=review.created_at,
                 updated_at=review.visible_updated_at,
-                user_name = user.name
+                name=user.name,
+                user_name=user.username
             )
 
         except IntegrityError as e:

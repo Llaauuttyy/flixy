@@ -64,18 +64,24 @@ class Database:
         
         return self.db_session.exec(statement).first()
     
-    def find_all_by_multiple(self, model, conditions, options=None, order_by=None):
-        statement = select(model).where(conditions)
+    def find_all_by_multiple(self, model, conditions=None, options=None, order_by=None, limit=None):
+        statement = select(model)
 
-        if options:
+        if conditions is not None:
+            statement = statement.where(conditions)
+
+        if options is not None:
             statement = statement.options(*options)
 
-        if order_by:
+        if order_by is not None:
             if order_by["way"] == "desc":
                 statement = statement.order_by(desc(getattr(model, order_by["column"])))
             else:
                 statement = statement.order_by(getattr(model, order_by["column"]))
 
+        if limit is not None:
+            statement = statement.limit(limit)
+        
         return self.db_session.exec(statement)
     
     def left_join(
