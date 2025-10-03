@@ -56,12 +56,12 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
           <Avatar>
             <AvatarImage src={"/placeholder.svg?height=32&width=32"} />
             <AvatarFallback className="bg-slate-700 text-white">
-              {currentReview.user_name[0]?.toUpperCase() || "NN"}
+              {currentReview.name[0]?.toUpperCase() || "NN"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <span className="font-medium">{currentReview.user_name}</span>
+              <span className="font-medium">{currentReview.name}</span>
               <div className="flex space-between items-center text-slate-400">
                 <Pencil size={13}></Pencil>
                 <span className="text-sm ml-1">

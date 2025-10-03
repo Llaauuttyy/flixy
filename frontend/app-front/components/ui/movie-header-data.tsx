@@ -1,15 +1,18 @@
 import { Badge } from "components/ui/badge";
 import { Separator } from "components/ui/separator";
 import { Star } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 
 type Props = {
   movie: MovieDataGet;
+  showPlot?: boolean;
 };
 
-export default function MovieHeaderData({ movie }: Props) {
+export default function MovieHeaderData({ movie, showPlot = false }: Props) {
   const { t } = useTranslation();
+  const [showFullPlot, setShowFullPlot] = useState(false);
 
   const getDurationFromMovie = (minutes_str: string): string => {
     let minutes = parseInt(minutes_str, 10);
@@ -28,6 +31,31 @@ export default function MovieHeaderData({ movie }: Props) {
     }
 
     return duration;
+  };
+
+  const renderPlot = (plot: string) => {
+    if (!plot) return null;
+
+    const truncated = plot.length > 200 ? plot.slice(0, 200) + "... " : plot;
+
+    return (
+      <div className="text-[#E0E0E0] leading-relaxed space-y-2">
+        {showFullPlot ? (
+          <div className="max-h-[100px] overflow-y-auto pr-2">{plot}</div>
+        ) : (
+          <span>{truncated}</span>
+        )}
+
+        {plot.length > 200 && (
+          <button
+            onClick={() => setShowFullPlot((prev) => !prev)}
+            className="text-pink-400 hover:underline text-sm font-medium"
+          >
+            {showFullPlot ? "See less" : " See all"}
+          </button>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -69,6 +97,7 @@ export default function MovieHeaderData({ movie }: Props) {
             </Badge>
           ))}
       </div>
+      {showPlot !== false && renderPlot(movie.plot as string)}
     </div>
   );
 }
