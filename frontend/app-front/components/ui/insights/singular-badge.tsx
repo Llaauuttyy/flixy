@@ -1,46 +1,33 @@
-// import * as Icons from "lucide-react";
 import * as Icons from "lucide-react";
-import { Award } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import type { UserAchievement } from "services/api/flixy/types/user";
-import { BadgeIcon, getBadgeColor } from "../../utils";
-import { Badge } from "../badge";
-import { Card, CardContent, CardHeader, CardTitle } from "../card";
+import { BadgeIcon, getBadgeColor, getBadgeColorRGB } from "../../utils";
+import { Card, CardContent } from "../card";
 
 type IconName = keyof typeof Icons;
-// type IconName = keyof typeof Icons;
 
-interface BadgeGalleryProps {
-  achievementsInsights: UserAchievement[];
+interface BadgeProps {
+  badge: UserAchievement;
 }
 
-export function BadgeGallery({ achievementsInsights }: BadgeGalleryProps) {
-  const { t } = useTranslation();
-
-  function getBadgeLockedColor(unlocked: boolean) {
-    if (unlocked) {
-      return "bg-green-500/20 text-green-400 border-green-500/30";
-    }
-    return "bg-gray-500/20 text-gray-400 border-gray-500/30";
-  }
-
+export function SingularBadge({ badge }: BadgeProps) {
   return (
-    <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
-          <Award className="h-5 w-5 text-yellow-400" />
-          {t("profile.insights.badge_gallery.title")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {achievementsInsights.map((badge) => {
-            return (
+    <div key={badge.name} className="relative group inline-block">
+      <div className={`rounded-full`}>
+        <BadgeIcon
+          iconName={badge.icon_name as IconName}
+          color={getBadgeColorRGB(badge.color)}
+          size={20}
+        />
+      </div>
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 hidden group-hover:block z-10">
+        <div className="w-max">
+          <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+            <CardContent className="p-0">
               <div
                 key={badge.name}
                 className={`relative p-4 rounded-lg border transition-all duration-300 ${
                   badge.unlocked
-                    ? "bg-slate-700/50 border-slate-600 hover:scale-105"
+                    ? "bg-slate-700/50 border-slate-600"
                     : "bg-slate-800/30 border-slate-700 opacity-60"
                 }`}
               >
@@ -70,15 +57,12 @@ export function BadgeGallery({ achievementsInsights }: BadgeGalleryProps) {
                       {badge.description}
                     </p>
                   </div>
-                  <Badge className={getBadgeLockedColor(badge.unlocked)}>
-                    {badge.unlocked ? "Unlocked" : "Locked"}
-                  </Badge>
                 </div>
               </div>
-            );
-          })}
+            </CardContent>
+          </Card>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ from typing import Annotated
 from app.db.database import Database
 from app.db.database_setup import SessionDep
 from app.service.review_service import ReviewService
-from app.dto.review import ReviewCreationDTO, ReviewGetSingularDTO, ReviewGetResponse
+from app.dto.review import ReviewCreationDTO, ReviewGetSingularAchievementsDTO, ReviewGetSingularDTO, ReviewGetResponse
 from fastapi import APIRouter, Depends, Path, HTTPException, Request
 from fastapi_pagination import Params, paginate
 
@@ -50,7 +50,7 @@ def delete_review(session: SessionDep, request: Request, review_service: ReviewS
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
     
 @review_router.post("/review/{id}/like")
-def like_review(session: SessionDep, request: Request, review_service: ReviewServiceDep, id: int = Path(..., title="id", ge=1)) -> ReviewGetSingularDTO:
+def like_review(session: SessionDep, request: Request, review_service: ReviewServiceDep, id: int = Path(..., title="id", ge=1)) -> ReviewGetSingularAchievementsDTO:
     user_id = request.state.user_id
     try:
         return review_service.like_review(Database(session), user_id, id)

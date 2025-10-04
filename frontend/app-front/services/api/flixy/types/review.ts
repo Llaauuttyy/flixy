@@ -1,5 +1,6 @@
 import type { MovieDataGet } from "./movie";
 import type { Page } from "./overall";
+import type { UserAchievement } from "./user";
 
 export interface ReviewCreation {
   movie_id: number;
@@ -20,7 +21,15 @@ export interface ReviewDataGet {
   liked_by_user: boolean;
   updated_at: Date;
   movie: MovieDataGet;
-  [key: string]: string | number | Date | boolean | MovieDataGet | null;
+  achievements: UserAchievement[];
+  [key: string]:
+    | string
+    | number
+    | Date
+    | boolean
+    | MovieDataGet
+    | UserAchievement[]
+    | null;
 }
 
 export interface ReviewsData {

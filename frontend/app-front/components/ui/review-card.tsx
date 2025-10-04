@@ -8,11 +8,16 @@ import { useTranslation } from "react-i18next";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { Card, CardContent } from "./card";
 
+import * as Icons from "lucide-react";
+
+type IconName = keyof typeof Icons;
+
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import i18n from "i18n/i18n";
 import { useState } from "react";
 import { handleLikeReview } from "services/api/flixy/client/reviews";
+import { SingularBadge } from "./insights/singular-badge";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -75,6 +80,10 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
                 <MonitorPlay className="pr-2" size={24} />{" "}
                 {dayjs.utc(currentReview.watch_date).fromNow()}
               </Badge>
+              {currentReview.achievements.length > 0 &&
+                currentReview.achievements.map((achievement) => (
+                  <SingularBadge badge={achievement} />
+                ))}
             </div>
             <p className="text-slate-300 mb-3">{currentReview.text}</p>
             <div className="flex items-center gap-4">
