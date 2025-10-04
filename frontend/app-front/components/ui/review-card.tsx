@@ -3,14 +3,16 @@ import { Badge } from "components/ui/badge";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import { MessageCircle, MonitorPlay, Star, ThumbsUp } from "lucide-react";
+import {
+  MessageCircle,
+  MonitorPlay,
+  Pencil,
+  Star,
+  ThumbsUp,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { Card, CardContent } from "./card";
-
-import * as Icons from "lucide-react";
-
-type IconName = keyof typeof Icons;
 
 import "dayjs/locale/en";
 import "dayjs/locale/es";
@@ -60,9 +62,12 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <span className="font-medium">{currentReview.user_name}</span>
-              <span className="text-sm text-slate-400">
-                {dayjs.utc(currentReview.created_at).fromNow()}
-              </span>
+              <div className="flex space-between items-center text-slate-400">
+                <Pencil size={13}></Pencil>
+                <span className="text-sm ml-1">
+                  {dayjs.utc(currentReview.updated_at).fromNow()}
+                </span>
+              </div>
               {currentReview.rating && (
                 <div className="flex items-center gap-1">
                   {Array.from({ length: Number(currentReview.rating) }).map(

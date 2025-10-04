@@ -138,6 +138,10 @@ export const enTranslation = {
     review_button: "Publish review",
     review_analizying: "Analyzing review...",
     cancel_button: "Cancel",
+    your_review: "Your Review",
+    published: "Published",
+    verified: "Verified review",
+    visible: "Visible to the community",
   },
   settings: {
     title: "Settings",
@@ -306,5 +310,18 @@ export const enTranslation = {
       cancel: "Cancel",
       accept: "Delete",
     },
+  },
+  reviews: {
+    title: "Reviews",
+    subtitle:
+      "Organize your movie reviews and never lose track of your thoughts",
+  },
+  review_detail_handler_component: {
+    you_watched_movie: "You watched this movie!",
+    give_review_question: "Why not give it a review?",
+    whatched_on: "Watched on",
+    write_review_button: "Write Review",
+    movie_watched: "Movie Watched",
+    pending_review: "Pending Review",
   },
 };

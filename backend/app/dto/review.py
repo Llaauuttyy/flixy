@@ -1,5 +1,5 @@
 from typing import Optional
-from app.dto.movie import MovieDTO
+from app.dto.movie import MovieGetResponse
 from app.dto.achievement import AchievementDTO
 from pydantic import BaseModel, Field
 from datetime import datetime as datetime
@@ -15,7 +15,8 @@ class ReviewDTO(BaseModel):
     likes: int
     liked_by_user: bool = False
     created_at: datetime
-    movie: Optional[MovieDTO] = None
+    updated_at: datetime
+    movie: Optional[MovieGetResponse] = None
 
 class ReviewCreationDTO(BaseModel):
     movie_id: int

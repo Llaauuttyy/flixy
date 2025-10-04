@@ -130,6 +130,8 @@ export function ReviewInput({
         reviewData
       );
 
+      newUserReview.achievements = currentReview?.achievements || [];
+
       setCurrentReview(newUserReview);
       setIsEditing(false);
       if (onChangeReview) {
@@ -202,7 +204,7 @@ export function ReviewInput({
 
             <Textarea
               placeholder={t("review_input.review_placeholder")}
-              value={review || currentReview?.text}
+              value={review || currentReview?.text || ""}
               onChange={(e) => updateReview(e.target.value)}
               className="mb-2 bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 min-h-[120px]"
             />
@@ -255,37 +257,76 @@ export function ReviewInput({
   if (currentReview) {
     return (
       <div>
-        <div className="flex justify-between items-center mb-[10px]">
-          <h2 className="text-2xl font-semibold">
-            {t("movie_detail.review_user")}
-          </h2>
-          <div className="flex gap-[10px]">
-            <Button
-              onClick={handleEditReview}
-              className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
-            >
-              <Edit size={30} />
-            </Button>
-            <ConfirmationBox
-              isAccepted={(value) => handleConfirmationBox(value)}
-              title={t("confirmation_box.review.title")}
-              subtitle={t("confirmation_box.review.subtitle")}
-              cancelText={t("confirmation_box.review.cancel")}
-              acceptText={t("confirmation_box.review.accept")}
-            >
-              <Button
-                disabled={isDeleting}
-                className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
-              >
-                <Trash size={30} color="red" />
-              </Button>
-            </ConfirmationBox>
-          </div>
-        </div>
+        <div className="flex justify-between items-center mb-[10px]"></div>
         {apiDeleteResponse?.error && (
           <p className="text-red-500 mt-4 mb-4">{apiDeleteResponse.error}</p>
         )}
-        <ReviewCard userReview={currentReview} accessToken={accessToken} />
+        <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/20 backdrop-blur-sm rounded-2xl border border-gray-700/30 p-8 shadow-xl hover:shadow-purple-500/10 transition-all duration-300">
+          {/* Review Header */}
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold text-white/90 tracking-wide">
+              {t("review_input.your_review")}
+            </h3>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center space-x-2 px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/30">
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                <span className="text-purple-300 text-sm font-medium">
+                  {t("review_input.published")}
+                </span>
+              </div>
+              <div className="flex gap-[10px]">
+                <Button
+                  onClick={handleEditReview}
+                  className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                >
+                  <Edit size={30} />
+                </Button>
+                <ConfirmationBox
+                  isAccepted={(value) => handleConfirmationBox(value)}
+                  title={t("confirmation_box.review.title")}
+                  subtitle={t("confirmation_box.review.subtitle")}
+                  cancelText={t("confirmation_box.review.cancel")}
+                  acceptText={t("confirmation_box.review.accept")}
+                >
+                  <Button
+                    disabled={isDeleting}
+                    className="rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                  >
+                    <Trash size={30} color="red" />
+                  </Button>
+                </ConfirmationBox>
+              </div>
+            </div>
+          </div>
+          <ReviewCard userReview={currentReview} accessToken={accessToken} />
+          <div className="flex items-center justify-between pt-6 border-t border-gray-600/30">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-lg font-bold">★</span>
+              </div>
+              <div>
+                <p className="text-gray-300 text-sm font-medium">
+                  {t("review_input.verified")}
+                </p>
+                <p className="text-gray-500 text-xs">
+                  {t("review_input.visible")}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 text-gray-400 text-sm">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>
+                {new Date(String(userReview?.created_at)).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

@@ -8,7 +8,7 @@ from app.dto.insight import InsightDTO, Genre
 from app.model.review import Review
 from app.model.user_relationship import UserRelationship
 from app.dto.review import ReviewDTO
-from app.dto.movie import MovieDTO
+from app.dto.movie import MovieGetResponse
 from app.model.user_achievement import UserAchievement
 from app.model.achievement import Achievement
 from app.dto.achievement import AchievementsDTO, AchievementDTO
@@ -246,7 +246,8 @@ def get_most_liked_review(reviews: list[Review]) -> Optional[ReviewDTO]:
         watch_date=most_liked_review.watch_date,
         likes=most_liked_review.likes,
         created_at=most_liked_review.created_at,
-        movie=MovieDTO(
+        updated_at=most_liked_review.updated_at,
+        movie=MovieGetResponse(
             id=most_liked_review.movie.id,
             title=most_liked_review.movie.title,
             year=most_liked_review.movie.year,

@@ -2,6 +2,7 @@ from app.model.user import User
 from app.model.review_like import ReviewLike
 from app.model.user_achievement import UserAchievement
 from app.dto.achievement import AchievementDTO
+from app.dto.movie import MovieGetResponse
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
@@ -25,12 +26,32 @@ class ReviewService:
             watch_date=review.watch_date,
             likes=review.likes,
             created_at=review.created_at,
+            updated_at=review.updated_at,
             liked_by_user=liked_by_user,
             user_name=review.user.name
         )
     
     def set_up_review_singular_achievements_dto(self, review: Review, user_id: int, db: Database) -> ReviewGetSingularAchievementsDTO:
         liked_by_user = db.exists_by_multiple(ReviewLike, review_id=review.id, user_id=user_id)
+        
+        movie = None
+        if review.movie:
+            movie_data = review.movie
+            movie = MovieGetResponse(
+                id=movie_data.id,
+                title=movie_data.title,
+                year=movie_data.year,
+                imdb_rating=movie_data.imdb_rating,
+                genres=movie_data.genres,
+                countries=movie_data.countries,
+                duration=movie_data.duration,
+                cast=movie_data.cast,
+                directors=movie_data.directors,
+                writers=movie_data.writers,
+                plot=movie_data.plot,
+                logo_url=movie_data.logo_url,
+                user_rating=review.rating if review.rating else None
+            )
 
         achievements = review.user.achievements
         achievement_dtos = list()
@@ -57,30 +78,43 @@ class ReviewService:
             watch_date=review.watch_date,
             likes=review.likes,
             created_at=review.created_at,
+            updated_at=review.updated_at,
             liked_by_user=liked_by_user,
             user_name=review.user.name,
+            movie=movie,
             achievements=achievement_dtos
         )
 
-    def get_all_reviews(self, db: Database, user_id: int, movie_id: int) -> Tuple[Optional[ReviewGetSingularAchievementsDTO], List[ReviewGetSingularAchievementsDTO]]:
-        current_user_review = db.find_by_multiple(
-            Review, 
-            options=[selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement)], 
-            movie_id=movie_id, 
-            user_id=user_id
-        )
-        
-        reviews = db.find_all(
-            Review,
-            db.build_condition([Review.movie_id == movie_id, Review.user_id != user_id]),
-            [selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement)]
-        )
+    def get_all_reviews(self, db: Database, user_id: int, movie_id: Optional[int]) -> Tuple[Optional[ReviewGetSingularAchievementsDTO], List[ReviewGetSingularAchievementsDTO]]:
+        current_user_review = None
+        reviews = []
 
-        if not current_user_review and not reviews:
-            return (None, [])
+        if movie_id:
+            current_user_review = db.find_by_multiple(
+                Review,
+                options=[selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement)],
+                movie_id=movie_id,
+                user_id=user_id
+            )
+            
+            reviews = db.find_all(
+                Review,
+                db.build_condition([Review.movie_id == movie_id, Review.user_id != user_id]),
+                [selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement)]
+            )
 
-        if current_user_review:
-            current_user_review = self.set_up_review_singular_achievements_dto(current_user_review, user_id, db)
+            if not current_user_review and not reviews:
+                return (None, [])
+
+            if current_user_review:
+                current_user_review = self.set_up_review_singular_achievements_dto(current_user_review, user_id, db)
+
+        else:
+            reviews = db.find_all(
+                Review,
+                db.build_condition([Review.user_id == user_id]),
+                [selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement), selectinload(Review.movie)]
+            )
 
         if reviews:
             reviews_singular = list()
@@ -135,6 +169,7 @@ class ReviewService:
                 watch_date=review.watch_date,
                 likes=review.likes,
                 created_at=review.created_at,
+                updated_at=review.updated_at,
                 user_name = user.name
             )
 
