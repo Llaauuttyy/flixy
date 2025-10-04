@@ -9,10 +9,10 @@ class UserRelationship(SQLModel, table=True):
     followed_id: int = Field(foreign_key="users.id")
 
     follower: Optional["User"] = Relationship(
-        back_populates="following",
+        back_populates="following_list",
         sa_relationship_kwargs={"foreign_keys": "[UserRelationship.follower_id]"},
     )
     followed: Optional["User"] = Relationship(
-        back_populates="followers",
+        back_populates="followers_list",
         sa_relationship_kwargs={"foreign_keys": "[UserRelationship.followed_id]"},
     )

@@ -19,6 +19,8 @@ export default [
     route("profile", "routes/profile.tsx"),
     route("search", "routes/search.tsx"),
 
+    route("social", "routes/social.tsx"),
+
     route("reviews", "routes/reviews.tsx"),
 
     route("recommendations", "routes/recommendations.tsx"),

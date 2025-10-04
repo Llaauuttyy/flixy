@@ -10,6 +10,16 @@ export interface UserDataGet {
   [key: string]: string | null | undefined;
 }
 
+export interface UserData {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  followers: number;
+  following: number;
+  followed_by_user: boolean;
+}
+
 export interface UserDataChange {
   error?: string | null;
   success?: string | null;
