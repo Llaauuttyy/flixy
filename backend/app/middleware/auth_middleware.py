@@ -14,7 +14,7 @@ def is_localhost(url: str) -> bool:
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Omitir rutas públicas
-        if request.url.path in PUBLIC_ROUTES and request:
+        if request and (request.url.path in PUBLIC_ROUTES or request.method == "OPTIONS"):
             return await call_next(request)
         
         if is_localhost(str(request.url)):
