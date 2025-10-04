@@ -2,32 +2,53 @@ import { MoveRight } from "lucide-react";
 import { data, redirect } from "react-router";
 import { Link } from "react-router-dom";
 import LoginForm from "../../components/login-form";
-import { commitSession, getSession } from "../session/sessions.server";
+import {
+  commitAccessSession,
+  commitRefreshSession,
+  getAccessSession,
+  getRefreshSession,
+} from "../session/sessions.server";
 import type { Route } from "./+types/login";
 
+import { Select } from "components/ui/select";
+import i18n, { getLanguageIcon, getLanguageLabel } from "i18n/i18n";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { handleLogin } from "services/api/flixy/server/auth";
 
 export async function action({ request }: Route.ActionArgs) {
-  const session = await getSession(request.headers.get("Cookie"));
+  const accessSession = await getAccessSession(request.headers.get("Cookie"));
+  const refreshSession = await getRefreshSession(request.headers.get("Cookie"));
   const form = await request.formData();
 
   const username = form.get("username");
   const password = form.get("password");
 
   try {
-    const { access_token, expiration_time } = await handleLogin({
+    const {
+      access_token,
+      refresh_token,
+      access_token_expiration_time,
+      refresh_token_expiration_time,
+    } = await handleLogin({
       username,
       password,
     });
     console.log("Login successful:", access_token);
 
-    // TODO: Guardar token en localstorage?
-
-    session.set("accessToken", access_token);
+    accessSession.set("accessToken", access_token);
+    refreshSession.set("refreshToken", refresh_token);
 
     return redirect("/", {
       headers: {
-        "Set-Cookie": await commitSession(session, { maxAge: expiration_time }),
+        "Set-Cookie": [
+          await commitAccessSession(accessSession, {
+            maxAge: access_token_expiration_time,
+          }),
+          await commitRefreshSession(refreshSession, {
+            maxAge: refresh_token_expiration_time,
+          }),
+        ].join(", "),
       },
     });
   } catch (err: Error | TypeError | any) {
@@ -45,6 +66,12 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Login() {
+  const { t } = useTranslation();
+  const [language, setLanguage] = useState(i18n.language || "en");
+  const availableLanguages = i18n.options.resources
+    ? Object.keys(i18n.options.resources)
+    : [];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex flex-col">
       <header className="container mx-auto py-6 px-4 flex justify-between items-center">
@@ -57,7 +84,7 @@ export default function Login() {
             to="/register"
             className="text-gray-300 hover:text-white transition-colors flex items-center gap-1 text-sm"
           >
-            Create account <MoveRight className="size-4" />
+            {t("login.create_account")} <MoveRight className="size-4" />
           </Link>
         </nav>
       </header>
@@ -65,26 +92,32 @@ export default function Login() {
       <main className="flex-1 container mx-auto flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-10">
         <div className="w-full md:w-1/2 space-y-6 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            Welcome back to{" "}
+            {t("login.welcome_title")}{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
               Flixy
             </span>
           </h1>
           <p className="text-gray-400 text-lg max-w-md mx-auto md:mx-0">
-            Sign in to access your profile and continue your journey with us.
+            {t("login.welcome_description")}
           </p>
           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
             <div className="flex items-center gap-2">
               <div className="size-2 rounded-full bg-green-500"></div>
-              <span className="text-gray-300 text-sm">99.9% Uptime</span>
+              <span className="text-gray-300 text-sm">
+                99.9% {t("login.welcome_item_uptime")}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="size-2 rounded-full bg-blue-500"></div>
-              <span className="text-gray-300 text-sm">Secure Access</span>
+              <span className="text-gray-300 text-sm">
+                {t("login.welcome_item_secure_access")}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="size-2 rounded-full bg-purple-500"></div>
-              <span className="text-gray-300 text-sm">24/7 Support</span>
+              <span className="text-gray-300 text-sm">
+                {t("login.welcome_item_support")}
+              </span>
             </div>
           </div>
         </div>
@@ -96,10 +129,26 @@ export default function Login() {
         </div>
       </main>
 
-      <footer className="container mx-auto py-6 px-4 text-center border-t border-gray-800">
-        <p className="text-gray-500 text-sm">
-          © {new Date().getFullYear()} Flixy. All rights reserved.
-        </p>
+      <footer className="container mx-auto py-6 px-4 border-t border-gray-800 flex items-center justify-between relative">
+        <div className="flex items-center justify-between w-full relative">
+          <p className="text-gray-500 text-sm mx-auto">
+            © {new Date().getFullYear()} Flixy. {t("general.rights_reserved")}
+          </p>
+          <Select
+            className="absolute right-0"
+            options={availableLanguages.map((lang) => ({
+              value: lang,
+              label: getLanguageLabel(lang),
+              iconUrl: getLanguageIcon(lang),
+            }))}
+            selected={language}
+            onChange={(value) => {
+              setLanguage(value);
+              i18n.changeLanguage(value);
+            }}
+            openDirection="up"
+          />
+        </div>
       </footer>
     </div>
   );

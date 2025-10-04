@@ -1,7 +1,7 @@
 from app.model.user import User
 from app.db.database import Database
 from app.dto.user import UserDTO
-from app.dto.login import LoginResponse
+from app.dto.login import LoginResponse, RefreshTokenDTO
 from app.dto.auth import PasswordUpdateDTO
 from app.constants.message import LOGIN_CREDENTIALS_ERROR, OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR, OLD_PASSWORD_DOESNT_MATCH_ERROR, PASSWORD_VALIDATION_ERROR, USER_NOT_FOUND
 from fastapi import HTTPException
@@ -48,9 +48,26 @@ class AuthService:
         if not user or not self.security_service.verify_password(login_dto.password, user.password):
             raise HTTPException(status_code=400, detail=LOGIN_CREDENTIALS_ERROR)
         
+        access_token, refresh_token = self.security_service.create_tokens(data={"username": user.username, "id": user.id})
         return LoginResponse(
-            access_token=self.security_service.create_access_token(data={"username": user.username, "id": user.id}),
-            expiration_time=self.security_service.access_token_expiration_seconds
+            access_token=access_token,
+            refresh_token=refresh_token,
+            access_token_expiration_time=self.security_service.access_token_expiration_seconds,
+            refresh_token_expiration_time=self.security_service.refresh_token_expiration_seconds
+        )
+    
+    def refresh_token(self, refresh_token_dto: RefreshTokenDTO, db: Database) -> LoginResponse:
+        user_id = self.security_service.get_id_from_token(refresh_token_dto.refresh_token)
+        user = db.find_by(User, 'id', user_id)
+        if not user:
+            raise HTTPException(status_code=400, detail=USER_NOT_FOUND)
+
+        access_token, refresh_token = self.security_service.create_tokens(data={"username": user.username, "id": user.id})
+        return LoginResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            access_token_expiration_time=self.security_service.access_token_expiration_seconds,
+            refresh_token_expiration_time=self.security_service.refresh_token_expiration_seconds
         )
     
     def update_password(self, password_update_dto: PasswordUpdateDTO, user_id: int, db: Database):

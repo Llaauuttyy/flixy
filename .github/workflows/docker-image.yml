@@ -30,6 +30,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Log in to DockerHub to avoid rate limits
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -50,4 +56,18 @@ jobs:
         working-directory: ./backend
         env:
           TEST_DATABASE_URL: mysql+mysqlconnector://root:root@127.0.0.1:3306/flixy_test
+          AI_API_KEY: ${{ secrets.MODERATOR_API_KEY }}
         run: pytest
+
+  deploy-api:
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Call webhook depending on branch
+        run: |
+          if [ "${GITHUB_REF##*/}" = "dev" ]; then
+            curl "${{ secrets.WEBHOOK_URL_DEV }}"
+          elif [ "${GITHUB_REF##*/}" = "main" ]; then
+            curl "${{ secrets.WEBHOOK_URL_MAIN }}"
+          fi

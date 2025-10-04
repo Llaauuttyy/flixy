@@ -1,33 +1,46 @@
 import { createCookieSessionStorage } from "react-router";
 
-type SessionData = {
+type AccessTokenSessionData = {
   accessToken: string;
 };
 
-type SessionFlashData = {
-  error: string;
+type RefreshTokenSessionData = {
+  refreshToken: string;
 };
 
-const { getSession, commitSession, destroySession } =
-  createCookieSessionStorage<SessionData, SessionFlashData>({
-    // a Cookie from `createCookie` or the CookieOptions to create one
+const accessTokenStorage = createCookieSessionStorage<AccessTokenSessionData>({
+  cookie: {
+    name: "__access_token",
+    httpOnly: true,
+    maxAge: 60,
+    path: "/",
+    sameSite: "lax",
+    secrets: ["super_secret_secret"],
+    secure: true,
+  },
+});
+
+const refreshTokenStorage = createCookieSessionStorage<RefreshTokenSessionData>(
+  {
     cookie: {
-      name: "__session",
-
-      // all of these are optional
-      // domain: "reactrouter.com",
-
-      // maxAge overrides expires
-      // expires: new Date(Date.now() + 60_000),
-      httpOnly: true, // Para no ser accesible via JS.
-      maxAge: 60,
+      name: "__refresh_token",
+      httpOnly: true,
+      maxAge: 60 * 60 * 6,
       path: "/",
       sameSite: "lax",
-
-      //TODO: Cambiar por una variable de entorno.
       secrets: ["super_secret_secret"],
       secure: true,
     },
-  });
+  }
+);
 
-export { commitSession, destroySession, getSession };
+export const {
+  getSession: getAccessSession,
+  commitSession: commitAccessSession,
+  destroySession: destroyAccessSession,
+} = accessTokenStorage;
+export const {
+  getSession: getRefreshSession,
+  commitSession: commitRefreshSession,
+  destroySession: destroyRefreshSession,
+} = refreshTokenStorage;

@@ -1,3 +1,6 @@
+import type { MovieGenre } from "./movie";
+import type { ReviewDataGet } from "./review";
+
 export interface UserDataGet {
   error?: string | null;
   name: string;
@@ -5,6 +8,16 @@ export interface UserDataGet {
   email: string;
   accessToken?: string | undefined;
   [key: string]: string | null | undefined;
+}
+
+export interface UserData {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  followers: number;
+  following: number;
+  followed_by_user: boolean;
 }
 
 export interface UserDataChange {
@@ -20,3 +33,26 @@ export type PasswordData = {
   currentPassword: FormDataEntryValue | null;
   newPassword: FormDataEntryValue | null;
 };
+
+export interface UserInsights {
+  id: number;
+  genres: MovieGenre[];
+  achievements: UserAchievement[];
+  total_reviews: number;
+  total_ratings: number;
+  total_movies_watched: number;
+  total_time_watched: number;
+  total_likes: number;
+  most_liked_review: ReviewDataGet | null;
+  total_average_rating: number;
+  reviewed_movies_percentage: number;
+}
+
+export interface UserAchievement {
+  name: string;
+  description: string;
+  icon_name: string;
+  color: string;
+  unlocked: boolean;
+  unlocked_at: Date;
+}

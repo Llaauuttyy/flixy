@@ -1,16 +1,5 @@
 from app.constants.message import EXISTENT_USERNAME_ERROR
-from .setup import client
-import pytest
-
-@pytest.fixture(scope="module", autouse=True)
-def register_and_login_test_user():
-    login_form = {
-        "username": "test_user_1",
-        "password": "User.1234"
-    }
-    login_response = client.post("/login", json=login_form)
-    access_token = login_response.json()["access_token"]
-    client.headers = {"Authorization": f"Bearer {access_token}"}
+from tests.setup import client
 
 def test_update_user_data_changing_all_data_should_succeed():
     user_update_dto = {

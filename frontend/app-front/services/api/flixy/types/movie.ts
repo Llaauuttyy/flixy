@@ -1,0 +1,35 @@
+import type { ReviewsData } from "./review";
+
+export interface MovieDataGet {
+  error?: string | undefined;
+  id: number | undefined;
+  title: string | undefined;
+  year: number | undefined;
+  imdb_rating: number | undefined;
+  genres: string | undefined;
+  countries: string | undefined;
+  duration: number | undefined;
+  cast: string | undefined;
+  directors: string | undefined;
+  writers: string | undefined;
+  plot: string | undefined;
+  logo_url: string | undefined;
+  youtube_trailer_id?: string | undefined;
+  is_trailer_reliable?: boolean | undefined;
+  user_rating?: number;
+  access_token?: string | undefined;
+  [key: string | number]: string | number | null | boolean | undefined;
+}
+
+export interface MovieOverallData {
+  movie: MovieDataGet;
+  reviews: ReviewsData;
+  [key: string]: null | undefined | MovieDataGet | ReviewsData;
+}
+
+export interface MovieGenre {
+  name: string;
+  average_rating: number;
+  movies_watched: number;
+  [key: string]: string | number;
+}

@@ -6,7 +6,8 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-import { handleUserDataChange } from "services/api//flixy/client/user-data-client";
+import { useTranslation } from "react-i18next";
+import { handleUserDataChange } from "services/api/flixy/client/user-data-client";
 import type {
   UserDataChange,
   UserDataGet,
@@ -15,6 +16,7 @@ import type {
 function UserDataForm({ userData }: { userData: UserDataGet }) {
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
+  const { t } = useTranslation();
 
   const [currentUserDataReactive, setCurrentUserData] =
     useState<UserDataChange>(userData);
@@ -98,7 +100,7 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
           <div className="space-y-2">
             <div>
               <Label htmlFor="name" className="text-foreground font-bold">
-                Name
+                {t("settings.general.name")}
               </Label>
             </div>
             <Input
@@ -113,7 +115,7 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
           <div className="space-y-2">
             <div>
               <Label htmlFor="username" className="text-foreground font-bold">
-                Username
+                {t("settings.general.username")}
               </Label>
             </div>
             <Input
@@ -128,7 +130,7 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
           <div className="space-y-2">
             <div>
               <Label htmlFor="email" className="text-foreground font-bold">
-                Email
+                {t("settings.general.email")}
               </Label>
             </div>
             <Input
@@ -148,10 +150,10 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Updating...
+                {t("settings.general.updating")}
               </>
             ) : (
-              "Save"
+              t("settings.general.update")
             )}
           </Button>
         </form>

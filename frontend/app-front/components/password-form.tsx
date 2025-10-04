@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
+import { useTranslation } from "react-i18next";
 import { handlePasswordChange } from "services/api/flixy/client/user-data-client";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 
@@ -21,6 +22,7 @@ type FormData = z.infer<typeof PasswordFormSchema>;
 function PasswordForm({ accessToken }: PasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
+  const { t } = useTranslation();
 
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
 
@@ -81,7 +83,7 @@ function PasswordForm({ accessToken }: PasswordFormProps) {
                 htmlFor="current-password"
                 className="text-foreground font-bold"
               >
-                Current password
+                {t("settings.password.current_password")}
               </Label>
             </div>
             <Input
@@ -104,7 +106,7 @@ function PasswordForm({ accessToken }: PasswordFormProps) {
                 htmlFor="new-password"
                 className="text-foreground font-bold"
               >
-                New password
+                {t("settings.password.new_password")}
               </Label>
             </div>
             <Input
@@ -127,7 +129,7 @@ function PasswordForm({ accessToken }: PasswordFormProps) {
                 htmlFor="confirm-password"
                 className="text-foreground font-bold"
               >
-                Repeat new password
+                {t("settings.password.confirm_new_password")}
               </Label>
             </div>
             <Input
@@ -154,10 +156,10 @@ function PasswordForm({ accessToken }: PasswordFormProps) {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Updating...
+                {t("settings.password.updating")}
               </>
             ) : (
-              "Update"
+              t("settings.password.update")
             )}
           </Button>
         </form>

@@ -4,6 +4,7 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  Eye,
   Film,
   Home,
   Settings,
@@ -16,35 +17,41 @@ import { Link, useLocation } from "react-router-dom";
 
 // import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const navigationItems = [
   {
-    title: "Home",
+    title: "sidebar_nav.home",
     href: "/",
     icon: Home,
   },
   {
-    title: "Movies",
+    title: "sidebar_nav.movies",
     href: "/movies",
     icon: Film,
   },
   {
-    title: "Social",
+    title: "sidebar_nav.watchlists",
+    href: "/watchlists",
+    icon: Eye,
+  },
+  {
+    title: "sidebar_nav.social",
     href: "/social",
     icon: Users,
   },
   {
-    title: "Reviews",
+    title: "sidebar_nav.reviews",
     href: "/reviews",
     icon: BookOpen,
   },
   {
-    title: "Explore",
+    title: "sidebar_nav.explore",
     href: "/recommendations",
     icon: Sparkles,
   },
   {
-    title: "My Profile",
+    title: "sidebar_nav.profile",
     href: "/profile",
     icon: User,
   },
@@ -55,16 +62,17 @@ export function SidebarNav() {
   // const pathname = usePathname();
   const location = useLocation();
   const pathname = location.pathname;
+  const { t } = useTranslation();
 
   return (
     <div
       className={cn(
         "bg-gray-900 border-r border-gray-800 transition-all duration-300 flex flex-col",
-        collapsed ? "w-16" : "w-64"
+        collapsed ? "w-18" : "w-64"
       )}
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-800">
+      <div className="p-5 border-b border-gray-800">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center space-x-2">
@@ -112,7 +120,7 @@ export function SidebarNav() {
                   )}
                 >
                   <Icon className={cn("h-4 w-4", !collapsed && "mr-2")} />
-                  {!collapsed && item.title}
+                  {!collapsed && t(item.title)}
                 </Button>
               </Link>
             );
@@ -131,7 +139,7 @@ export function SidebarNav() {
             )}
           >
             <Settings className={cn("h-4 w-4", !collapsed && "mr-2")} />
-            {!collapsed && "Settings"}
+            {!collapsed && t("sidebar_nav.settings")}
           </Button>
         </Link>
       </div>

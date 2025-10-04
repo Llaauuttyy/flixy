@@ -1,4 +1,4 @@
-from .setup import client
+from tests.setup import client
 
 def test_register_with_valid_user_should_success():
     register_form = {

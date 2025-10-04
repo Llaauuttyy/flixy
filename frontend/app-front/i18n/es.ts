@@ -1,0 +1,333 @@
+export const esTranslation = {
+  general: {
+    rights_reserved: "Todos los derechos reservados.",
+  },
+  exceptions: {
+    service_error:
+      "El servicio no se encuentra funcionando. Intente nuevamente más tarde.",
+  },
+  header: {
+    sign_out: "Cerrar sesión",
+    signing_out: "Cerrando sesión...",
+    search_placeholder: "Buscar películas, usuarios...",
+  },
+  login: {
+    welcome_title: "Bienvenido de nuevo a",
+    welcome_description:
+      "Inicia sesión para acceder a tu perfil y continuar tu viaje con nosotros.",
+    welcome_item_uptime: "Tiempo de actividad",
+    welcome_item_secure_access: "Acceso seguro",
+    welcome_item_support: "Soporte 24/7",
+    sign_in_title: "Inicia sesión en tu cuenta",
+    sign_in_description:
+      "Ingresa tus credenciales a continuación para acceder a tu cuenta",
+    username: "Nombre de usuario",
+    password: "Contraseña",
+    forgot_password: "¿Olvidaste tu contraseña?",
+    sign_in_button_loading: "Iniciando sesión...",
+    sign_in_button: "Iniciar sesión",
+    dont_have_account: "¿No tienes una cuenta?",
+    sign_up: "Regístrate",
+    create_account: "Crear una cuenta",
+  },
+  register: {
+    sign_up_title: "Crea tu cuenta",
+    name: "Nombre",
+    username: "Nombre de usuario",
+    email: "Correo electrónico",
+    password: "Contraseña",
+    confirm_password: "Confirmar contraseña",
+    sign_up_button_loading: "Registrando...",
+    sign_up_button: "Registrarse",
+  },
+  sidebar_nav: {
+    home: "Inicio",
+    movies: "Películas",
+    watchlists: "Listas",
+    social: "Social",
+    reviews: "Reseñas",
+    explore: "Explorar",
+    profile: "Mi Perfil",
+    settings: "Configuración",
+  },
+  movies: {
+    title: "Películas",
+    subtitle:
+      "Califica las películas que has visto y comparte tus pensamientos",
+  },
+  movie_card: {
+    rate_movie: "Califica esta película",
+    show_details: "Ver más detalles...",
+  },
+  movie_detail: {
+    watched: "Vista",
+    mark_as_watched: "Marcar como Vista",
+    add_to_watchlist: "Agregar a la Lista",
+    no_watchlists: "Aún no hay listas.",
+    create_watchlist: "Crear Lista",
+    dialog: {
+      title: "Marcar como Vista",
+      subtitle:
+        "¿Cuándo viste esta película? Si no seleccionas una fecha, se marcará como vista hoy.",
+      cancel: "Cancelar",
+    },
+    directors: "Directores",
+    writers: "Guionistas",
+    cast: "Elenco",
+    reviews_title: "Reseñas de los flixis",
+    review_user: "Tu reseña",
+  },
+  movie_filters: {
+    filter: {
+      button_text: "Géneros",
+      dropdown_title: "Filtra por género",
+      clear: "Borrar",
+    },
+    order: {
+      button_text: "Ordenar",
+      dropdown_column_title: "Ordenar por",
+      dropdown_way_title: "Orden",
+      column: {
+        title: "Título",
+        year: "Año",
+        duration: "Duración",
+        imdb_rating: "Puntuación IMDb",
+      },
+      way: {
+        asc: "Asc",
+        desc: "Desc",
+      },
+    },
+  },
+  recommendations: {
+    title: "Explora",
+    subtitle:
+      "Explora tus recomendaciones personalizadas basadas en tus interacciones.",
+    random_movie: {
+      title: "¿No sabes con que película comenzar?",
+      prefix: "Déjate sorprender con una ",
+      random: "recomendación aleatoria",
+      sufix: " y encuentra tu próxima favorita.",
+    },
+  },
+  search: {
+    page_title: "Resultados de la Búsqueda",
+    results_for_query: "Resultados encontrados para",
+    movies_section_title: "Películas",
+    results: "resultados",
+    users_section_title: "Usuarios",
+    user_followers: "seguidores",
+    user_reviews: "reseñas",
+    user_follow_button: "Seguir",
+    user_unfollow_button: "Dejar de seguir",
+  },
+  not_found: {
+    title_oops: "¡Uy!",
+    it_seems: "Parece que",
+    got_it_wrong: "se ha equivocado...",
+    description_begin: "No parece un buen lugar para pasar el rato.",
+    description_end: "que hay contenido esperándote.",
+    link_home: "Regresa al inicio",
+  },
+  review_card: {
+    comment_button: "Comentar",
+    no_reviews: "Todavía no hay reseñas. Podés ser el primero!",
+  },
+  review_input: {
+    have_watched: "¿Has visto la película",
+    share_thoughts: "Comparte tus pensamientos...",
+    watch_date_input: "Elige la fecha de visualización",
+    review_placeholder: "¿Qué opinas de la película?",
+    review_button: "Publicar reseña",
+    review_analizying: "Analizando reseña...",
+    cancel_button: "Cancelar",
+    your_review: "Tu reseña",
+    published: "Publicada",
+    verified: "Reseña verificada",
+    visible: "Visible para la comunidad",
+  },
+  settings: {
+    title: "Configuración",
+    description: "Actualiza tus datos personales o contraseña.",
+    general: {
+      tab: "General",
+      title: "Configuración General",
+      description:
+        "Actualiza los datos de perfil y las preferencias de la aplicación.",
+      change_language: "Cambiar idioma",
+      name: "Nombre",
+      username: "Nombre de usuario",
+      email: "Correo electrónico",
+      updating: "Actualizando...",
+      update: "Actualizar",
+    },
+    data: {
+      tab: "Datos",
+      title: "Gestión de Datos",
+      description: "Visualiza y gestiona tus datos personales.",
+    },
+    password: {
+      tab: "Cambiar Contraseña",
+      title: "Cambiar Contraseña",
+      description: "Actualiza tu contraseña para mantener tu cuenta segura.",
+      current_password: "Current Password",
+      new_password: "New Password",
+      confirm_new_password: "Confirm New Password",
+      updating: "Actualizando...",
+      update: "Actualizar",
+    },
+  },
+  profile: {
+    title: {
+      prefix: "Tus",
+      highlight: "Flixy",
+      suffix: "Estadísticas",
+    },
+    subtitle: "Descubrí tus patrones y logros como cinéfilo",
+    insights: {
+      overall_stats: {
+        reviews: {
+          title: "Reseñas Totales",
+          description: "Opiniones compartidas",
+        },
+        movies_watched: {
+          title: "Películas Vistas",
+          description: "Historias vividas",
+        },
+        movies_rated: {
+          title: "Películas Calificadas",
+          description: "Opiniones registradas",
+        },
+        time: {
+          title: "Tiempo Total",
+          description: {
+            less_than_a_day: "Menos de un día de cine",
+            one_day: "1 día de cine",
+            days: "días de cine",
+          },
+        },
+        total_likes: {
+          title: "Total apoyos recibidos",
+          description: "Entre todas tus reseñas",
+        },
+        most_liked_review: {
+          title: "Reseña más apoyada",
+          description: "Entre todas tus reseñas",
+        },
+      },
+      genre_statistics: {
+        title: "Promedio por Género",
+      },
+      featured_genres: {
+        title: "Géneros Destacados",
+        best_rated: "Mejor Calificados",
+        worst_rated: "Peor Calificados",
+        most_watched: "Más Vistos",
+        least_watched: "Menos Vistos",
+        average: " de promedio",
+        one_movie: " película",
+        movies: " películas",
+      },
+      quick_stats: {
+        average_rating: "Calificación Promedio",
+        watched_movies: "Películas Vistas (de tus Listas)",
+        reviewed_movies: "Películas Reseñadas (de las Vistas)",
+      },
+      badge_gallery: {
+        title: "Logros y Medallas",
+      },
+      no_activity: "Todavía no hay actividad en ningún género.",
+    },
+  },
+  watchlists: {
+    title: "Listas",
+    subtitle:
+      "Administra tus géneros favoritos y nunca te pierdas una película imprescindible",
+    create_button: "Crear lista",
+    cancel_button: "Cancelar",
+    no_watchlists: "Aún no hay listas.",
+    general_insights: {
+      movies: "películas",
+      watchlists: "listas",
+      last_activity: "Actualizado recientemente",
+    },
+    see_watchlist: "Ver lista",
+  },
+  watchlist_detail: {
+    is_editing: {
+      name: "Nombre",
+      description: "Descripción",
+      add_movies: "Agregar películas",
+      save: "Guardar cambios",
+      saving: "Guardando cambios...",
+    },
+    no_description: "Sin descripción por ahora.",
+    details: {
+      movies: "películas",
+      created: "Creada",
+      updated: "Actualizada",
+    },
+    movies_display: "Películas en esta lista",
+    no_movies: "Aún no hay películas en esta lista.",
+    statistics: {
+      title: "Estadísticas de la lista",
+      total_movies: "Total de películas",
+      watched: "Vistas",
+      your: "Tu",
+    },
+    visibility: "Visibilidad",
+    visibility_public: "Pública",
+    activity: {
+      title: "Actividad reciente",
+      no_activity: "Aún no hay actividad en esta lista.",
+      added: "agregó",
+    },
+  },
+  watchlist_creator: {
+    name: "Nombre",
+    name_placeholder: "Ingresa el nombre de la lista",
+    description: "Descripción",
+    description_placeholder: "Ingresa la descripción de la lista",
+    movies: "Películas",
+    create: "Crear",
+    creating: "Creando...",
+  },
+  add_movie_watchlist_component: {
+    add_movie: "Agregar más",
+    no_movies_found: "No se encontraron películas.",
+  },
+  confirmation_box: {
+    default: {
+      title: "¿Estás seguro?",
+      subtitle: "Esta acción no se puede deshacer.",
+      cancel: "Cancelar",
+      accept: "Aceptar",
+    },
+    review: {
+      title: "¿Eliminar reseña?",
+      subtitle: "Tu opinión es valorada, ¿estás seguro de eliminarla?",
+      cancel: "Cancelar",
+      accept: "Sí, eliminar reseña",
+    },
+    watchlist: {
+      title: "¿Eliminar lista?",
+      subtitle: "Tu lista será eliminada permanentemente.",
+      cancel: "Cancelar",
+      accept: "Eliminar",
+    },
+  },
+  reviews: {
+    title: "Reseñas",
+    subtitle:
+      "Organiza tus reseñas de películas y nunca pierdas de vista tus opiniones",
+  },
+
+  review_detail_handler_component: {
+    you_watched_movie: "¡Viste esta película!",
+    give_review_question: "¿Por qué no darle una reseña?",
+    whatched_on: "Vista el",
+    write_review_button: "Escribir reseña",
+    movie_watched: "Película vista",
+    pending_review: "Reseña pendiente",
+  },
+};

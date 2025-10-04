@@ -1,4 +1,4 @@
-import { type RouteConfig, index, route } from "@react-router/dev/routes";
+import { index, route, type RouteConfig } from "@react-router/dev/routes";
 
 export default [
   // rutas públicas.
@@ -12,8 +12,19 @@ export default [
     index("routes/home.tsx"),
     route("movies", "routes/movies.tsx"),
     route("movies/:movieId", "routes/movie-detail.tsx"),
-    route("settings", "routes/settings.tsx"),
 
+    route("watchlists", "routes/watchlists.tsx"),
+    route("watchlists/:watchListId", "routes/watchlist-detail.tsx"),
+
+    route("profile", "routes/profile.tsx"),
+    route("search", "routes/search.tsx"),
+
+    route("social", "routes/social.tsx"),
+
+    route("reviews", "routes/reviews.tsx"),
+
+    route("recommendations", "routes/recommendations.tsx"),
+    route("settings", "routes/settings.tsx"),
     route("signout", "routes/auth/signout.tsx"),
   ]),
 ] satisfies RouteConfig;

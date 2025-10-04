@@ -2,8 +2,12 @@ import { cn } from "lib/utils";
 import { Star } from "lucide-react";
 import { useState } from "react";
 
+import { handleReviewCreation } from "services/api/flixy/client/reviews";
+import type { ReviewCreation } from "services/api/flixy/types/review";
 interface StarRatingProps {
   initialRating: number;
+  movieId: number;
+  accessToken: string | undefined;
   onRatingChange?: (rating: number) => void;
   size?: number;
   interactive?: boolean;
@@ -11,6 +15,8 @@ interface StarRatingProps {
 
 export function StarRating({
   initialRating,
+  movieId,
+  accessToken,
   onRatingChange,
   size = 24,
   interactive = true,
@@ -18,10 +24,23 @@ export function StarRating({
   const [currentRating, setCurrentRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
 
-  const handleClick = (rating: number) => {
+  const handleClick = async (rating: number) => {
     if (interactive) {
       setCurrentRating(rating);
-      onRatingChange?.(rating);
+
+      let newRating: ReviewCreation = {
+        movie_id: movieId,
+        rating: rating,
+      };
+
+      try {
+        await handleReviewCreation(accessToken, newRating);
+        if (onRatingChange) {
+          onRatingChange(rating);
+        }
+      } catch (err: Error | any) {
+        console.log("API POST /review: ", err.message);
+      }
     }
   };
 
