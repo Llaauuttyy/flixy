@@ -26,7 +26,7 @@ class ReviewService:
             watch_date=review.watch_date,
             likes=review.likes,
             created_at=review.created_at,
-            updated_at=review.updated_at,
+            updated_at=review.visible_updated_at,
             liked_by_user=liked_by_user,
             user_name=review.user.name
         )
@@ -78,7 +78,7 @@ class ReviewService:
             watch_date=review.watch_date,
             likes=review.likes,
             created_at=review.created_at,
-            updated_at=review.updated_at,
+            updated_at=review.visible_updated_at,
             liked_by_user=liked_by_user,
             user_name=review.user.name,
             movie=movie,
@@ -136,6 +136,7 @@ class ReviewService:
                 raise Exception(INSULTING_REVIEW)
             
             existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)
+
             if existing_review:
                 if review_dto.text:
                     existing_review.text = review_dto.text
@@ -144,6 +145,7 @@ class ReviewService:
                 if review_dto.watch_date:
                     existing_review.watch_date = review_dto.watch_date
 
+                existing_review.visible_updated_at = datetime.now()
                 db.save(existing_review)
                 review = existing_review
             else:
@@ -155,6 +157,7 @@ class ReviewService:
                     text=review_dto.text,
                     watch_date=review_dto.watch_date if review_dto.watch_date else curent_date,
                 )
+
                 db.save(new_review)
                 review = new_review
 
@@ -169,7 +172,7 @@ class ReviewService:
                 watch_date=review.watch_date,
                 likes=review.likes,
                 created_at=review.created_at,
-                updated_at=review.updated_at,
+                updated_at=review.visible_updated_at,
                 user_name = user.name
             )
 
@@ -185,6 +188,13 @@ class ReviewService:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
 
+    def remove_review_likes(self, db: Database, review_to_delete: Review):
+        review_likes = db.find_all(ReviewLike, ReviewLike.review_id == review_to_delete.id)
+
+        for like in review_likes:
+            db.remove(like)
+            review_to_delete.likes = 0
+        
     def delete_review_text(self, db: Database, user_id: int, id: int):
         try:
             review_to_delete = db.find_by_multiple(Review, id=id, user_id=user_id)
@@ -193,6 +203,10 @@ class ReviewService:
                 raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
 
             review_to_delete.text = None
+            review_to_delete.visible_updated_at = datetime.now()
+
+            self.remove_review_likes(db, review_to_delete)
+
             db.save(review_to_delete)
         except IntegrityError as e:
             db.rollback()
@@ -207,6 +221,8 @@ class ReviewService:
             
             if review_to_delete.text or review_to_delete.rating:
                 raise HTTPException(status_code=409, detail=UNDELETABLE_REVIEW_ERROR)
+
+            self.remove_review_likes(db, review_to_delete)
 
             db.delete(review_to_delete)
         except IntegrityError as e:

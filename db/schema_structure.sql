@@ -42,6 +42,7 @@ CREATE TABLE reviews (
   watch_date timestamp NULL DEFAULT NULL,
   likes int DEFAULT 0,
   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  visible_updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY user_id (user_id, movie_id),
@@ -117,7 +118,7 @@ CREATE TABLE achievements (
 );
 
 -- Achievements
-INSERT INTO achievements (name, description, icon_name, unlock_conditions)
+INSERT INTO achievements (name, description, icon_name, color, unlock_conditions)
 VALUES
 ('Prolific Critic', 'More than 200 reviews written', 'BookOpen', 'purple',
  '{"target_field": "total_reviews", "value": 200}'),
