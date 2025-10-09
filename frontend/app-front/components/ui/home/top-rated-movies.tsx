@@ -14,7 +14,7 @@ export function TopRatedMovies({ movies, accessToken }: TopRatedMoviesProps) {
       {movies.slice(0, 5).map((movie) => (
         <div key={movie.id} className="flex flex-col items-center">
           <div className="inline-flex items-center gap-2 mb-1 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20">
-            <span className="text-sm font-semibold text-pink-500">
+            <span className="text-sm font-semibold text-pink-500 line-clamp-1">
               {movie.title}
             </span>
           </div>

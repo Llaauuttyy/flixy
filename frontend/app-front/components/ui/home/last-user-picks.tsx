@@ -13,7 +13,7 @@ export function LastUserPicks({ reviews, accessToken }: LastUserPicksProps) {
       {reviews.slice(0, 5).map((review) => (
         <div key={review.movie.id} className="flex flex-col items-center">
           <div className="inline-flex items-center gap-2 mb-1 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20">
-            <span className="text-sm font-semibold text-pink-500">
+            <span className="text-sm font-semibold text-pink-500 line-clamp-1">
               {review.movie.title}
             </span>
           </div>
