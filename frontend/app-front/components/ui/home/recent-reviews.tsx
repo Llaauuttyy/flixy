@@ -17,8 +17,12 @@ export function RecentReviews({ reviews }: RecentReviewsProps) {
         >
           <div className="flex gap-3 mb-3">
             <img
-              src={review.movie.logo_url || "./poster-not-found.jpg"}
-              alt={review.movie.title}
+              src={review.movie.logo_url}
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.onerror = null;
+                target.src = "./poster-not-found.jpg";
+              }}
               className="w-16 h-24 object-cover rounded"
             />
             <div className="flex-1 min-w-0">

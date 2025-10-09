@@ -46,7 +46,7 @@ export default function HomePage() {
   const trendingNowMovies: MovieDataGet[] =
     apiResponse.data?.trending_now_movies;
   const topRatedMovies: MovieDataGet[] = apiResponse.data?.top_rated_movies;
-  const lastWatchedMovies: MovieDataGet[] =
+  const lastWatchedMoviesReviews: ReviewDataGet[] =
     apiResponse.data?.last_watched_movies;
 
   const recentReviews: ReviewDataGet[] = apiResponse.data?.recent_reviews;
@@ -133,7 +133,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   <LastUserPicks
-                    movies={lastWatchedMovies}
+                    reviews={lastWatchedMoviesReviews}
                     accessToken={apiResponse.accessToken as string}
                   />
                 </section>
