@@ -99,6 +99,14 @@ export const esTranslation = {
       },
     },
   },
+  social: {
+    recent_reviews: {
+      title: "Reseñas Recientes",
+      subtitle: "Los últimos pensamientos de los flixies seguidos y de todos",
+      following_tab: "Seguidos",
+      all_tab: "Todos",
+    },
+  },
   recommendations: {
     title: "Explora",
     subtitle:

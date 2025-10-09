@@ -15,6 +15,7 @@ import { ReviewCard } from "components/ui/review-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { Star } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { getLatestReviews } from "services/api/flixy/server/reviews";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
@@ -23,7 +24,7 @@ import { getAccessToken } from "services/api/utils";
 import type { Route } from "./+types/social";
 
 const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 5;
 const DEFAULT_REVIEW_TAB = "following";
 
 type ReviewTab = "following" | "all";
@@ -37,11 +38,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const reviewTab =
     url.searchParams.get("review_tab") ?? `${DEFAULT_REVIEW_TAB}`;
-  /* const reviewPage = parseInt(
-    url.searchParams.get("review_page") ?? `${DEFAULT_PAGE}`,
-    DEFAULT_PAGE
-  ); */
-  const reviewPage = DEFAULT_PAGE;
+  const reviewPage = parseInt(
+    url.searchParams.get("review_page") ?? `${DEFAULT_PAGE}`
+  );
 
   let apiResponse: ApiResponse = {};
   let latestReviews = {} as LatestReviews;
@@ -77,6 +76,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function SocialPage() {
   const [activeTab, setActiveTab] = useState<ReviewTab>("following");
+  const { t } = useTranslation();
 
   const apiResponse: ApiResponse = useLoaderData();
   const fetcher = useFetcher();
@@ -102,10 +102,10 @@ export default function SocialPage() {
                       <Card className="bg-gray-800 border-gray-700">
                         <CardHeader>
                           <CardTitle className="text-white">
-                            Recent Reviews
+                            {t("social.recent_reviews.title")}
                           </CardTitle>
                           <CardDescription className="text-gray-400">
-                            My latest thoughts on films I've watched
+                            {t("social.recent_reviews.subtitle")}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -124,7 +124,7 @@ export default function SocialPage() {
                                 );
                               }}
                             >
-                              Seguidos
+                              {t("social.recent_reviews.following_tab")}
                             </Button>
                             <Button
                               className={`text-gray-300 ${
@@ -140,14 +140,14 @@ export default function SocialPage() {
                                 );
                               }}
                             >
-                              Todos
+                              {t("social.recent_reviews.all_tab")}
                             </Button>
                           </div>
                           <Pagination
                             itemsPage={reviews}
                             onPageChange={(page: number) => {
                               fetcher.load(
-                                `/social?review_tab=${activeTab}&page=${page}`
+                                `/social?review_tab=${activeTab}&review_page=${page}`
                               );
                             }}
                           >

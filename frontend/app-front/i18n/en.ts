@@ -96,6 +96,14 @@ export const enTranslation = {
       },
     },
   },
+  social: {
+    recent_reviews: {
+      title: "Recent Reviews",
+      subtitle: "The latest thoughts of followed and all flixies",
+      following_tab: "Following",
+      all_tab: "All",
+    },
+  },
   recommendations: {
     title: "Explore",
     subtitle:
