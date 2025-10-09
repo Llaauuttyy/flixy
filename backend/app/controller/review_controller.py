@@ -4,7 +4,7 @@ from app.db.database_setup import SessionDep
 from app.service.review_service import ReviewService
 from app.dto.review import ReviewCreationDTO, ReviewGetSingularAchievementsDTO, ReviewGetSingularDTO, ReviewGetResponse
 from fastapi import APIRouter, Depends, Path, HTTPException, Request, Query
-from fastapi_pagination import Params, paginate
+from fastapi_pagination import Params, paginate, Page
 
 review_router = APIRouter()
 
@@ -54,5 +54,14 @@ def like_review(session: SessionDep, request: Request, review_service: ReviewSer
     user_id = request.state.user_id
     try:
         return review_service.like_review(Database(session), user_id, id)
+    except Exception as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+
+@review_router.get("/review/latest")
+def latest_reviews(session: SessionDep, request: Request, review_service: ReviewServiceDep, following: Optional[bool] = Query(False), params: Params = Depends()) -> Page[ReviewGetSingularAchievementsDTO]:
+    user_id = request.state.user_id
+    try:
+        reviews = review_service.latest_reviews(Database(session), user_id, following)
+        return paginate(reviews, params)
     except Exception as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
