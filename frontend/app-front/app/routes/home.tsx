@@ -11,7 +11,7 @@ import { SidebarNav } from "components/ui/sidebar-nav";
 import { useLoaderData } from "react-router-dom";
 import { getHomeFeed } from "services/api/flixy/server/feed";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
-import type { ApiResponse } from "services/api/flixy/types/overall";
+import type { ApiResponse, Dictionary } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { getAccessToken } from "services/api/utils";
 import type { Route } from "./+types/home";
@@ -50,6 +50,8 @@ export default function HomePage() {
     apiResponse.data?.last_watched_movies;
 
   const recentReviews: ReviewDataGet[] = apiResponse.data?.recent_reviews;
+  const MoviesCountByGenre: Dictionary<string> =
+    apiResponse.data?.movies_count_by_genre;
 
   console.log("Featured Movie: ", recentReviews);
 
@@ -163,7 +165,7 @@ export default function HomePage() {
                       </p>
                     </div>
                   </div>
-                  <GenreSpotlight />
+                  <GenreSpotlight genres={MoviesCountByGenre} />
                 </section>
 
                 <section className="grid md:grid-cols-2 gap-6">

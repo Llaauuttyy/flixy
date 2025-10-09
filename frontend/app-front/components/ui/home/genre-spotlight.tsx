@@ -1,56 +1,55 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import type { Dictionary } from "services/api/flixy/types/overall";
 import { Card } from "../card";
 
-const genres = [
+const static_genres = [
   {
     id: 1,
     name: "Action",
-    count: "1,234 movies",
     image: "./../../images/action-movie-poster.jpg",
     color: "from-red-500/20 to-orange-500/20",
   },
   {
     id: 2,
     name: "Drama",
-    count: "2,156 movies",
     image: "./../../images/drama-movie-poster.jpg",
     color: "from-blue-500/20 to-purple-500/20",
   },
   {
     id: 3,
     name: "Comedy",
-    count: "987 movies",
     image: "./../../images/comedy-movie-poster.jpg",
     color: "from-yellow-500/20 to-pink-500/20",
   },
   {
     id: 4,
     name: "Sci-Fi",
-    count: "756 movies",
     image: "./../../images/scifi-movie-poster.jpg",
     color: "from-cyan-500/20 to-blue-500/20",
   },
   {
     id: 5,
     name: "Horror",
-    count: "543 movies",
     image: "./../../images/horror-movie-poster.jpg",
     color: "from-purple-500/20 to-red-500/20",
   },
   {
     id: 6,
     name: "Romance",
-    count: "892 movies",
     image: "./../../images/romance-movie-poster.jpg",
     color: "from-pink-500/20 to-rose-500/20",
   },
 ];
 
-export function GenreSpotlight() {
+interface GenreSpotlightProps {
+  genres: Dictionary<string>;
+}
+
+export function GenreSpotlight({ genres }: GenreSpotlightProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {genres.map((genre) => (
+      {static_genres.map((genre) => (
         <Link to={`/movies?genres=${genre.name}`}>
           <Card
             key={genre.id}
@@ -71,7 +70,9 @@ export function GenreSpotlight() {
                 <h3 className="text-2xl font-bold text-white mb-1">
                   {genre.name}
                 </h3>
-                <p className="text-sm text-slate-400">{genre.count}</p>
+                <p className="text-sm text-slate-400">
+                  {genres[genre.name]} movies
+                </p>
               </div>
               <ArrowRight className="w-6 h-6 text-pink-500 group-hover:translate-x-1 transition-transform" />
             </div>

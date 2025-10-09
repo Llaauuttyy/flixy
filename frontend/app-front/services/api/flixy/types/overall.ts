@@ -13,3 +13,7 @@ export interface Page<T> {
   size: number;
   pages: number;
 }
+
+export type Dictionary<T> = {
+  [key: string]: T;
+};
