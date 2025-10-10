@@ -106,6 +106,12 @@ export const esTranslation = {
       following_tab: "Seguidos",
       all_tab: "Todos",
     },
+    recent_ratings: {
+      title: "Puntuaciones Recientes",
+      subtitle: "Las últimas opiniones basadas en nuestras estrellas violetas",
+      following_tab: "Seguidos",
+      all_tab: "Todos",
+    },
   },
   recommendations: {
     title: "Explora",
@@ -192,6 +198,9 @@ export const esTranslation = {
       suffix: "Estadísticas",
     },
     subtitle: "Descubrí tus patrones y logros como cinéfilo",
+    edit_profile: "Editar Perfil",
+    following: "Siguiendo",
+    followers: "Seguidores",
     insights: {
       overall_stats: {
         reviews: {

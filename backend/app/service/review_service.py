@@ -252,7 +252,7 @@ class ReviewService:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
 
-    def latest_reviews(self, db: Database, user_id: int, following: bool) -> list[ReviewGetSingularAchievementsDTO]:
+    def latest_text_reviews(self, db: Database, user_id: int, following: bool) -> list[ReviewGetSingularAchievementsDTO]:
         order_by = {"column": "visible_updated_at", "way": "desc"}
         try:
             if following:
@@ -261,6 +261,19 @@ class ReviewService:
                 return [self.set_up_review_singular_achievements_dto(review, user_id, db) for review in db.find_all_by_multiple(Review, conditions, order_by=order_by)]
             else:
                 conditions = db.build_condition([Review.user_id != user_id, Review.text != None])
+                return [self.set_up_review_singular_achievements_dto(review, user_id, db) for review in db.find_all_by_multiple(Review, conditions, order_by=order_by)]
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        
+    def latest_rating_reviews(self, db: Database, user_id: int, following: bool) -> list[ReviewGetSingularAchievementsDTO]:
+        order_by = {"column": "visible_updated_at", "way": "desc"}
+        try:
+            if following:
+                following_users = db.find_all(UserRelationship, UserRelationship.follower_id == user_id)
+                conditions = db.build_condition([Review.user_id.in_([user.followed_id for user in following_users]), Review.rating != None])
+                return [self.set_up_review_singular_achievements_dto(review, user_id, db) for review in db.find_all_by_multiple(Review, conditions, order_by=order_by)]
+            else:
+                conditions = db.build_condition([Review.user_id != user_id, Review.rating != None])
                 return [self.set_up_review_singular_achievements_dto(review, user_id, db) for review in db.find_all_by_multiple(Review, conditions, order_by=order_by)]
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))

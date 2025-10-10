@@ -25,8 +25,8 @@ import type { UserData, UserInsights } from "services/api/flixy/types/user";
 import type { Route } from "../+types/root";
 
 const DEFAULT_PAGE = 1;
-const DEFAULT_FOLLOWERS_PAGE_SIZE = 1;
-const DEFAULT_FOLLOWING_PAGE_SIZE = 1;
+const DEFAULT_FOLLOWERS_PAGE_SIZE = 10;
+const DEFAULT_FOLLOWING_PAGE_SIZE = 10;
 
 interface FollowResults {
   followers: Page<UserData>;
@@ -133,7 +133,7 @@ export default function MovieInsights() {
                       className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white bg-transparent"
                     >
                       <Settings className="h-4 w-4 mr-2" />
-                      Edit Profile
+                      {t("profile.edit_profile")}
                     </Button>
                   </Link>
                 </div>
@@ -163,7 +163,9 @@ export default function MovieInsights() {
                 <div className="flex items-center space-x-2">
                   <Users className="h-5 w-5 text-blue-400" />
                   <div>
-                    <p className="text-sm text-gray-400">Following</p>
+                    <p className="text-sm text-gray-400">
+                      {t("profile.following")}
+                    </p>
                     <p className="text-2xl font-bold text-white">
                       {followResults.following.total}
                     </p>
@@ -182,7 +184,9 @@ export default function MovieInsights() {
                 <div className="flex items-center space-x-2">
                   <UserPlus className="h-5 w-5 text-green-400" />
                   <div>
-                    <p className="text-sm text-gray-400">Followers</p>
+                    <p className="text-sm text-gray-400">
+                      {t("profile.followers")}
+                    </p>
                     <p className="text-2xl font-bold text-white">
                       {followResults.followers.total}
                     </p>
@@ -197,7 +201,9 @@ export default function MovieInsights() {
                 <Card className="bg-slate-800/50 border-gray-700 mb-6">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-white">Followers</CardTitle>
+                      <CardTitle className="text-white">
+                        {t("profile.followers")}
+                      </CardTitle>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -214,7 +220,7 @@ export default function MovieInsights() {
                         itemsPage={followResults.followers}
                         onPageChange={(page: number) => {
                           fetcher.load(
-                            `/social?followers=${page}&following=${followResults.following.page}`
+                            `/profile?followers=${page}&following=${followResults.following.page}`
                           );
                         }}
                       >
@@ -237,7 +243,9 @@ export default function MovieInsights() {
                 <Card className="bg-slate-800/50 border-gray-700 mb-6">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-white">Following</CardTitle>
+                      <CardTitle className="text-white">
+                        {t("profile.following")}
+                      </CardTitle>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -254,7 +262,7 @@ export default function MovieInsights() {
                         itemsPage={followResults.following}
                         onPageChange={(page: number) => {
                           fetcher.load(
-                            `/social?followers=${followResults.followers.page}&following=${page}`
+                            `/profile?followers=${followResults.followers.page}&following=${page}`
                           );
                         }}
                       >

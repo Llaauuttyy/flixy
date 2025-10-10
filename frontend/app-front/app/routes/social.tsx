@@ -13,33 +13,49 @@ import { HeaderFull } from "components/ui/header-full";
 import { Pagination } from "components/ui/pagination";
 import { ReviewCard } from "components/ui/review-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
+import dayjs from "dayjs";
+import "dayjs/locale/en";
+import "dayjs/locale/es";
+import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
-import { getLatestReviews } from "services/api/flixy/server/reviews";
+import {
+  getLatestRatings,
+  getLatestReviews,
+} from "services/api/flixy/server/reviews";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { getAccessToken } from "services/api/utils";
 import type { Route } from "./+types/social";
 
-const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 5;
-const DEFAULT_REVIEW_TAB = "following";
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
-type ReviewTab = "following" | "all";
+const DEFAULT_PAGE = 1;
+const DEFAULT_REVIEW_PAGE_SIZE = 5;
+const DEFAULT_RATING_PAGE_SIZE = 8;
+const DEFAULT_TAB = "following";
+
+type Tab = "following" | "all";
 
 interface LatestReviews {
   reviews: Page<ReviewDataGet>;
+  ratings: Page<ReviewDataGet>;
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
 
-  const reviewTab =
-    url.searchParams.get("review_tab") ?? `${DEFAULT_REVIEW_TAB}`;
+  const reviewTab = url.searchParams.get("review_tab") ?? `${DEFAULT_TAB}`;
   const reviewPage = parseInt(
     url.searchParams.get("review_page") ?? `${DEFAULT_PAGE}`
+  );
+  const ratingTab = url.searchParams.get("rating_tab") ?? `${DEFAULT_TAB}`;
+  const ratingPage = parseInt(
+    url.searchParams.get("rating_page") ?? `${DEFAULT_PAGE}`
   );
 
   let apiResponse: ApiResponse = {};
@@ -51,7 +67,14 @@ export async function loader({ request }: Route.LoaderArgs) {
     latestReviews.reviews = await getLatestReviews(
       reviewTab === "following",
       reviewPage,
-      DEFAULT_PAGE_SIZE,
+      DEFAULT_REVIEW_PAGE_SIZE,
+      request
+    );
+
+    latestReviews.ratings = await getLatestRatings(
+      ratingTab === "following",
+      ratingPage,
+      DEFAULT_RATING_PAGE_SIZE,
       request
     );
 
@@ -75,7 +98,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function SocialPage() {
-  const [activeTab, setActiveTab] = useState<ReviewTab>("following");
+  const [activeReviewTab, setActiveReviewTab] = useState<Tab>(DEFAULT_TAB);
+  const [reviewPage, setReviewPage] = useState<number>(DEFAULT_PAGE);
+  const [activeRatingTab, setActiveRatingTab] = useState<Tab>(DEFAULT_TAB);
+  const [ratingPage, setRatingPage] = useState<number>(DEFAULT_PAGE);
   const { t } = useTranslation();
 
   const apiResponse: ApiResponse = useLoaderData();
@@ -83,6 +109,26 @@ export default function SocialPage() {
 
   let reviews: Page<ReviewDataGet> =
     fetcher.data?.data.reviews ?? (apiResponse.data?.reviews || {});
+  let ratings: Page<ReviewDataGet> =
+    fetcher.data?.data.ratings ?? (apiResponse.data?.ratings || {});
+
+  const handleReviewTabChange = (newTab: Tab) => {
+    if (activeReviewTab === newTab) return;
+    setActiveReviewTab(newTab);
+    setReviewPage(DEFAULT_PAGE);
+    fetcher.load(
+      `/social?review_tab=${newTab}&review_page=${DEFAULT_PAGE}&rating_tab=${activeRatingTab}&rating_page=${ratingPage}`
+    );
+  };
+
+  const handleRatingTabChange = (newTab: Tab) => {
+    if (activeRatingTab === newTab) return;
+    setActiveRatingTab(newTab);
+    setRatingPage(DEFAULT_PAGE);
+    fetcher.load(
+      `/social?rating_tab=${newTab}&rating_page=${DEFAULT_PAGE}&review_tab=${activeReviewTab}&review_page=${reviewPage}`
+    );
+  };
 
   return (
     <html lang="en">
@@ -109,36 +155,24 @@ export default function SocialPage() {
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="grid w-full grid-cols-2 bg-gray-800 border-gray-700 mb-4">
+                          <div className="grid w-full grid-cols-2 bg-gray-800 gap-4 border-gray-700 mb-4">
                             <Button
-                              className={`text-gray-300 ${
-                                activeTab === "following"
+                              className={`text-gray-300 hover:bg-gray-700 ${
+                                activeReviewTab === "following"
                                   ? "bg-gray-700 text-white"
                                   : ""
                               }`}
-                              onClick={() => {
-                                const newTab = "following";
-                                setActiveTab(newTab);
-                                fetcher.load(
-                                  `/social?review_tab=${newTab}&page=${DEFAULT_PAGE}`
-                                );
-                              }}
+                              onClick={() => handleReviewTabChange("following")}
                             >
                               {t("social.recent_reviews.following_tab")}
                             </Button>
                             <Button
-                              className={`text-gray-300 ${
-                                activeTab === "all"
+                              className={`text-gray-300 hover:bg-gray-700 ${
+                                activeReviewTab === "all"
                                   ? "bg-gray-700 text-white"
                                   : ""
                               }`}
-                              onClick={() => {
-                                const newTab = "all";
-                                setActiveTab(newTab);
-                                fetcher.load(
-                                  `/social?review_tab=${newTab}&page=${DEFAULT_PAGE}`
-                                );
-                              }}
+                              onClick={() => handleReviewTabChange("all")}
                             >
                               {t("social.recent_reviews.all_tab")}
                             </Button>
@@ -146,8 +180,9 @@ export default function SocialPage() {
                           <Pagination
                             itemsPage={reviews}
                             onPageChange={(page: number) => {
+                              setReviewPage(page);
                               fetcher.load(
-                                `/social?review_tab=${activeTab}&review_page=${page}`
+                                `/social?review_tab=${activeReviewTab}&review_page=${page}`
                               );
                             }}
                           >
@@ -159,6 +194,7 @@ export default function SocialPage() {
                                     accessToken={String(
                                       apiResponse.accessToken
                                     )}
+                                    showMovieTitle
                                     userReview={review}
                                   />
                                 ))}
@@ -171,74 +207,72 @@ export default function SocialPage() {
                       <Card className="bg-gray-800 border-gray-700">
                         <CardHeader>
                           <CardTitle className="text-white">
-                            Favorite Movies
+                            {t("social.recent_ratings.title")}
                           </CardTitle>
                           <CardDescription className="text-gray-400">
-                            My all-time favorite films that shaped my love for
-                            cinema
+                            {t("social.recent_ratings.subtitle")}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {[
-                              {
-                                title: "The Godfather",
-                                year: "1972",
-                                rating: 10,
-                                genre: "Crime Drama",
-                              },
-                              {
-                                title: "2001: A Space Odyssey",
-                                year: "1968",
-                                rating: 10,
-                                genre: "Sci-Fi",
-                              },
-                              {
-                                title: "Pulp Fiction",
-                                year: "1994",
-                                rating: 9,
-                                genre: "Crime",
-                              },
-                              {
-                                title: "Seven Samurai",
-                                year: "1954",
-                                rating: 10,
-                                genre: "Action Drama",
-                              },
-                              {
-                                title: "Citizen Kane",
-                                year: "1941",
-                                rating: 9,
-                                genre: "Drama",
-                              },
-                              {
-                                title: "Vertigo",
-                                year: "1958",
-                                rating: 9,
-                                genre: "Thriller",
-                              },
-                            ].map((movie, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between p-3 rounded-lg border border-gray-600 bg-gray-700"
-                              >
-                                <div>
-                                  <p className="font-medium text-white">
-                                    {movie.title}
-                                  </p>
-                                  <p className="text-sm text-gray-400">
-                                    {movie.year} • {movie.genre}
-                                  </p>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                  <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                                  <span className="font-medium text-white">
-                                    {movie.rating}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
+                          <div className="grid w-full grid-cols-2 bg-gray-800 gap-4 border-gray-700 mb-4">
+                            <Button
+                              className={`text-gray-300 hover:bg-gray-700 ${
+                                activeRatingTab === "following"
+                                  ? "bg-gray-700 text-white"
+                                  : ""
+                              }`}
+                              onClick={() => handleRatingTabChange("following")}
+                            >
+                              {t("social.recent_ratings.following_tab")}
+                            </Button>
+                            <Button
+                              className={`text-gray-300 hover:bg-gray-700 ${
+                                activeRatingTab === "all"
+                                  ? "bg-gray-700 text-white"
+                                  : ""
+                              }`}
+                              onClick={() => handleRatingTabChange("all")}
+                            >
+                              {t("social.recent_ratings.all_tab")}
+                            </Button>
                           </div>
+                          <Pagination
+                            itemsPage={ratings}
+                            onPageChange={(page: number) => {
+                              setRatingPage(page);
+                              fetcher.load(
+                                `/social?rating_tab=${activeRatingTab}&rating_page=${page}`
+                              );
+                            }}
+                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {ratings.items &&
+                                ratings.items.map((rating) => (
+                                  <div
+                                    key={rating.id}
+                                    className="flex items-center justify-between p-3 rounded-lg border border-gray-600 bg-gray-700"
+                                  >
+                                    <div>
+                                      <p className="font-medium text-white">
+                                        {rating.movie.title}
+                                      </p>
+                                      <p className="text-sm text-gray-400">
+                                        {rating.movie.genres}
+                                      </p>
+                                      <p className="text-sm text-gray-300 font-medium">
+                                        {dayjs.utc(rating.updated_at).fromNow()}
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Star className="h-4 w-4 text-purple-400 fill-current" />
+                                      <span className="font-medium text-white">
+                                        {rating.rating}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </Pagination>
                         </CardContent>
                       </Card>
                     </div>

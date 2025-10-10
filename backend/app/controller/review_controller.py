@@ -57,11 +57,20 @@ def like_review(session: SessionDep, request: Request, review_service: ReviewSer
     except Exception as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
 
-@review_router.get("/review/latest")
+@review_router.get("/review/text/latest")
 def latest_reviews(session: SessionDep, request: Request, review_service: ReviewServiceDep, following: Optional[bool] = Query(False), params: Params = Depends()) -> Page[ReviewGetSingularAchievementsDTO]:
     user_id = request.state.user_id
     try:
-        reviews = review_service.latest_reviews(Database(session), user_id, following)
+        reviews = review_service.latest_text_reviews(Database(session), user_id, following)
+        return paginate(reviews, params)
+    except Exception as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+    
+@review_router.get("/review/rating/latest")
+def latest_reviews(session: SessionDep, request: Request, review_service: ReviewServiceDep, following: Optional[bool] = Query(False), params: Params = Depends()) -> Page[ReviewGetSingularAchievementsDTO]:
+    user_id = request.state.user_id
+    try:
+        reviews = review_service.latest_rating_reviews(Database(session), user_id, following)
         return paginate(reviews, params)
     except Exception as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
