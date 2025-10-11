@@ -109,6 +109,9 @@ export const enTranslation = {
       following_tab: "Following",
       all_tab: "All",
     },
+    top_movies: {
+      ratings: "ratings",
+    },
   },
   recommendations: {
     title: "Explore",

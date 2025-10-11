@@ -7,7 +7,7 @@ from app.model.user_relationship import UserRelationship
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
-from app.dto.review import ReviewCreationDTO, ReviewGetSingularAchievementsDTO, ReviewGetSingularDTO
+from app.dto.review import ReviewCreationDTO, ReviewGetSingularAchievementsDTO, ReviewGetSingularDTO, TopMovieRatingDTO
 from sqlalchemy.exc import IntegrityError
 from app.constants.message import FUTURE_TRAVELER, MOVIE_NOT_FOUND, REVIEW_NOT_FOUND, INSULTING_REVIEW, UNDELETABLE_REVIEW_ERROR
 from sqlalchemy.orm import selectinload
@@ -84,6 +84,28 @@ class ReviewService:
             user_name=review.user.name,
             movie=movie,
             achievements=achievement_dtos
+        )
+    
+    def set_up_top_movie_rating_dto(self, top_movie: dict) -> TopMovieRatingDTO:
+        movie_data = top_movie["movie"]
+        return TopMovieRatingDTO(
+            movie=MovieGetResponse(
+                id=movie_data.id,
+                title=movie_data.title,
+                year=movie_data.year,
+                imdb_rating=movie_data.imdb_rating,
+                genres=movie_data.genres,
+                countries=movie_data.countries,
+                duration=movie_data.duration,
+                cast=movie_data.cast,
+                directors=movie_data.directors,
+                writers=movie_data.writers,
+                plot=movie_data.plot,
+                logo_url=movie_data.logo_url,
+                user_rating=None
+            ),
+            average_rating=top_movie["average_rating"],
+            total_ratings=len(top_movie["ratings"])
         )
 
     def get_all_reviews(self, db: Database, user_id: int, movie_id: Optional[int]) -> Tuple[Optional[ReviewGetSingularAchievementsDTO], List[ReviewGetSingularAchievementsDTO]]:
@@ -275,5 +297,25 @@ class ReviewService:
             else:
                 conditions = db.build_condition([Review.user_id != user_id, Review.rating != None])
                 return [self.set_up_review_singular_achievements_dto(review, user_id, db) for review in db.find_all_by_multiple(Review, conditions, order_by=order_by)]
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        
+    def top_movie_ratings(self, db: Database) -> list[TopMovieRatingDTO]:
+        try:
+            movie_ratings = {} 
+            all_ratings = db.find_all(Review, Review.rating != None, [selectinload(Review.movie)])
+
+            for review in all_ratings:
+                movie_id = review.movie_id
+                if movie_id not in movie_ratings:
+                    movie_ratings[movie_id] = {"movie": review.movie, "ratings": []}
+                movie_ratings[movie_id]["ratings"].append(review.rating)
+
+            for id, ratings in movie_ratings.items():
+                movie_ratings[id]["average_rating"] = sum(ratings["ratings"]) / len(ratings["ratings"])
+
+            top_movies = sorted(movie_ratings.values(), key=lambda x: x["average_rating"], reverse=True)[:10]
+
+            return [self.set_up_top_movie_rating_dto(top_movie) for top_movie in top_movies]
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))

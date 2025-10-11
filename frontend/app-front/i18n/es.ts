@@ -112,6 +112,9 @@ export const esTranslation = {
       following_tab: "Seguidos",
       all_tab: "Todos",
     },
+    top_movies: {
+      ratings: "puntuaciones",
+    },
   },
   recommendations: {
     title: "Explora",

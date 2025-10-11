@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "components/ui/badge";
 import { Button } from "components/ui/button";
 import {
   Card,
@@ -13,6 +12,7 @@ import { HeaderFull } from "components/ui/header-full";
 import { Pagination } from "components/ui/pagination";
 import { ReviewCard } from "components/ui/review-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
+import { TopMovies } from "components/ui/social/top-movies";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
@@ -25,7 +25,9 @@ import { useFetcher, useLoaderData } from "react-router-dom";
 import {
   getLatestRatings,
   getLatestReviews,
+  getTopMovies,
 } from "services/api/flixy/server/reviews";
+import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { getAccessToken } from "services/api/utils";
@@ -40,10 +42,15 @@ const DEFAULT_RATING_PAGE_SIZE = 8;
 const DEFAULT_TAB = "following";
 
 type Tab = "following" | "all";
+interface TopMovies {
+  movie: MovieDataGet;
+  average_rating: number;
+}
 
-interface LatestReviews {
+interface SocialData {
   reviews: Page<ReviewDataGet>;
   ratings: Page<ReviewDataGet>;
+  top_movies: TopMovies[];
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -59,26 +66,28 @@ export async function loader({ request }: Route.LoaderArgs) {
   );
 
   let apiResponse: ApiResponse = {};
-  let latestReviews = {} as LatestReviews;
+  let socialData = {} as SocialData;
 
   try {
     apiResponse.accessToken = await getAccessToken(request);
 
-    latestReviews.reviews = await getLatestReviews(
+    socialData.reviews = await getLatestReviews(
       reviewTab === "following",
       reviewPage,
       DEFAULT_REVIEW_PAGE_SIZE,
       request
     );
 
-    latestReviews.ratings = await getLatestRatings(
+    socialData.ratings = await getLatestRatings(
       ratingTab === "following",
       ratingPage,
       DEFAULT_RATING_PAGE_SIZE,
       request
     );
 
-    apiResponse.data = latestReviews;
+    socialData.top_movies = await getTopMovies(request);
+
+    apiResponse.data = socialData;
     return apiResponse;
   } catch (err: Error | any) {
     console.log(
@@ -111,6 +120,8 @@ export default function SocialPage() {
     fetcher.data?.data.reviews ?? (apiResponse.data?.reviews || {});
   let ratings: Page<ReviewDataGet> =
     fetcher.data?.data.ratings ?? (apiResponse.data?.ratings || {});
+  let topMovies: TopMovies[] =
+    fetcher.data?.data.top_movies ?? (apiResponse.data?.top_movies || []);
 
   const handleReviewTabChange = (newTab: Tab) => {
     if (activeReviewTab === newTab) return;
@@ -140,246 +151,154 @@ export default function SocialPage() {
             <HeaderFull />
             <main className="flex-1 overflow-auto">
               <div className="p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   {/* Main Content */}
-                  <div className="lg:col-span-3">
-                    <div className="space-y-6">
-                      {/* Recent Reviews Section */}
-                      <Card className="bg-gray-800 border-gray-700">
-                        <CardHeader>
-                          <CardTitle className="text-white">
-                            {t("social.recent_reviews.title")}
-                          </CardTitle>
-                          <CardDescription className="text-gray-400">
-                            {t("social.recent_reviews.subtitle")}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid w-full grid-cols-2 bg-gray-800 gap-4 border-gray-700 mb-4">
-                            <Button
-                              className={`text-gray-300 hover:bg-gray-700 ${
-                                activeReviewTab === "following"
-                                  ? "bg-gray-700 text-white"
-                                  : ""
-                              }`}
-                              onClick={() => handleReviewTabChange("following")}
-                            >
-                              {t("social.recent_reviews.following_tab")}
-                            </Button>
-                            <Button
-                              className={`text-gray-300 hover:bg-gray-700 ${
-                                activeReviewTab === "all"
-                                  ? "bg-gray-700 text-white"
-                                  : ""
-                              }`}
-                              onClick={() => handleReviewTabChange("all")}
-                            >
-                              {t("social.recent_reviews.all_tab")}
-                            </Button>
-                          </div>
-                          <Pagination
-                            itemsPage={reviews}
-                            onPageChange={(page: number) => {
-                              setReviewPage(page);
-                              fetcher.load(
-                                `/social?review_tab=${activeReviewTab}&review_page=${page}`
-                              );
-                            }}
-                          >
-                            <div className="space-y-4">
-                              {reviews.items &&
-                                reviews.items.map((review) => (
-                                  <ReviewCard
-                                    key={review.id}
-                                    accessToken={String(
-                                      apiResponse.accessToken
-                                    )}
-                                    showMovieTitle
-                                    userReview={review}
-                                  />
-                                ))}
-                            </div>
-                          </Pagination>
-                        </CardContent>
-                      </Card>
-
-                      {/* Favorite Movies Section */}
-                      <Card className="bg-gray-800 border-gray-700">
-                        <CardHeader>
-                          <CardTitle className="text-white">
-                            {t("social.recent_ratings.title")}
-                          </CardTitle>
-                          <CardDescription className="text-gray-400">
-                            {t("social.recent_ratings.subtitle")}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid w-full grid-cols-2 bg-gray-800 gap-4 border-gray-700 mb-4">
-                            <Button
-                              className={`text-gray-300 hover:bg-gray-700 ${
-                                activeRatingTab === "following"
-                                  ? "bg-gray-700 text-white"
-                                  : ""
-                              }`}
-                              onClick={() => handleRatingTabChange("following")}
-                            >
-                              {t("social.recent_ratings.following_tab")}
-                            </Button>
-                            <Button
-                              className={`text-gray-300 hover:bg-gray-700 ${
-                                activeRatingTab === "all"
-                                  ? "bg-gray-700 text-white"
-                                  : ""
-                              }`}
-                              onClick={() => handleRatingTabChange("all")}
-                            >
-                              {t("social.recent_ratings.all_tab")}
-                            </Button>
-                          </div>
-                          <Pagination
-                            itemsPage={ratings}
-                            onPageChange={(page: number) => {
-                              setRatingPage(page);
-                              fetcher.load(
-                                `/social?rating_tab=${activeRatingTab}&rating_page=${page}`
-                              );
-                            }}
-                          >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {ratings.items &&
-                                ratings.items.map((rating) => (
-                                  <div
-                                    key={rating.id}
-                                    className="flex items-center justify-between p-3 rounded-lg border border-gray-600 bg-gray-700"
-                                  >
-                                    <div>
-                                      <p className="font-medium text-white">
-                                        {rating.movie.title}
-                                      </p>
-                                      <p className="text-sm text-gray-400">
-                                        {rating.movie.genres}
-                                      </p>
-                                      <p className="text-sm text-gray-300 font-medium">
-                                        {dayjs.utc(rating.updated_at).fromNow()}
-                                      </p>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <Star className="h-4 w-4 text-purple-400 fill-current" />
-                                      <span className="font-medium text-white">
-                                        {rating.rating}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
-                            </div>
-                          </Pagination>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-
-                  {/* Sidebar */}
-                  <div className="space-y-4">
+                  <div className="space-y-6">
+                    {/* Recent Reviews Section */}
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
-                        <CardTitle className="text-lg text-white">
-                          Movie Stats
+                        <CardTitle className="text-white">
+                          {t("social.recent_reviews.title")}
                         </CardTitle>
                         <CardDescription className="text-gray-400">
-                          Your viewing habits at a glance
+                          {t("social.recent_reviews.subtitle")}
                         </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-400">Average Rating</span>
-                          <span className="text-white font-medium">7.8/10</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-400">Favorite Genre</span>
-                          <span className="text-white font-medium">Drama</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-400">This Month</span>
-                          <span className="text-white font-medium">
-                            23 movies
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-400">
-                            Favorite Director
-                          </span>
-                          <span className="text-white font-medium">
-                            C. Nolan
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Popular Hashtags */}
-                    <Card className="bg-gray-800 border-gray-700">
-                      <CardHeader>
-                        <CardTitle className="text-lg text-white">
-                          Favorite Genres
-                        </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                          {[
-                            "#Drama",
-                            "#SciFi",
-                            "#Thriller",
-                            "#Crime",
-                            "#Biography",
-                            "#Mystery",
-                            "#Horror",
-                            "#Comedy",
-                          ].map((tag, index) => (
-                            <Badge
-                              key={index}
-                              variant="secondary"
-                              className="cursor-pointer hover:bg-gray-600 bg-gray-700 text-gray-300"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
+                        <div className="grid w-full grid-cols-2 bg-gray-800 gap-4 border-gray-700 mb-4">
+                          <Button
+                            className={`text-gray-300 hover:bg-gray-700 ${
+                              activeReviewTab === "following"
+                                ? "bg-gray-700 text-white"
+                                : ""
+                            }`}
+                            onClick={() => handleReviewTabChange("following")}
+                          >
+                            {t("social.recent_reviews.following_tab")}
+                          </Button>
+                          <Button
+                            className={`text-gray-300 hover:bg-gray-700 ${
+                              activeReviewTab === "all"
+                                ? "bg-gray-700 text-white"
+                                : ""
+                            }`}
+                            onClick={() => handleReviewTabChange("all")}
+                          >
+                            {t("social.recent_reviews.all_tab")}
+                          </Button>
                         </div>
+                        <Pagination
+                          itemsPage={reviews}
+                          onPageChange={(page: number) => {
+                            setReviewPage(page);
+                            fetcher.load(
+                              `/social?review_tab=${activeReviewTab}&review_page=${page}`
+                            );
+                          }}
+                        >
+                          <div className="space-y-4">
+                            {reviews.items &&
+                              reviews.items.map((review) => (
+                                <ReviewCard
+                                  key={review.id}
+                                  accessToken={String(apiResponse.accessToken)}
+                                  showMovieTitle
+                                  userReview={review}
+                                />
+                              ))}
+                          </div>
+                        </Pagination>
                       </CardContent>
                     </Card>
 
-                    {/* Recent Activity */}
+                    {/* Top Movies Section */}
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardHeader>
+                        <CardTitle className="text-white">
+                          {t("social.recent_ratings.title")}
+                        </CardTitle>
+                        <CardDescription className="text-gray-400">
+                          {t("social.recent_ratings.subtitle")}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid w-full grid-cols-2 bg-gray-800 gap-4 border-gray-700 mb-4">
+                          <Button
+                            className={`text-gray-300 hover:bg-gray-700 ${
+                              activeRatingTab === "following"
+                                ? "bg-gray-700 text-white"
+                                : ""
+                            }`}
+                            onClick={() => handleRatingTabChange("following")}
+                          >
+                            {t("social.recent_ratings.following_tab")}
+                          </Button>
+                          <Button
+                            className={`text-gray-300 hover:bg-gray-700 ${
+                              activeRatingTab === "all"
+                                ? "bg-gray-700 text-white"
+                                : ""
+                            }`}
+                            onClick={() => handleRatingTabChange("all")}
+                          >
+                            {t("social.recent_ratings.all_tab")}
+                          </Button>
+                        </div>
+                        <Pagination
+                          itemsPage={ratings}
+                          onPageChange={(page: number) => {
+                            setRatingPage(page);
+                            fetcher.load(
+                              `/social?rating_tab=${activeRatingTab}&rating_page=${page}`
+                            );
+                          }}
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {ratings.items &&
+                              ratings.items.map((rating) => (
+                                <div
+                                  key={rating.id}
+                                  className="flex items-center justify-between p-3 rounded-lg border border-gray-600 bg-gray-700"
+                                >
+                                  <div>
+                                    <p className="font-medium text-white">
+                                      {rating.movie.title}
+                                    </p>
+                                    <p className="text-sm text-gray-400">
+                                      {rating.movie.genres}
+                                    </p>
+                                    <p className="text-sm text-gray-300 font-medium">
+                                      {dayjs.utc(rating.updated_at).fromNow()}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    {Array.from({
+                                      length: Number(rating.rating),
+                                    }).map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        size={18}
+                                        className="text-purple-400 fill-purple-400"
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </Pagination>
+                      </CardContent>
+                    </Card>
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
                         <CardTitle className="text-lg text-white">
-                          Recent Activity
+                          Top 10 Movies
                         </CardTitle>
                         <CardDescription className="text-gray-400">
-                          What you've been up to lately
+                          Most valued by the community
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <div className="text-sm">
-                          <p className="text-gray-300">
-                            <span className="text-purple-400">Reviewed</span>{" "}
-                            Oppenheimer
-                          </p>
-                          <p className="text-gray-500">2 days ago</p>
-                        </div>
-                        <div className="text-sm">
-                          <p className="text-gray-300">
-                            <span className="text-green-400">
-                              Added to watchlist
-                            </span>{" "}
-                            Dune: Part Two
-                          </p>
-                          <p className="text-gray-500">3 days ago</p>
-                        </div>
-                        <div className="text-sm">
-                          <p className="text-gray-300">
-                            <span className="text-blue-400">Followed</span>{" "}
-                            Christopher Nolan
-                          </p>
-                          <p className="text-gray-500">1 week ago</p>
-                        </div>
+                        <TopMovies topMovies={topMovies} />
                       </CardContent>
                     </Card>
                   </div>

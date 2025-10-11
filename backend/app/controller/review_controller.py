@@ -2,7 +2,7 @@ from typing import Annotated, Optional
 from app.db.database import Database
 from app.db.database_setup import SessionDep
 from app.service.review_service import ReviewService
-from app.dto.review import ReviewCreationDTO, ReviewGetSingularAchievementsDTO, ReviewGetSingularDTO, ReviewGetResponse
+from app.dto.review import ReviewCreationDTO, ReviewGetSingularAchievementsDTO, ReviewGetSingularDTO, ReviewGetResponse, TopMovieRatingDTO
 from fastapi import APIRouter, Depends, Path, HTTPException, Request, Query
 from fastapi_pagination import Params, paginate, Page
 
@@ -72,5 +72,12 @@ def latest_reviews(session: SessionDep, request: Request, review_service: Review
     try:
         reviews = review_service.latest_rating_reviews(Database(session), user_id, following)
         return paginate(reviews, params)
+    except Exception as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+    
+@review_router.get("/review/rating/top")
+def top_movie_ratings(session: SessionDep, review_service: ReviewServiceDep) -> list[TopMovieRatingDTO]:
+    try:
+        return review_service.top_movie_ratings(Database(session))
     except Exception as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
