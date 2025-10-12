@@ -77,10 +77,8 @@ export async function loader({ request }: Route.LoaderArgs) {
       request
     );
 
-    // TODO: Esto carga algunos datos default que todavia no tenemos
     searchResults.users.items = searchResults.users.items.map((user) => ({
       ...user,
-      followers: 2341,
       reviews: 234,
       verified: true,
     }));

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 
-interface TopMovie {
+export interface TopMovie {
   movie: MovieDataGet;
   average_rating: number;
   total_ratings: number;

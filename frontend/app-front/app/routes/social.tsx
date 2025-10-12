@@ -12,13 +12,13 @@ import { HeaderFull } from "components/ui/header-full";
 import { Pagination } from "components/ui/pagination";
 import { ReviewCard } from "components/ui/review-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
-import { TopMovies } from "components/ui/social/top-movies";
+import { RatingCard } from "components/ui/social/rating-card";
+import { TopMovies, type TopMovie } from "components/ui/social/top-movies";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import { Star } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
@@ -27,7 +27,6 @@ import {
   getLatestReviews,
   getTopMovies,
 } from "services/api/flixy/server/reviews";
-import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import { getAccessToken } from "services/api/utils";
@@ -42,15 +41,11 @@ const DEFAULT_RATING_PAGE_SIZE = 8;
 const DEFAULT_TAB = "following";
 
 type Tab = "following" | "all";
-interface TopMovies {
-  movie: MovieDataGet;
-  average_rating: number;
-}
 
 interface SocialData {
   reviews: Page<ReviewDataGet>;
   ratings: Page<ReviewDataGet>;
-  top_movies: TopMovies[];
+  top_movies: TopMovie[];
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -120,7 +115,7 @@ export default function SocialPage() {
     fetcher.data?.data.reviews ?? (apiResponse.data?.reviews || {});
   let ratings: Page<ReviewDataGet> =
     fetcher.data?.data.ratings ?? (apiResponse.data?.ratings || {});
-  let topMovies: TopMovies[] =
+  let topMovies: TopMovie[] =
     fetcher.data?.data.top_movies ?? (apiResponse.data?.top_movies || []);
 
   const handleReviewTabChange = (newTab: Tab) => {
@@ -256,33 +251,7 @@ export default function SocialPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {ratings.items &&
                               ratings.items.map((rating) => (
-                                <div
-                                  key={rating.id}
-                                  className="flex items-center justify-between p-3 rounded-lg border border-gray-600 bg-gray-700"
-                                >
-                                  <div>
-                                    <p className="font-medium text-white">
-                                      {rating.movie.title}
-                                    </p>
-                                    <p className="text-sm text-gray-400">
-                                      {rating.movie.genres}
-                                    </p>
-                                    <p className="text-sm text-gray-300 font-medium">
-                                      {dayjs.utc(rating.updated_at).fromNow()}
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center space-x-1">
-                                    {Array.from({
-                                      length: Number(rating.rating),
-                                    }).map((_, i) => (
-                                      <Star
-                                        key={i}
-                                        size={18}
-                                        className="text-purple-400 fill-purple-400"
-                                      />
-                                    ))}
-                                  </div>
-                                </div>
+                                <RatingCard review={rating} />
                               ))}
                           </div>
                         </Pagination>
@@ -291,10 +260,10 @@ export default function SocialPage() {
                     <Card className="bg-gray-800 border-gray-700">
                       <CardHeader>
                         <CardTitle className="text-lg text-white">
-                          Top 10 Movies
+                          {t("social.top_movies.title")}
                         </CardTitle>
                         <CardDescription className="text-gray-400">
-                          Most valued by the community
+                          {t("social.top_movies.subtitle")}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">

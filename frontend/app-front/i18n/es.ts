@@ -113,6 +113,8 @@ export const esTranslation = {
       all_tab: "Todos",
     },
     top_movies: {
+      title: "Top 10 Películas",
+      subtitle: "Las mejores valoradas por la comunidad",
       ratings: "puntuaciones",
     },
   },

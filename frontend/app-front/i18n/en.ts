@@ -110,6 +110,8 @@ export const enTranslation = {
       all_tab: "All",
     },
     top_movies: {
+      title: "Top 10 Movies",
+      subtitle: "Best rated by the community",
       ratings: "ratings",
     },
   },
