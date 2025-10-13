@@ -51,3 +51,78 @@ export async function getAllUserReviewsData(
 
   return response_json;
 }
+
+export async function getLatestReviews(
+  following: boolean,
+  page: number,
+  size: number,
+  request: Request
+) {
+  const token = await getAccessToken(request);
+
+  const response = await fetch(
+    process.env.VITE_API_URL +
+      `/review/text/latest?following=${following}&page=${page}&size=${size}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
+
+export async function getLatestRatings(
+  following: boolean,
+  page: number,
+  size: number,
+  request: Request
+) {
+  const token = await getAccessToken(request);
+
+  const response = await fetch(
+    process.env.VITE_API_URL +
+      `/review/rating/latest?following=${following}&page=${page}&size=${size}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
+
+export async function getTopMovies(request: Request) {
+  const token = await getAccessToken(request);
+
+  const response = await fetch(
+    process.env.VITE_API_URL + `/review/rating/top`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}

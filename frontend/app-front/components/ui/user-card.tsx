@@ -38,10 +38,7 @@ export function UserCard({ user, accessToken }: UserCardProps) {
         <Avatar className="w-12 h-12">
           <AvatarImage src={currentUser.avatar || "/placeholder.svg"} />
           <AvatarFallback className="bg-pink-500">
-            {currentUser.name
-              .split(" ")
-              .map((n: any) => n[0])
-              .join("")}
+            {currentUser.name[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">

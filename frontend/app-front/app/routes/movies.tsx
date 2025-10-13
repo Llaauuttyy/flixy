@@ -121,25 +121,33 @@ export default function MoviesPage() {
     );
   }
 
+  const getGenresParams = (genres: string[]) =>
+    genres.map((g) => `genres=${g}`).join("&");
+
   const handleOrderColumnChange = (column: OrderColumn) => {
     setOrderColumn(column);
     fetcher.load(
-      `/movies?page=${DEFAULT_PAGE}&order_column=${column}&order_way=${orderWay}`
+      `/movies?page=${DEFAULT_PAGE}&order_column=${column}&order_way=${orderWay}&${getGenresParams(
+        selectedGenres
+      )}`
     );
   };
 
   const handleOrderWayChange = (way: OrderWay) => {
     setOrderWay(way);
     fetcher.load(
-      `/movies?page=${DEFAULT_PAGE}&order_column=${orderColumn}&order_way=${way}`
+      `/movies?page=${DEFAULT_PAGE}&order_column=${orderColumn}&order_way=${way}&${getGenresParams(
+        selectedGenres
+      )}`
     );
   };
 
   const handleGenresChange = (genres: string[]) => {
     setSelectedGenres(genres);
-    const genresParams = genres.map((g) => `genres=${g}`).join("&");
     fetcher.load(
-      `/movies?page=${DEFAULT_PAGE}&order_column=${orderColumn}&order_way=${orderWay}&${genresParams}`
+      `/movies?page=${DEFAULT_PAGE}&order_column=${orderColumn}&order_way=${orderWay}&${getGenresParams(
+        genres
+      )}`
     );
   };
 
@@ -180,7 +188,7 @@ export default function MoviesPage() {
                 itemsPage={moviesData.movies}
                 onPageChange={(page: number) => {
                   fetcher.load(
-                    `/movies?page=${page}&order_column=${orderColumn}&order_way=${orderWay}`
+                    `/movies?page=${page}&order_column=${orderColumn}&order_way=${orderWay}&${getGenresParams()}`
                   );
                 }}
               >

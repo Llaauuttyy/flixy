@@ -99,6 +99,25 @@ export const esTranslation = {
       },
     },
   },
+  social: {
+    recent_reviews: {
+      title: "Reseñas Recientes",
+      subtitle: "Los últimos pensamientos de los flixies seguidos y de todos",
+      following_tab: "Seguidos",
+      all_tab: "Todos",
+    },
+    recent_ratings: {
+      title: "Puntuaciones Recientes",
+      subtitle: "Las últimas opiniones basadas en nuestras estrellas violetas",
+      following_tab: "Seguidos",
+      all_tab: "Todos",
+    },
+    top_movies: {
+      title: "Top 10 Películas",
+      subtitle: "Las mejores valoradas por la comunidad",
+      ratings: "puntuaciones",
+    },
+  },
   recommendations: {
     title: "Explora",
     subtitle:
@@ -184,6 +203,9 @@ export const esTranslation = {
       suffix: "Estadísticas",
     },
     subtitle: "Descubrí tus patrones y logros como cinéfilo",
+    edit_profile: "Editar Perfil",
+    following: "Siguiendo",
+    followers: "Seguidores",
     insights: {
       overall_stats: {
         reviews: {
@@ -329,5 +351,45 @@ export const esTranslation = {
     write_review_button: "Escribir reseña",
     movie_watched: "Película vista",
     pending_review: "Reseña pendiente",
+  },
+  home: {
+    trending_now: "Tendencias",
+    trending_now_subtitle: "Lo que todos están viendo esta semana",
+    top_rated: "Mejor Valoradas",
+    top_rated_subtitle:
+      "Películas con las calificaciones más altas de la comunidad",
+    last_picked_by_you: "Tus Últimas Selecciones",
+    last_picked_by_you_subtitle: "Películas que viste recientemente",
+    recent_reviews: "Reseñas Recientes",
+    recent_reviews_subtitle: "Las últimas reseñas de la comunidad",
+    genre_spotlight: "Destacado por Género",
+    genre_spotlight_subtitle: "Explorá películas según tus géneros favoritos",
+  },
+  featured_movie_component: {
+    featured: "Destacado",
+    details_button: "Ver Detalles",
+  },
+  get_recommendations_component: {
+    ai_powered: "Impulsado por IA",
+    discover_next_favorite: "Descubrí Tu Próxima Película Favorita",
+    discover_next_favorite_description:
+      "Obtené recomendaciones personalizadas según tus gustos. Nuestra IA analiza tus valoraciones y encuentra joyas ocultas.",
+    get_recommendations_button: "Obtener Recomendaciones",
+  },
+  share_your_thoughts_component: {
+    community: "Comunidad",
+    how_was_your_last_watch: "¿Qué te pareció la última pelicula que viste?",
+    share_your_thoughts_description:
+      "Compartí tus opiniones y ayudá a otros a descubrir grandes películas. Tu voz importa en nuestra comunidad en crecimiento.",
+    write_a_review: "Escribir una Reseña",
+  },
+  genre_spotlight_component: {
+    action: "Acción",
+    drama: "Drama",
+    comedy: "Comedia",
+    sci_fi: "Ciencia Ficción",
+    horror: "Terror",
+    romance: "Romance",
+    movies: " películas",
   },
 };

@@ -70,6 +70,7 @@ class UserService:
                 name=user.name,
                 username=user.username,
                 email=user.email,
+                followers=user.followers,
                 followed_by_user=db.exists_by_multiple(UserRelationship, follower_id=user_id, followed_id=user.id)
             ) for user in users]
     
@@ -89,6 +90,9 @@ class UserService:
             followed.followers += 1
             follower.following += 1
             db.save(UserRelationship(follower_id=follower_id, followed_id=followed_id))
+        
+        db.save(followed)
+        db.save(follower)
 
     def get_user_relationship(self, db: Database, user_id: int, condition, relation: str) -> list[UserDTO]:
         relationships = db.find_all_by_multiple(UserRelationship, db.build_condition([condition]), options=[selectinload(UserRelationship.follower), selectinload(UserRelationship.followed)])

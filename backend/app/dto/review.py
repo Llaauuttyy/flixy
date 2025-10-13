@@ -25,6 +25,7 @@ class ReviewCreationDTO(BaseModel):
     watch_date: Optional[datetime] = None
 
 class ReviewGetSingularDTO(ReviewDTO):
+    name: str
     user_name: str
 
 class ReviewGetSingularAchievementsDTO(ReviewGetSingularDTO):
@@ -33,3 +34,8 @@ class ReviewGetSingularAchievementsDTO(ReviewGetSingularDTO):
 class ReviewGetResponse(BaseModel):
     user_review: Optional[ReviewGetSingularAchievementsDTO] = None
     reviews: Page[ReviewGetSingularAchievementsDTO]
+
+class TopMovieRatingDTO(BaseModel):
+    movie: MovieGetResponse
+    average_rating: float
+    total_ratings: int
