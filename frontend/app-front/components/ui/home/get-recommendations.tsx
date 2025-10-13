@@ -1,8 +1,10 @@
 import { Sparkles, TrendingUp, Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "../button";
 
 export function GetRecommendations() {
+  const { t } = useTranslation();
   return (
     <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600/20 via-pink-600/20 to-pink-600/20 border border-pink-500/40 p-8 h-full hover:border-pink-500/60 transition-all duration-300">
       {/* Animated gradient orbs */}
@@ -22,17 +24,18 @@ export function GetRecommendations() {
           <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-pink-500/20 border border-pink-500/30">
             <Sparkles className="w-4 h-4 text-pink-500" />
             <span className="text-sm font-semibold text-pink-500">
-              AI Powered
+              {t("get_recommendations_component.ai_powered")}
             </span>
           </div>
 
           <h2 className="text-2xl font-bold text-white mb-3 leading-tight">
-            Discover Your Next Favorite Movie
+            {t("get_recommendations_component.discover_next_favorite")}
           </h2>
 
           <p className="text-slate-400 leading-relaxed">
-            Get personalized recommendations tailored to your unique taste. Our
-            AI analyzes your ratings and finds hidden gems.
+            {t(
+              "get_recommendations_component.discover_next_favorite_description"
+            )}
           </p>
         </div>
 
@@ -42,7 +45,7 @@ export function GetRecommendations() {
             className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 transition-all hover:scale-[1.02] group-hover:scale-[1.02]"
           >
             <Sparkles className="w-5 h-5 mr-2" />
-            Get Recommendations
+            {t("get_recommendations_component.get_recommendations_button")}
           </Button>
         </Link>
       </div>

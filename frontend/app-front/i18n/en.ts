@@ -324,4 +324,43 @@ export const enTranslation = {
     movie_watched: "Movie Watched",
     pending_review: "Pending Review",
   },
+  home: {
+    trending_now: "Trending Now",
+    trending_now_subtitle: "What everyone's watching this week",
+    top_rated: "Top Rated",
+    top_rated_subtitle: "Highest rated movies by the community",
+    last_picked_by_you: "Last Picked By You",
+    last_picked_by_you_subtitle: "Movies you have watched recently",
+    recent_reviews: "Recent Reviews",
+    recent_reviews_subtitle: "Latest reviews from the community",
+    genre_spotlight: "Genre Spotlight",
+    genre_spotlight_subtitle: "Explore movies by your favorite genres",
+  },
+  featured_movie_component: {
+    featured: "Featured",
+    details_button: "Details",
+  },
+  get_recommendations_component: {
+    ai_powered: "AI Powered",
+    discover_next_favorite: "Discover Your Next Favorite Movie",
+    discover_next_favorite_description:
+      "Get personalized recommendations tailored to your unique taste. Our AI analyzes your ratings and finds hidden gems.",
+    get_recommendations_button: "Get Recommendations",
+  },
+  share_your_thoughts_component: {
+    community: "Community",
+    how_was_your_last_watch: "How Was Your Last Watch?",
+    share_your_thoughts_description:
+      "Share your thoughts and help others discover great films. Your voice matters in our growing community.",
+    write_a_review: "Write a Review",
+  },
+  genre_spotlight_component: {
+    action: "Action",
+    drama: "Drama",
+    comedy: "Comedy",
+    sci_fi: "Sci-Fi",
+    horror: "Horror",
+    romance: "Romance",
+    movies: " movies",
+  },
 };

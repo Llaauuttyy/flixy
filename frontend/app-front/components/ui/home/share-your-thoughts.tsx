@@ -1,8 +1,10 @@
 import { Film, Heart, MessageSquare, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "../button";
 
 export function ShareYourThoughts() {
+  const { t } = useTranslation();
   return (
     <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 p-8 h-full hover:border-pink-500/40 transition-all duration-300">
       {/* Decorative elements */}
@@ -22,17 +24,16 @@ export function ShareYourThoughts() {
           <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20">
             <Star className="w-4 h-4 text-pink-500 fill-pink-500" />
             <span className="text-sm font-semibold text-pink-500">
-              Community
+              {t("share_your_thoughts_component.community")}
             </span>
           </div>
 
           <h2 className="text-2xl font-bold text-white mb-3 leading-tight">
-            How Was Your Last Watch?
+            {t("share_your_thoughts_component.how_was_your_last_watch")}
           </h2>
 
           <p className="text-slate-400 leading-relaxed">
-            Share your thoughts and help others discover great films. Your voice
-            matters in our growing community.
+            {t("share_your_thoughts_component.share_your_thoughts_description")}
           </p>
         </div>
 
@@ -43,7 +44,7 @@ export function ShareYourThoughts() {
             className="w-full border-2 border-pink-500/50 text-pink-500 hover:bg-pink-500 hover:text-white font-semibold rounded-xl transition-all hover:scale-[1.02] group-hover:scale-[1.02] bg-pink-500/5 hover:border-pink-500"
           >
             <MessageSquare className="w-5 h-5 mr-2" />
-            Write a Review
+            {t("share_your_thoughts_component.write_a_review")}
           </Button>
         </Link>
       </div>

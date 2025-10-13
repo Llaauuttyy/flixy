@@ -8,6 +8,7 @@ import { ShareYourThoughts } from "components/ui/home/share-your-thoughts";
 import { TopRatedMovies } from "components/ui/home/top-rated-movies";
 import { TrendingMovies } from "components/ui/home/trending-movies";
 import { SidebarNav } from "components/ui/sidebar-nav";
+import { useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router-dom";
 import { getHomeFeed } from "services/api/flixy/server/feed";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
@@ -40,6 +41,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function HomePage() {
+  const { t } = useTranslation();
+
   const apiResponse: ApiResponse = useLoaderData();
 
   const featuredMovie: MovieDataGet = apiResponse.data?.featured_movie;
@@ -89,10 +92,10 @@ export default function HomePage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-3xl font-bold text-white">
-                        Trending Now
+                        {t("home.trending_now")}
                       </h2>
                       <p className="text-slate-400 mt-1">
-                        {"What everyone's watching this week"}
+                        {t("home.trending_now_subtitle")}
                       </p>
                     </div>
                   </div>
@@ -107,10 +110,10 @@ export default function HomePage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-3xl font-bold text-white">
-                        Top Rated
+                        {t("home.top_rated")}
                       </h2>
                       <p className="text-slate-400 mt-1">
-                        Highest rated movies by the community
+                        {t("home.top_rated_subtitle")}
                       </p>
                     </div>
                   </div>
@@ -125,10 +128,10 @@ export default function HomePage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-3xl font-bold text-white">
-                        Last Picked By You
+                        {t("home.last_picked_by_you")}
                       </h2>
                       <p className="text-slate-400 mt-1">
-                        Movies you have watched recently
+                        {t("home.last_picked_by_you_subtitle")}
                       </p>
                     </div>
                   </div>
@@ -143,10 +146,10 @@ export default function HomePage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-3xl font-bold text-white">
-                        Recent Reviews
+                        {t("home.recent_reviews")}
                       </h2>
                       <p className="text-slate-400 mt-1">
-                        Latest thoughts from the community
+                        {t("home.recent_reviews_subtitle")}
                       </p>
                     </div>
                   </div>
@@ -158,10 +161,10 @@ export default function HomePage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-3xl font-bold text-white">
-                        Genre Spotlight
+                        {t("home.genre_spotlight")}
                       </h2>
                       <p className="text-slate-400 mt-1">
-                        Explore movies by your favorite genres
+                        {t("home.genre_spotlight_subtitle")}
                       </p>
                     </div>
                   </div>
