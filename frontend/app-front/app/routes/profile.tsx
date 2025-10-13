@@ -22,6 +22,7 @@ import {
 } from "services/api/flixy/server/user-data";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { UserData, UserInsights } from "services/api/flixy/types/user";
+import { getAccessToken } from "services/api/utils";
 import type { Route } from "../+types/root";
 
 const DEFAULT_PAGE = 1;
@@ -64,6 +65,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     userInsights = await getUserInsights(request);
 
     apiResponse.data = { followResults, userInsights };
+
+    apiResponse.accessToken = await getAccessToken(request);
 
     return apiResponse;
   } catch (err: Error | any) {
