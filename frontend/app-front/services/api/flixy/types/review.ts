@@ -12,6 +12,7 @@ export interface ReviewCreation {
 
 export interface ReviewDataGet {
   id: number;
+  name: string;
   user_name: string;
   movie_id: number;
   rating: number | null;
@@ -29,7 +30,8 @@ export interface ReviewDataGet {
     | boolean
     | MovieDataGet
     | UserAchievement[]
-    | null;
+    | null
+    | undefined;
 }
 
 export interface ReviewsData {

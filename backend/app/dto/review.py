@@ -25,6 +25,7 @@ class ReviewCreationDTO(BaseModel):
     watch_date: Optional[datetime] = None
 
 class ReviewGetSingularDTO(ReviewDTO):
+    name: str
     user_name: str
 
 class ReviewGetSingularAchievementsDTO(ReviewGetSingularDTO):
