@@ -57,7 +57,12 @@ export function GenreSpotlight({ genres }: GenreSpotlightProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {static_genres.map((genre) => (
-        <Link to={`/movies?genres=${genre.name}`}>
+        <Link
+          to={{
+            pathname: "/movies",
+            search: `?genres=${genre.name}`,
+          }}
+        >
           <Card
             key={genre.id}
             className="group relative overflow-hidden border-slate-700 bg-slate-800 hover:border-pink-500/50 transition-all cursor-pointer h-32"

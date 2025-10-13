@@ -22,11 +22,11 @@ export const RatingCard = ({ review }: RatingCardProps) => {
       <div className="flex items-center gap-2 mb-3">
         <Avatar className="h-8 w-8 bg-slate-700 flex items-center justify-center">
           <span className="text-white font-medium text-sm">
-            {review.user_name[0].toUpperCase()}
+            {review.name[0].toUpperCase()}
           </span>
         </Avatar>
         <span className="text-slate-300 text-sm font-medium">
-          {review.user_name}
+          {review.name}
         </span>
       </div>
 
