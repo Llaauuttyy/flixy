@@ -18,6 +18,7 @@ import "dayjs/locale/en";
 import "dayjs/locale/es";
 import i18n from "i18n/i18n";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { handleLikeReview } from "services/api/flixy/client/reviews";
 import { SingularBadge } from "./insights/singular-badge";
 
@@ -26,10 +27,15 @@ dayjs.extend(utc);
 
 interface ReviewCardProps {
   userReview: ReviewDataGet;
+  showMovieTitle?: boolean;
   accessToken: string;
 }
 
-export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
+export function ReviewCard({
+  userReview,
+  accessToken,
+  showMovieTitle = false,
+}: ReviewCardProps) {
   const { t } = useTranslation();
   const [likeDisabled, setLikeDisabled] = useState(false);
   const [currentReview, setCurrentReview] = useState(userReview);
@@ -51,7 +57,28 @@ export function ReviewCard({ userReview, accessToken }: ReviewCardProps) {
 
   return (
     <Card className="bg-slate-800/50 border-slate-700">
-      <CardContent className="p-6">
+      <CardContent className="flex flex-col p-6 space-y-4">
+        {showMovieTitle && (
+          <div className="flex items-center justify-between">
+            <Link to={"/movies/" + currentReview.movie_id}>
+              <div className="flex items-center gap-1 text-sm font-semibold text-purple-400 hover:underline cursor-pointer">
+                {`${currentReview.movie.title} (${currentReview.movie.year})`}
+              </div>
+            </Link>
+            <div className="flex flex-wrap gap-2">
+              {String(currentReview.movie.genres)
+                .split(",")
+                .map((genre: string, index: number) => (
+                  <Badge
+                    key={index}
+                    className="bg-[#202135] text-[#E0E0E0] hover:bg-[#202135]/80"
+                  >
+                    {genre.trim()}
+                  </Badge>
+                ))}
+            </div>
+          </div>
+        )}
         <div className="flex items-start gap-4">
           <Avatar>
             <AvatarImage src={"/placeholder.svg?height=32&width=32"} />

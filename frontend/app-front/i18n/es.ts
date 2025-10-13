@@ -99,6 +99,25 @@ export const esTranslation = {
       },
     },
   },
+  social: {
+    recent_reviews: {
+      title: "Reseñas Recientes",
+      subtitle: "Los últimos pensamientos de los flixies seguidos y de todos",
+      following_tab: "Seguidos",
+      all_tab: "Todos",
+    },
+    recent_ratings: {
+      title: "Puntuaciones Recientes",
+      subtitle: "Las últimas opiniones basadas en nuestras estrellas violetas",
+      following_tab: "Seguidos",
+      all_tab: "Todos",
+    },
+    top_movies: {
+      title: "Top 10 Películas",
+      subtitle: "Las mejores valoradas por la comunidad",
+      ratings: "puntuaciones",
+    },
+  },
   recommendations: {
     title: "Explora",
     subtitle:
@@ -184,6 +203,9 @@ export const esTranslation = {
       suffix: "Estadísticas",
     },
     subtitle: "Descubrí tus patrones y logros como cinéfilo",
+    edit_profile: "Editar Perfil",
+    following: "Siguiendo",
+    followers: "Seguidores",
     insights: {
       overall_stats: {
         reviews: {

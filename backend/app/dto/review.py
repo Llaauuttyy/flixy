@@ -33,3 +33,8 @@ class ReviewGetSingularAchievementsDTO(ReviewGetSingularDTO):
 class ReviewGetResponse(BaseModel):
     user_review: Optional[ReviewGetSingularAchievementsDTO] = None
     reviews: Page[ReviewGetSingularAchievementsDTO]
+
+class TopMovieRatingDTO(BaseModel):
+    movie: MovieGetResponse
+    average_rating: float
+    total_ratings: int

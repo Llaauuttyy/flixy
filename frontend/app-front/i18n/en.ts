@@ -96,6 +96,25 @@ export const enTranslation = {
       },
     },
   },
+  social: {
+    recent_reviews: {
+      title: "Recent Reviews",
+      subtitle: "The latest thoughts of followed and all flixies",
+      following_tab: "Following",
+      all_tab: "All",
+    },
+    recent_ratings: {
+      title: "Recent Ratings",
+      subtitle: "The latest opinions based on our purple stars",
+      following_tab: "Following",
+      all_tab: "All",
+    },
+    top_movies: {
+      title: "Top 10 Movies",
+      subtitle: "Best rated by the community",
+      ratings: "ratings",
+    },
+  },
   recommendations: {
     title: "Explore",
     subtitle:
@@ -180,6 +199,9 @@ export const enTranslation = {
       suffix: "Insights",
     },
     subtitle: "Discover your patterns and achievements as a cinephile",
+    edit_profile: "Edit Profile",
+    following: "Following",
+    followers: "Followers",
     insights: {
       overall_stats: {
         reviews: {
