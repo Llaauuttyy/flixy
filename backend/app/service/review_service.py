@@ -4,6 +4,7 @@ from app.model.user_achievement import UserAchievement
 from app.dto.achievement import AchievementDTO
 from app.dto.movie import MovieGetResponse
 from app.model.user_relationship import UserRelationship
+from app.dto.comment import CommentGetDTO
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
@@ -85,7 +86,17 @@ class ReviewService:
             name=review.user.name,
             user_name=review.user.username,
             movie=movie,
-            achievements=achievement_dtos
+            achievements=achievement_dtos,
+            comments=[CommentGetDTO(
+                id=comment.id,
+                review_id=comment.review_id,
+                text=comment.text,
+                likes=comment.likes,
+                user_id=comment.user_id,
+                liked_by_user=any(cl.user_id == user_id for cl in comment.comment_likes),
+                user_name=comment.user.name,
+                created_at=comment.created_at
+            ) for comment in review.comments] if review.comments else []
         )
     
     def set_up_top_movie_rating_dto(self, top_movie: dict) -> TopMovieRatingDTO:
@@ -157,7 +168,7 @@ class ReviewService:
             if review_dto.watch_date and review_dto.watch_date.replace(tzinfo=None) > datetime.now():
                 raise Exception(FUTURE_TRAVELER)
             
-            if review_dto.text and Moderator().is_review_insulting(review_dto.text):
+            if review_dto.text and Moderator().is_text_insulting(review_dto.text):
                 raise Exception(INSULTING_REVIEW)
             
             existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)

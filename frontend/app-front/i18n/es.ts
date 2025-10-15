@@ -165,6 +165,17 @@ export const esTranslation = {
     verified: "Reseña verificada",
     visible: "Visible para la comunidad",
   },
+  comment: {
+    input: {
+      placeholder: "Escribe un comentario...",
+      cancel: "Cancelar",
+      submit: "Comentar",
+    },
+    list: {
+      hide_comments: "Ocultar comentarios",
+      show_comments: "Mostrar comentarios",
+    },
+  },
   settings: {
     title: "Configuración",
     description: "Actualiza tus datos personales o contraseña.",

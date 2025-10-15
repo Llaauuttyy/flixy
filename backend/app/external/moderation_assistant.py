@@ -11,7 +11,7 @@ class Moderator:
         self.behavior = "I need you to be a moderator to filter insulting reviews to movies. So you are going to read a review and tell me if " \
             "it is insulting or not. If it is insulting, you will return 'insulting', otherwise you will return 'not insulting'. Here is the review: "
 
-    def is_review_insulting(self, review: str) -> bool:
+    def is_text_insulting(self, review: str) -> bool:
         response = self.client.models.generate_content(
             model=self.model,
             contents=self.behavior + review,

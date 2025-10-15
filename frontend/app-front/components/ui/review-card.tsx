@@ -20,6 +20,9 @@ import i18n from "i18n/i18n";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { handleLikeReview } from "services/api/flixy/client/reviews";
+import type { CommentDataGet } from "services/api/flixy/types/comment";
+import { CommentInput } from "./comment-input";
+import { CommentList } from "./comment-list";
 import { SingularBadge } from "./insights/singular-badge";
 
 dayjs.extend(relativeTime);
@@ -38,6 +41,8 @@ export function ReviewCard({
 }: ReviewCardProps) {
   const { t } = useTranslation();
   const [likeDisabled, setLikeDisabled] = useState(false);
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [commentText, setCommentText] = useState("");
   const [currentReview, setCurrentReview] = useState(userReview);
 
   dayjs.locale(i18n.language || "en");
@@ -144,7 +149,10 @@ export function ReviewCard({
                   {currentReview.likes}
                 </span>
               </button>
-              <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+              <button
+                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+                onClick={() => setShowCommentInput(true)}
+              >
                 <MessageCircle className="w-4 h-4" />
                 <span className="text-sm">
                   {t("review_card.comment_button")}
@@ -153,7 +161,25 @@ export function ReviewCard({
             </div>
           </div>
         </div>
+        {showCommentInput && (
+          <CommentInput
+            accessToken={accessToken}
+            reviewId={currentReview.id}
+            onCancel={() => setShowCommentInput(false)}
+            onComment={(comment: CommentDataGet) => {
+              setCurrentReview((prev) => ({
+                ...prev,
+                comments: [...prev.comments, comment],
+              }));
+              setShowCommentInput(false);
+            }}
+          />
+        )}
       </CardContent>
+      <CommentList
+        accessToken={accessToken}
+        comments={currentReview.comments}
+      />
     </Card>
   );
 }

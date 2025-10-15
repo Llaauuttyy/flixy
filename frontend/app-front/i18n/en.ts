@@ -162,6 +162,17 @@ export const enTranslation = {
     verified: "Verified review",
     visible: "Visible to the community",
   },
+  comment: {
+    input: {
+      placeholder: "Write a comment...",
+      cancel: "Cancel",
+      submit: "Comment",
+    },
+    list: {
+      hide_comments: "Hide comments",
+      show_comments: "Show comments",
+    },
+  },
   settings: {
     title: "Settings",
     description: "Update your personal data or password.",
