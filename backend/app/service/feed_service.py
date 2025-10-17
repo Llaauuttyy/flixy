@@ -12,6 +12,7 @@ import random
 
 
 MAX_RESULTS = 10
+MAX_REVIEWS_RESULTS = 100
 MAX_RESULTS_BEST_RATED = 20
 
 GENRES = ["Action", "Drama", "Comedy", "Sci-Fi", "Horror", "Romance"]
@@ -68,19 +69,32 @@ class FeedService:
             ) for movie in movies if movie != featured_movie
         ]
     
-    def _get_trending_now_movies(self, db: Database) -> List[MovieGetResponse]:
+    def _get_trending_now_movies(self, db: Database, user_id: int) -> List[MovieGetResponse]:
         one_month_ago = datetime.now() - timedelta(weeks=4)
 
         trending_movies = db.find_all_by_multiple(
             model=Review,
             conditions=db.build_condition([Review.watch_date >= one_month_ago]),
             order_by={"way": "desc", "column": "watch_date"},
-            limit=MAX_RESULTS,
+            limit=MAX_REVIEWS_RESULTS,
             options=[selectinload(Review.movie)]
         )
 
-        movies = [review.movie for review in trending_movies if review.movie]
-        movies = sorted(movies, key=lambda movie: sum(1 for r in trending_movies if r.movie_id == movie.id), reverse=True)[:MAX_RESULTS]
+        review_counts = {}
+        review_and_movies = [r for r in trending_movies if r.movie]
+        for r in review_and_movies:
+            if r.movie:
+                review_counts[r.movie.id] = review_counts.get(r.movie.id, 0) + 1
+
+        movies = list({m.id: m for m in (r.movie for r in review_and_movies if r.movie)}.values())
+        movies = sorted(movies, key=lambda m: review_counts.get(m.id, 0), reverse=True)[:MAX_RESULTS]
+
+        movie_ids = [m.id for m in movies]
+        user_reviews = db.db_session.query(Review)\
+            .filter(Review.movie_id.in_(movie_ids), Review.user_id == user_id)\
+            .all() if movie_ids else []
+
+        user_reviews_by_movie = {r.movie_id: r for r in user_reviews}
 
         return [
             MovieGetResponse(
@@ -97,7 +111,8 @@ class FeedService:
                 plot=movie.plot,
                 logo_url=movie.logo_url,
                 youtube_trailer_id=movie.youtube_trailer_id,
-                is_trailer_reliable=movie.is_trailer_reliable
+                is_trailer_reliable=movie.is_trailer_reliable,
+                user_rating=user_reviews_by_movie[movie.id].rating if movie.id in user_reviews_by_movie else None
             ) for movie in movies
         ]
     
@@ -138,7 +153,8 @@ class FeedService:
                     plot=review.movie.plot,
                     logo_url=review.movie.logo_url,
                     youtube_trailer_id=review.movie.youtube_trailer_id,
-                    is_trailer_reliable=review.movie.is_trailer_reliable
+                    is_trailer_reliable=review.movie.is_trailer_reliable,
+                    user_rating=review.rating
                 ) if review.movie else None
             ) for review in last_watched_reviews
         ]
@@ -207,7 +223,7 @@ class FeedService:
         
         return HomeFeed(
             featured_movie=featured_movie,
-            trending_now_movies=self._get_trending_now_movies(db),
+            trending_now_movies=self._get_trending_now_movies(db, user_id),
             top_rated_movies=top_rated_movies,
             last_watched_movies=self._get_last_watched_movies(db, user_id),
             recent_reviews=self._get_recent_reviews(db),
