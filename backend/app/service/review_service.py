@@ -4,6 +4,7 @@ from app.model.user_achievement import UserAchievement
 from app.dto.achievement import AchievementDTO
 from app.dto.movie import MovieGetResponse
 from app.model.user_relationship import UserRelationship
+from app.model.movie import Movie
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
@@ -166,6 +167,14 @@ class ReviewService:
                 if review_dto.text:
                     existing_review.text = review_dto.text
                 if review_dto.rating:
+
+                    if existing_review.rating:
+                        existing_review.movie.flixy_ratings_sum += (-1 * existing_review.rating)
+                    else:
+                        existing_review.movie.flixy_ratings_total += 1
+
+                    existing_review.movie.flixy_ratings_sum += review_dto.rating
+
                     existing_review.rating = review_dto.rating
                 if review_dto.watch_date:
                     existing_review.watch_date = review_dto.watch_date
@@ -182,6 +191,13 @@ class ReviewService:
                     text=review_dto.text,
                     watch_date=review_dto.watch_date if review_dto.watch_date else curent_date,
                 )
+
+                movie = db.find_by(Movie, "id", review_dto.movie_id)
+
+                if review_dto.rating:
+                    movie.flixy_ratings_sum += review_dto.rating
+                    movie.flixy_ratings_total += 1
+                    db.add(movie)
 
                 db.save(new_review)
                 review = new_review
