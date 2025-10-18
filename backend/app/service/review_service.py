@@ -15,6 +15,7 @@ from sqlalchemy.orm import selectinload
 from typing import Tuple, List, Optional
 from datetime import datetime as datetime
 from app.external.moderation_assistant import Moderator
+from app import utils
 
 class ReviewService:
     def set_up_review_singular_dto(self, review: Review, user_id: int, db: Database) -> ReviewGetSingularDTO:
@@ -53,7 +54,8 @@ class ReviewService:
                 writers=movie_data.writers,
                 plot=movie_data.plot,
                 logo_url=movie_data.logo_url,
-                user_rating=review.rating if review.rating else None
+                user_rating=review.rating if review.rating else None,
+                flixy_rating = utils.get_movie_average_rating(movie_data)
             )
 
         achievements = review.user.achievements
@@ -105,7 +107,8 @@ class ReviewService:
                 writers=movie_data.writers,
                 plot=movie_data.plot,
                 logo_url=movie_data.logo_url,
-                user_rating=None
+                user_rating=None,
+                flixy_rating = utils.get_movie_average_rating(movie_data)
             ),
             average_rating=top_movie["average_rating"],
             total_ratings=len(top_movie["ratings"])

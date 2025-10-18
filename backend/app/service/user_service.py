@@ -13,6 +13,7 @@ from app.model.user_achievement import UserAchievement
 from app.model.achievement import Achievement
 from app.dto.achievement import AchievementsDTO, AchievementDTO
 from sqlalchemy.orm import selectinload
+import app.utils as utils
 import json
 
 class UserService:
@@ -294,6 +295,8 @@ def get_most_liked_review(reviews: list[Review]) -> Optional[ReviewDTO]:
             writers=most_liked_review.movie.writers,
             plot=most_liked_review.movie.plot,
             logo_url=most_liked_review.movie.logo_url,
+            flixy_rating = utils.get_movie_average_rating(most_liked_review.movie)
+            
         )
     ) if most_liked_review else None
 

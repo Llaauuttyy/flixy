@@ -12,6 +12,7 @@ from sqlalchemy.orm import selectinload, with_loader_criteria
 from typing import List, Optional, Tuple
 from datetime import datetime as datetime
 from fastapi_pagination import Params, paginate
+from app import utils
 
 
 class WatchListService:
@@ -58,7 +59,8 @@ class WatchListService:
                     writers=movie_data.writers,
                     plot=movie_data.plot,
                     logo_url=movie_data.logo_url,
-                    user_rating=movie_user_rating
+                    user_rating=movie_user_rating,
+                    flixy_rating = utils.get_movie_average_rating(movie_data)
                 ))
 
                 total_movies += 1
@@ -144,7 +146,8 @@ class WatchListService:
                 writers=movie_data.writers,
                 plot=movie_data.plot,
                 logo_url=movie_data.logo_url,
-                user_rating=movie_user_rating
+                user_rating=movie_user_rating,
+                flixy_rating = utils.get_movie_average_rating(movie_data)
             ))
 
             total_movies += 1

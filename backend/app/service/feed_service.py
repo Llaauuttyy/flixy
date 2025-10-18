@@ -5,6 +5,7 @@ from app.dto.feed import HomeFeed
 from app.model.movie import Movie
 from app.dto.review import ReviewDTO, ReviewGetSingularDTO
 from app.db.database import Database
+from app import utils
 from sqlalchemy.orm import selectinload
 from typing import List, Optional, Tuple
 from datetime import datetime as datetime, timedelta
@@ -49,7 +50,8 @@ class FeedService:
             plot=featured_movie.plot,
             logo_url=featured_movie.logo_url,
             youtube_trailer_id=featured_movie.youtube_trailer_id,
-            is_trailer_reliable=featured_movie.is_trailer_reliable
+            is_trailer_reliable=featured_movie.is_trailer_reliable,
+            flixy_rating = utils.get_movie_average_rating(movie)
         ) if featured_movie else None, [
             MovieGetResponse(
                 id=movie.id,
@@ -65,7 +67,8 @@ class FeedService:
                 plot=movie.plot,
                 logo_url=movie.logo_url,
                 youtube_trailer_id=movie.youtube_trailer_id,
-                is_trailer_reliable=movie.is_trailer_reliable
+                is_trailer_reliable=movie.is_trailer_reliable,
+                flixy_rating = utils.get_movie_average_rating(movie)
             ) for movie in movies if movie != featured_movie
         ]
     
@@ -112,7 +115,8 @@ class FeedService:
                 logo_url=movie.logo_url,
                 youtube_trailer_id=movie.youtube_trailer_id,
                 is_trailer_reliable=movie.is_trailer_reliable,
-                user_rating=user_reviews_by_movie[movie.id].rating if movie.id in user_reviews_by_movie else None
+                user_rating=user_reviews_by_movie[movie.id].rating if movie.id in user_reviews_by_movie else None,
+                flixy_rating = utils.get_movie_average_rating(movie)
             ) for movie in movies
         ]
     
@@ -154,7 +158,8 @@ class FeedService:
                     logo_url=review.movie.logo_url,
                     youtube_trailer_id=review.movie.youtube_trailer_id,
                     is_trailer_reliable=review.movie.is_trailer_reliable,
-                    user_rating=review.rating
+                    user_rating=review.rating,
+                    flixy_rating = utils.get_movie_average_rating(review.movie)
                 ) if review.movie else None
             ) for review in last_watched_reviews
         ]
@@ -195,7 +200,8 @@ class FeedService:
                     plot=review.movie.plot,
                     logo_url=review.movie.logo_url,
                     youtube_trailer_id=review.movie.youtube_trailer_id,
-                    is_trailer_reliable=review.movie.is_trailer_reliable
+                    is_trailer_reliable=review.movie.is_trailer_reliable,
+                    flixy_rating = utils.get_movie_average_rating(review.movie)
                 ) if review.movie else None
             ) for review in recent_reviews
         ]
