@@ -4,6 +4,7 @@ from app.model.user_achievement import UserAchievement
 from app.dto.achievement import AchievementDTO
 from app.dto.movie import MovieGetResponse
 from app.model.user_relationship import UserRelationship
+from app.model.movie import Movie
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
@@ -14,6 +15,7 @@ from sqlalchemy.orm import selectinload
 from typing import Tuple, List, Optional
 from datetime import datetime as datetime
 from app.external.moderation_assistant import Moderator
+from app import utils
 
 class ReviewService:
     def set_up_review_singular_dto(self, review: Review, user_id: int, db: Database) -> ReviewGetSingularDTO:
@@ -52,7 +54,8 @@ class ReviewService:
                 writers=movie_data.writers,
                 plot=movie_data.plot,
                 logo_url=movie_data.logo_url,
-                user_rating=review.rating if review.rating else None
+                user_rating=review.rating if review.rating else None,
+                flixy_rating = utils.get_movie_average_rating(movie_data)
             )
 
         achievements = review.user.achievements
@@ -104,7 +107,8 @@ class ReviewService:
                 writers=movie_data.writers,
                 plot=movie_data.plot,
                 logo_url=movie_data.logo_url,
-                user_rating=None
+                user_rating=None,
+                flixy_rating = utils.get_movie_average_rating(movie_data)
             ),
             average_rating=top_movie["average_rating"],
             total_ratings=len(top_movie["ratings"])
@@ -166,6 +170,14 @@ class ReviewService:
                 if review_dto.text:
                     existing_review.text = review_dto.text
                 if review_dto.rating:
+
+                    if existing_review.rating:
+                        existing_review.movie.flixy_ratings_sum += (-1 * existing_review.rating)
+                    else:
+                        existing_review.movie.flixy_ratings_total += 1
+
+                    existing_review.movie.flixy_ratings_sum += review_dto.rating
+
                     existing_review.rating = review_dto.rating
                 if review_dto.watch_date:
                     existing_review.watch_date = review_dto.watch_date
@@ -182,6 +194,13 @@ class ReviewService:
                     text=review_dto.text,
                     watch_date=review_dto.watch_date if review_dto.watch_date else curent_date,
                 )
+
+                movie = db.find_by(Movie, "id", review_dto.movie_id)
+
+                if review_dto.rating:
+                    movie.flixy_ratings_sum += review_dto.rating
+                    movie.flixy_ratings_total += 1
+                    db.add(movie)
 
                 db.save(new_review)
                 review = new_review

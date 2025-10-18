@@ -69,6 +69,21 @@ export default function MovieHeaderData({ movie, showPlot = false }: Props) {
         <span className="text-lg">
           {getDurationFromMovie(String(movie.duration))}
         </span>
+        {Number(movie.flixy_rating) > 0 && (
+          <div className="flex items-center gap-4">
+            <Separator orientation="vertical" className="h-6 bg-[#202135]" />
+            <div className="flex items-center gap-1">
+              <Star className="w-5 h-5 fill-[#c27aff] text-[#c27aff]" />
+              <span className="text-lg font-semibold">
+                {movie.flixy_rating}
+              </span>
+              <span className="text-sm">/5</span>{" "}
+              <Badge className="ml-2 bg-purple-400 text-black font-bold rounded-sm px-1.5 py-0.5">
+                Flixy
+              </Badge>
+            </div>
+          </div>
+        )}
         <Separator orientation="vertical" className="h-6 bg-[#202135]" />
         <div className="flex items-center gap-1">
           <Star className="w-5 h-5 fill-[#FFD700] text-[#FFD700]" />

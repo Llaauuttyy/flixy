@@ -31,6 +31,8 @@ CREATE TABLE movies (
   logo_url varchar(512) NOT NULL,
   youtube_trailer_id varchar(45) DEFAULT NULL,
   is_trailer_reliable tinyint DEFAULT NULL,
+  flixy_ratings_sum int NOT NULL DEFAULT 0,
+  flixy_ratings_total int NOT NULL DEFAULT 0,
   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)

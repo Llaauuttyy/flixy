@@ -3,26 +3,41 @@ from app.dto.movie import MovieGetResponse
 from app.model.review import Review
 from app.dto.feed import HomeFeed
 from app.model.movie import Movie
-from app.dto.review import ReviewDTO, ReviewGetSingularDTO
+from app.dto.review import ReviewGetSingularDTO
 from app.db.database import Database
-from sqlalchemy.orm import selectinload
+from app import utils
+from sqlalchemy.orm import selectinload, with_loader_criteria
+from sqlalchemy import case
 from typing import List, Optional, Tuple
 from datetime import datetime as datetime, timedelta
 import random
 
 
 MAX_RESULTS = 10
+MAX_REVIEWS_RESULTS = 100
 MAX_RESULTS_BEST_RATED = 20
 
 GENRES = ["Action", "Drama", "Comedy", "Sci-Fi", "Horror", "Romance"]
 
 
 class FeedService:
-    def _get_top_rated_movies(self, db: Database) -> Tuple[Optional[MovieGetResponse], List[MovieGetResponse]]:
+    def _get_top_rated_movies(self, db: Database, user_id: int) -> Tuple[Optional[MovieGetResponse], List[MovieGetResponse]]:
+        avg_expr = case(
+            (Movie.flixy_ratings_total > 0, Movie.flixy_ratings_sum / Movie.flixy_ratings_total),
+            else_=0
+        )
+        
         featured_movies = db.find_all_by_multiple(
             model=Movie,
             conditions=None,
-            order_by={"way": "desc", "column": "imdb_rating"},
+            options=[
+                selectinload(Movie.reviews), 
+                with_loader_criteria(
+                    Review,
+                    Review.user_id == user_id,
+                )
+            ],
+            order_by={"way": "desc", "column": avg_expr},
             limit=MAX_RESULTS_BEST_RATED
         )
 
@@ -48,7 +63,8 @@ class FeedService:
             plot=featured_movie.plot,
             logo_url=featured_movie.logo_url,
             youtube_trailer_id=featured_movie.youtube_trailer_id,
-            is_trailer_reliable=featured_movie.is_trailer_reliable
+            is_trailer_reliable=featured_movie.is_trailer_reliable,
+            flixy_rating = utils.get_movie_average_rating(featured_movie)
         ) if featured_movie else None, [
             MovieGetResponse(
                 id=movie.id,
@@ -64,23 +80,38 @@ class FeedService:
                 plot=movie.plot,
                 logo_url=movie.logo_url,
                 youtube_trailer_id=movie.youtube_trailer_id,
-                is_trailer_reliable=movie.is_trailer_reliable
+                is_trailer_reliable=movie.is_trailer_reliable,
+                user_rating=movie.reviews[0].rating if movie.reviews else None,
+                flixy_rating = utils.get_movie_average_rating(movie)
             ) for movie in movies if movie != featured_movie
         ]
     
-    def _get_trending_now_movies(self, db: Database) -> List[MovieGetResponse]:
+    def _get_trending_now_movies(self, db: Database, user_id: int) -> List[MovieGetResponse]:
         one_month_ago = datetime.now() - timedelta(weeks=4)
 
         trending_movies = db.find_all_by_multiple(
             model=Review,
             conditions=db.build_condition([Review.watch_date >= one_month_ago]),
             order_by={"way": "desc", "column": "watch_date"},
-            limit=MAX_RESULTS,
+            limit=MAX_REVIEWS_RESULTS,
             options=[selectinload(Review.movie)]
         )
 
-        movies = [review.movie for review in trending_movies if review.movie]
-        movies = sorted(movies, key=lambda movie: sum(1 for r in trending_movies if r.movie_id == movie.id), reverse=True)[:MAX_RESULTS]
+        review_counts = {}
+        review_and_movies = [r for r in trending_movies if r.movie]
+        for r in review_and_movies:
+            if r.movie:
+                review_counts[r.movie.id] = review_counts.get(r.movie.id, 0) + 1
+
+        movies = list({m.id: m for m in (r.movie for r in review_and_movies if r.movie)}.values())
+        movies = sorted(movies, key=lambda m: review_counts.get(m.id, 0), reverse=True)[:MAX_RESULTS]
+
+        movie_ids = [m.id for m in movies]
+        user_reviews = db.db_session.query(Review)\
+            .filter(Review.movie_id.in_(movie_ids), Review.user_id == user_id)\
+            .all() if movie_ids else []
+
+        user_reviews_by_movie = {r.movie_id: r for r in user_reviews}
 
         return [
             MovieGetResponse(
@@ -97,7 +128,9 @@ class FeedService:
                 plot=movie.plot,
                 logo_url=movie.logo_url,
                 youtube_trailer_id=movie.youtube_trailer_id,
-                is_trailer_reliable=movie.is_trailer_reliable
+                is_trailer_reliable=movie.is_trailer_reliable,
+                user_rating=user_reviews_by_movie[movie.id].rating if movie.id in user_reviews_by_movie else None,
+                flixy_rating = utils.get_movie_average_rating(movie)
             ) for movie in movies
         ]
     
@@ -138,7 +171,9 @@ class FeedService:
                     plot=review.movie.plot,
                     logo_url=review.movie.logo_url,
                     youtube_trailer_id=review.movie.youtube_trailer_id,
-                    is_trailer_reliable=review.movie.is_trailer_reliable
+                    is_trailer_reliable=review.movie.is_trailer_reliable,
+                    user_rating=review.rating,
+                    flixy_rating = utils.get_movie_average_rating(review.movie)
                 ) if review.movie else None
             ) for review in last_watched_reviews
         ]
@@ -179,7 +214,8 @@ class FeedService:
                     plot=review.movie.plot,
                     logo_url=review.movie.logo_url,
                     youtube_trailer_id=review.movie.youtube_trailer_id,
-                    is_trailer_reliable=review.movie.is_trailer_reliable
+                    is_trailer_reliable=review.movie.is_trailer_reliable,
+                    flixy_rating = utils.get_movie_average_rating(review.movie)
                 ) if review.movie else None
             ) for review in recent_reviews
         ]
@@ -203,11 +239,11 @@ class FeedService:
         return genre_count
 
     def get_home_feed(self, db: Database, user_id: int) -> HomeFeed:
-        featured_movie, top_rated_movies = self._get_top_rated_movies(db)
+        featured_movie, top_rated_movies = self._get_top_rated_movies(db, user_id)
         
         return HomeFeed(
             featured_movie=featured_movie,
-            trending_now_movies=self._get_trending_now_movies(db),
+            trending_now_movies=self._get_trending_now_movies(db, user_id),
             top_rated_movies=top_rated_movies,
             last_watched_movies=self._get_last_watched_movies(db, user_id),
             recent_reviews=self._get_recent_reviews(db),
