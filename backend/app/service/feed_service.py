@@ -3,10 +3,11 @@ from app.dto.movie import MovieGetResponse
 from app.model.review import Review
 from app.dto.feed import HomeFeed
 from app.model.movie import Movie
-from app.dto.review import ReviewDTO, ReviewGetSingularDTO
+from app.dto.review import ReviewGetSingularDTO
 from app.db.database import Database
 from app import utils
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, with_loader_criteria
+from sqlalchemy import case
 from typing import List, Optional, Tuple
 from datetime import datetime as datetime, timedelta
 import random
@@ -20,11 +21,23 @@ GENRES = ["Action", "Drama", "Comedy", "Sci-Fi", "Horror", "Romance"]
 
 
 class FeedService:
-    def _get_top_rated_movies(self, db: Database) -> Tuple[Optional[MovieGetResponse], List[MovieGetResponse]]:
+    def _get_top_rated_movies(self, db: Database, user_id: int) -> Tuple[Optional[MovieGetResponse], List[MovieGetResponse]]:
+        avg_expr = case(
+            (Movie.flixy_ratings_total > 0, Movie.flixy_ratings_sum / Movie.flixy_ratings_total),
+            else_=0
+        )
+        
         featured_movies = db.find_all_by_multiple(
             model=Movie,
             conditions=None,
-            order_by={"way": "desc", "column": "imdb_rating"},
+            options=[
+                selectinload(Movie.reviews), 
+                with_loader_criteria(
+                    Review,
+                    Review.user_id == user_id,
+                )
+            ],
+            order_by={"way": "desc", "column": avg_expr},
             limit=MAX_RESULTS_BEST_RATED
         )
 
@@ -51,7 +64,7 @@ class FeedService:
             logo_url=featured_movie.logo_url,
             youtube_trailer_id=featured_movie.youtube_trailer_id,
             is_trailer_reliable=featured_movie.is_trailer_reliable,
-            flixy_rating = utils.get_movie_average_rating(movie)
+            flixy_rating = utils.get_movie_average_rating(featured_movie)
         ) if featured_movie else None, [
             MovieGetResponse(
                 id=movie.id,
@@ -68,6 +81,7 @@ class FeedService:
                 logo_url=movie.logo_url,
                 youtube_trailer_id=movie.youtube_trailer_id,
                 is_trailer_reliable=movie.is_trailer_reliable,
+                user_rating=movie.reviews[0].rating if movie.reviews else None,
                 flixy_rating = utils.get_movie_average_rating(movie)
             ) for movie in movies if movie != featured_movie
         ]
@@ -225,7 +239,7 @@ class FeedService:
         return genre_count
 
     def get_home_feed(self, db: Database, user_id: int) -> HomeFeed:
-        featured_movie, top_rated_movies = self._get_top_rated_movies(db)
+        featured_movie, top_rated_movies = self._get_top_rated_movies(db, user_id)
         
         return HomeFeed(
             featured_movie=featured_movie,

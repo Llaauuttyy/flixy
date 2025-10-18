@@ -23,12 +23,14 @@ export function TopRatedMovies({ movies, accessToken }: TopRatedMoviesProps) {
           </div>
 
           <div className="pt-2 flex flex-col items-center justify-center gap-2 w-full max-w-[220px]">
-            <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 fill-[#FFD700] text-[#FFD700]" />
-              <span className="text-lg font-semibold">{movie.imdb_rating}</span>
-              <span className="text-sm">/10</span>
-              <Badge className="bg-yellow-400 text-black font-bold rounded-sm px-1.5 py-0.5">
-                IMDb
+            <div className="flex items-center gap-1">
+              <Star className="w-5 h-5 fill-[#c27aff] text-[#c27aff]" />
+              <span className="text-lg font-semibold">
+                {movie.flixy_rating}
+              </span>
+              <span className="text-sm">/5</span>{" "}
+              <Badge className="ml-2 bg-purple-400 text-black font-bold rounded-sm px-1.5 py-0.5">
+                Flixy
               </Badge>
             </div>
           </div>
