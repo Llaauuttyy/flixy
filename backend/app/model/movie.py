@@ -20,8 +20,8 @@ class Movie(SQLModel, table=True):
     logo_url: str
     youtube_trailer_id: Optional[str] = None
     is_trailer_reliable: Optional[bool] = None
-    flixy_ratings_sum: int
-    flixy_ratings_total: int
+    flixy_ratings_sum: int = 0
+    flixy_ratings_total: int = 0
     created_at: datetime
     updated_at: datetime
 
