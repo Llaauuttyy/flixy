@@ -149,7 +149,7 @@ CREATE TABLE user_achievements (
   CONSTRAINT user_achievements_ibfk_2 FOREIGN KEY (achievement_id) REFERENCES achievements (id) ON DELETE CASCADE
 )
 
-CREATE TABLE review_comments (
+CREATE TABLE comments (
   id int NOT NULL AUTO_INCREMENT,
   review_id int NOT NULL,
   user_id int NOT NULL,
