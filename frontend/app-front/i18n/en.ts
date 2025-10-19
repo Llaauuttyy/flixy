@@ -148,6 +148,7 @@ export const enTranslation = {
   review_card: {
     comment_button: "Comment",
     no_reviews: "No reviews so far. Be the first!",
+    view_details: "View details",
   },
   review_input: {
     have_watched: "Have you watched",
@@ -161,6 +162,18 @@ export const enTranslation = {
     published: "Published",
     verified: "Verified review",
     visible: "Visible to the community",
+  },
+  comment: {
+    input: {
+      placeholder: "Write a comment...",
+      cancel: "Cancel",
+      submit: "Comment",
+    },
+    list: {
+      hide_comments: "Hide comments",
+      show_comments: "Show comments",
+      view_all_comments: "Show more",
+    },
   },
   settings: {
     title: "Settings",

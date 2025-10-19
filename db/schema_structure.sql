@@ -148,3 +148,26 @@ CREATE TABLE user_achievements (
   CONSTRAINT user_achievements_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT user_achievements_ibfk_2 FOREIGN KEY (achievement_id) REFERENCES achievements (id) ON DELETE CASCADE
 )
+
+CREATE TABLE review_comments (
+  id int NOT NULL AUTO_INCREMENT,
+  review_id int NOT NULL,
+  user_id int NOT NULL,
+  text varchar(1024) NOT NULL,
+  likes int DEFAULT 0,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT review_comments_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT review_comments_ibfk_2 FOREIGN KEY (review_id) REFERENCES reviews (id) ON DELETE CASCADE
+);
+
+CREATE TABLE comment_likes (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  comment_id int NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY user_id (user_id, comment_id),
+  CONSTRAINT comment_likes_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT comment_likes_ibfk_2 FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE
+);

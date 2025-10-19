@@ -18,6 +18,10 @@ UNDELETABLE_REVIEW_ERROR = "Cannot delete that Review."
 FUTURE_TRAVELER = "Date cannot be in the future."
 INSULTING_REVIEW = "Your review contains insulting content. Try to express yourself and be nice at the same time. It is not that hard!"
 
+# Comment
+INSULTING_COMMENT = "Your comment contains insulting content. Try to express yourself and be nice at the same time. It is not that hard!"
+COMMENT_NOT_FOUND = "Comment not found."
+
 # WatchList
 WATCHLIST_ALREADY_EXISTS = "Watchlist with that name already exists."
 WATCHLIST_NOT_FOUND = "Watchlist not found."

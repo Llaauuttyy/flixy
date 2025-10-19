@@ -16,6 +16,8 @@ class User(SQLModel, table=True):
     about_me: str = Field(default="")
 
     reviews: List["Review"] = Relationship(back_populates="user")
+    comments: List["Comment"] = Relationship(back_populates="user")
+    comment_likes: List["CommentLike"] = Relationship(back_populates="user")
     watchlists: List["WatchList"] = Relationship(back_populates="user")
     watchlist_movies: List["WatchListMovie"] = Relationship(back_populates="user")
     review_likes: List["ReviewLike"] = Relationship(back_populates="user")

@@ -1,6 +1,6 @@
 import { Loader2 } from "lucide-react";
-import { Button } from "./button";
-import { Label } from "./label";
+import { Button } from "../button";
+import { Label } from "../label";
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,7 @@ import { handleWatchListCreation } from "services/api/flixy/client/watchlists";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { WatchListCreate } from "services/api/flixy/types/watchlist";
-import { MaxLengthInput } from "./max-length-input";
+import { MaxLengthInput } from "../max-length-input";
 import WatchListCreatorMovies from "./watchlist-creator-movies";
 
 interface Movie {

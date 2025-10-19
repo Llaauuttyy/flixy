@@ -126,3 +126,27 @@ export async function getTopMovies(request: Request) {
 
   return response_json;
 }
+
+export async function getReviewData(
+  review_id: string | undefined,
+  request: Request
+) {
+  const token = await getAccessToken(request);
+
+  const response = await fetch(
+    process.env.VITE_API_URL + `/review/${review_id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}

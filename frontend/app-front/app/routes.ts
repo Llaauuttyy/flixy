@@ -22,6 +22,7 @@ export default [
     route("social", "routes/social.tsx"),
 
     route("reviews", "routes/reviews.tsx"),
+    route("reviews/:reviewId", "routes/review-detail.tsx"),
 
     route("recommendations", "routes/recommendations.tsx"),
     route("settings", "routes/settings.tsx"),

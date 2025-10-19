@@ -20,3 +20,4 @@ class Review(SQLModel, table=True):
     user: Optional["User"] = Relationship(back_populates="reviews")
     movie: Optional["Movie"] = Relationship(back_populates="reviews")
     review_likes: list["ReviewLike"] = Relationship(back_populates="review")
+    comments: list["Comment"] = Relationship(back_populates="review")

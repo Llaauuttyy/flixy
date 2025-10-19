@@ -9,8 +9,8 @@ import type { Route } from "./+types/movies";
 
 import { Button } from "components/ui/button";
 import { Pagination } from "components/ui/pagination";
-import WatchList from "components/ui/watchlist";
-import WatchListCreator from "components/ui/watchlist-creator";
+import WatchList from "components/ui/watchlist/watchlist";
+import WatchListCreator from "components/ui/watchlist/watchlist-creator";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import { useTranslation } from "react-i18next";

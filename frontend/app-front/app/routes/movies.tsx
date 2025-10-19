@@ -188,7 +188,9 @@ export default function MoviesPage() {
                 itemsPage={moviesData.movies}
                 onPageChange={(page: number) => {
                   fetcher.load(
-                    `/movies?page=${page}&order_column=${orderColumn}&order_way=${orderWay}&${getGenresParams()}`
+                    `/movies?page=${page}&order_column=${orderColumn}&order_way=${orderWay}&${getGenresParams(
+                      selectedGenres
+                    )}`
                   );
                 }}
               >
