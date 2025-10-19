@@ -12,14 +12,23 @@ import type {
   UserDataChange,
   UserDataGet,
 } from "services/api/flixy/types/user";
+import { MaxLengthInput } from "./ui/max-length-input";
 
 function UserDataForm({ userData }: { userData: UserDataGet }) {
+  console.log("HOLA");
+  console.log(userData);
+
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
   const { t } = useTranslation();
 
   const [currentUserDataReactive, setCurrentUserData] =
     useState<UserDataChange>(userData);
+
+  const [aboutMeLimitReached, setAboutMeLimitReached] = useState(false);
+  const [aboutMe, setAboutMe] = useState(
+    currentUserDataReactive?.about_me ?? null
+  );
 
   const nameRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
@@ -38,11 +47,16 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
     const name = nameRef.current?.value;
     const username = usernameRef.current?.value;
     const email = emailRef.current?.value;
+    const about_me = aboutMe;
 
-    const updates: { [key: string]: string | undefined } = {
+    console.log("AVER");
+    console.log(about_me);
+
+    const updates: { [key: string]: string | undefined | null } = {
       name,
       username,
       email,
+      about_me,
     };
     const dataToUpdate: UserDataChange = {};
 
@@ -51,6 +65,8 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
         dataToUpdate[key] = updates[key];
       }
     }
+
+    console.log(dataToUpdate);
 
     if (Object.keys(dataToUpdate).length === 0) {
       console.log("No changes detected, not calling API.");
@@ -142,8 +158,28 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
             />
           </div>
 
+          <div className="space-y-2">
+            <div>
+              <Label htmlFor="email" className="text-foreground font-bold">
+                {t("settings.general.about_me")}
+              </Label>
+            </div>
+            <MaxLengthInput
+              id="name"
+              name="name"
+              value={aboutMe || ""}
+              placeholder={t("settings.general.about_me_empty")}
+              length={500}
+              onChange={(value) => setAboutMe(value)}
+              onLimitReached={(aboutMeLimit) =>
+                setAboutMeLimitReached(aboutMeLimit)
+              }
+              className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
+            />
+          </div>
+
           <Button
-            disabled={pending}
+            disabled={pending || aboutMeLimitReached}
             type="submit"
             className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
           >

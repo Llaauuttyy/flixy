@@ -27,11 +27,15 @@ class UserService:
             id=user.id,
             name=user.name,
             username=user.username,
-            email=user.email
+            email=user.email,
+            about_me=user.about_me,
+            created_at=user.created_at
         )
     
     def update_user_data(self, user_dto: UserUpdateDTO, user_id: int, db: Database) -> UserDTO:
         user_to_update = db.find_by(User, "id", user_id)
+
+        print(user_dto)
 
         if user_to_update is None:
             raise Exception(USER_NOT_FOUND)
@@ -47,7 +51,9 @@ class UserService:
             id=user_to_update.id,
             name=user_to_update.name,
             username=user_to_update.username,
-            email=user_to_update.email
+            email=user_to_update.email,
+            about_me=user_to_update.about_me,
+            created_at=user_to_update.created_at
         )
     
     def get_user_insights(self, db: Database, user_id: int) -> InsightDTO:
@@ -109,6 +115,7 @@ class UserService:
             name=rel.name,
             username=rel.username,
             email=rel.email,
+            created_at=rel.created_at,
             followers=rel.followers,
             following=rel.following,
             followed_by_user=db.exists_by_multiple(UserRelationship, follower_id=user_id, followed_id=rel.id)
