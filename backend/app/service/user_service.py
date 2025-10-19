@@ -19,7 +19,7 @@ import json
 class UserService:
     def get_all_users(self, db: Database) -> list[UserDTO]:
         users = db.find_all(User)
-        return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email) for user in users]
+        return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email, created_at=user.created_at) for user in users]
     
     def get_user_by_id(self, db: Database, user_id: int) -> UserDTO:
         user = db.find_by(User, "id", user_id)
@@ -28,7 +28,7 @@ class UserService:
             name=user.name,
             username=user.username,
             email=user.email,
-            about_me=user.about_me,
+            about_me=user.about_me if user.about_me else "",
             created_at=user.created_at
         )
     
@@ -77,6 +77,8 @@ class UserService:
                 name=user.name,
                 username=user.username,
                 email=user.email,
+                about_me=user.about_me if user.about_me else "",
+                created_at=user.created_at,
                 followers=user.followers,
                 followed_by_user=db.exists_by_multiple(UserRelationship, follower_id=user_id, followed_id=user.id)
             ) for user in users]

@@ -8,7 +8,7 @@ class UserDTO(BaseModel):
     name: str
     username: str
     email: EmailStr
-    about_me: str = None
+    about_me: str = ""
     created_at: datetime
     followers: int = 0
     following: int = 0
