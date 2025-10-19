@@ -19,3 +19,4 @@ class MovieGetResponse(MovieDTO):
     youtube_trailer_id: Optional[str] = None
     is_trailer_reliable: Optional[bool] = None
     user_rating: Optional[int] = None
+    flixy_rating: float = None

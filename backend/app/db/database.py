@@ -74,10 +74,15 @@ class Database:
             statement = statement.options(*options)
 
         if order_by is not None:
+            column_expr = order_by["column"]
+        
+            if isinstance(column_expr, str):
+                column_expr = getattr(model, column_expr)
+
             if order_by["way"] == "desc":
-                statement = statement.order_by(desc(getattr(model, order_by["column"])))
+                statement = statement.order_by(desc(column_expr))
             else:
-                statement = statement.order_by(getattr(model, order_by["column"]))
+                statement = statement.order_by(column_expr)
 
         if limit is not None:
             statement = statement.limit(limit)

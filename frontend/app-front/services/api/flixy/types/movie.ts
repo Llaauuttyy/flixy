@@ -16,6 +16,7 @@ export interface MovieDataGet {
   logo_url: string | undefined;
   youtube_trailer_id?: string | undefined;
   is_trailer_reliable?: boolean | undefined;
+  flixy_rating: number | undefined;
   user_rating?: number;
   access_token?: string | undefined;
   [key: string | number]: string | number | null | boolean | undefined;
