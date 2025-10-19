@@ -147,7 +147,7 @@ CREATE TABLE user_achievements (
   UNIQUE KEY user_id (user_id, achievement_id),
   CONSTRAINT user_achievements_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT user_achievements_ibfk_2 FOREIGN KEY (achievement_id) REFERENCES achievements (id) ON DELETE CASCADE
-)
+);
 
 CREATE TABLE comments (
   id int NOT NULL AUTO_INCREMENT,
