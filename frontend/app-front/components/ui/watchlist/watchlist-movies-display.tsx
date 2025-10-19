@@ -3,8 +3,8 @@ import { Trash } from "lucide-react";
 import { Link, useFetcher } from "react-router-dom";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { Page } from "services/api/flixy/types/overall";
-import { Button } from "./button";
-import { MovieCard } from "./movie-card";
+import { Button } from "../button";
+import { MovieCard } from "../movie-card";
 
 interface Movie {
   id: number;
@@ -58,7 +58,11 @@ export default function WatchListMoviesDisplay({
       <Button
         onClick={() => handleMovieDeletion(movie)}
         className={`m-10 mt-2 mb-2 rounded-lg border shadow-sm border-slate-700 hover:bg-slate-700 disabled:opacity-50
-        ${isActive ? "bg-red-700 text-white" : "bg-slate-800/50 text-card-foreground"}
+        ${
+          isActive
+            ? "bg-red-700 text-white"
+            : "bg-slate-800/50 text-card-foreground"
+        }
       `}
       >
         <Trash size={30} color={isActive ? "white" : "red"} />

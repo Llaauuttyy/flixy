@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 
-import { ReviewCard } from "../../components/ui/review-card";
-import { ReviewInput } from "../../components/ui/review-input";
+import { ReviewCard } from "../../components/ui/review/review-card";
+import { ReviewInput } from "../../components/ui/review/review-input";
 import { Separator } from "../../components/ui/separator";
 import type { Route } from "./+types/movie-detail";
 

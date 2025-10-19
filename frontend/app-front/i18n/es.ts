@@ -174,6 +174,7 @@ export const esTranslation = {
     list: {
       hide_comments: "Ocultar comentarios",
       show_comments: "Mostrar comentarios",
+      view_all_comments: "Mostrar más",
     },
   },
   settings: {

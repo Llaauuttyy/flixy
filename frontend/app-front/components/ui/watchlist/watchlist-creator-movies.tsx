@@ -1,8 +1,7 @@
 import { useState } from "react";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { Page } from "services/api/flixy/types/overall";
-import type { WatchListGet } from "services/api/flixy/types/watchlist";
-import { AddMovieWatchList } from "./add-movie-watchlist";
+import { AddMovieWatchList } from "../add-movie-watchlist";
 import WatchListMoviesDisplay from "./watchlist-movies-display";
 
 interface Movie {
@@ -21,7 +20,7 @@ interface Movie {
   user_rating: number | null;
 }
 
-interface WatchList {
+interface WatchListFace {
   id?: number;
   name?: string;
   description?: string;
@@ -31,43 +30,26 @@ interface WatchList {
   updated_at?: string;
 }
 
-export default function WatchListMovies({
+export default function WatchListCreatorMovies({
   showOnly,
-  isSeeWatchList = false,
-  isEditWatchList = false,
-  watchList,
   accessToken,
-  onMovieDeletion,
-  highlightedMovies = [],
+  watchlist,
+  onAddMovie,
 }: {
   showOnly?: boolean;
-  isSeeWatchList?: boolean;
-  isEditWatchList?: boolean;
-  watchList: WatchList | WatchListGet;
   accessToken: string;
-  onMovieDeletion?: (movie: MovieDataGet) => void;
-  highlightedMovies?: number[];
+  watchlist: WatchListFace;
+  onAddMovie: (movie: MovieDataGet) => void;
 }) {
   const [watchListMovies, setWatchListMovies] = useState<Page<MovieDataGet>>(
-    watchList.movies?.items
-      ? watchList.movies
-      : { items: [], total: 0, page: 1, size: 0, pages: 0 }
+    watchlist.movies || []
   );
 
   const [showOnlyError, setShowOnlyError] = useState<String>("");
 
-  function handleMovieDeletion(movie: MovieDataGet) {
-    if (onMovieDeletion) {
-      console.log("Edit: Deleting movie:", movie);
-      onMovieDeletion(movie);
-    }
-  }
-
   function handleMovieAddition(movie: MovieDataGet) {
     if (showOnly) {
-      const movieExists = watchListMovies.items.some(
-        (m: MovieDataGet) => m.id === movie.id
-      );
+      const movieExists = watchListMovies.items.some((m) => m.id === movie.id);
       if (movieExists) {
         setShowOnlyError("Movie already exists in the watchlist.");
       } else {
@@ -77,6 +59,7 @@ export default function WatchListMovies({
           items: [...prevMovies.items, movie],
           total: prevMovies.total + 1,
         }));
+        onAddMovie(movie);
       }
     } else {
       setWatchListMovies((prevMovies) => ({
@@ -90,28 +73,18 @@ export default function WatchListMovies({
   return (
     <div>
       <div className="flex items-center">
-        {watchListMovies.total === 0 && !isSeeWatchList && (
-          <div className="italic text-gray-300 mb-4 text-sm">
-            No movies so far.
-          </div>
-        )}
         <WatchListMoviesDisplay
           accessToken={accessToken}
-          watchlist_id={watchList.id ? watchList.id : 0}
-          isSeeWatchList={isSeeWatchList}
+          isCreateWatchList={true}
+          watchlist_id={watchlist.id ? watchlist.id : 0}
           movies={watchListMovies}
-          isEditWatchList={isEditWatchList}
-          onMovieDeletion={handleMovieDeletion}
-          highlightedMovies={highlightedMovies}
         />
-        {!isSeeWatchList && (
-          <AddMovieWatchList
-            showOnly={showOnly}
-            accessToken={String(accessToken)}
-            watchListId={watchList.id ? watchList.id : 0}
-            onMovieSelect={handleMovieAddition}
-          />
-        )}
+        <AddMovieWatchList
+          showOnly={showOnly}
+          accessToken={String(accessToken)}
+          watchListId={watchlist.id ? watchlist.id : 0}
+          onMovieSelect={handleMovieAddition}
+        />
       </div>
       {showOnly && showOnlyError && (
         <p className="text-red-500 text-sm mt-2">{showOnlyError}</p>

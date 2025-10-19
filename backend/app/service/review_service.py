@@ -1,6 +1,7 @@
 from app.model.user import User
 from app.model.review_like import ReviewLike
 from app.model.user_achievement import UserAchievement
+from app.model.comment import Comment
 from app.dto.achievement import AchievementDTO
 from app.dto.movie import MovieGetResponse
 from app.model.user_relationship import UserRelationship
@@ -96,7 +97,7 @@ class ReviewService:
                 liked_by_user=any(cl.user_id == user_id for cl in comment.comment_likes),
                 user_name=comment.user.name,
                 created_at=comment.created_at
-            ) for comment in review.comments] if review.comments else []
+            ) for comment in review.comments[:4]] if review.comments else []
         )
     
     def set_up_top_movie_rating_dto(self, top_movie: dict) -> TopMovieRatingDTO:
@@ -331,5 +332,16 @@ class ReviewService:
             top_movies = sorted(movie_ratings.values(), key=lambda x: x["average_rating"], reverse=True)[:10]
 
             return [self.set_up_top_movie_rating_dto(top_movie) for top_movie in top_movies]
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        
+    def get_review(self, db: Database, id: int, user_id: int) -> ReviewGetSingularAchievementsDTO:
+        try:
+            review = db.find_by(Review, "id", id, [selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement), selectinload(Review.movie)])
+
+            if not review:
+                raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
+
+            return self.set_up_review_singular_achievements_dto(review, user_id, db)
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))

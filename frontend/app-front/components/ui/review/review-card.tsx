@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import {
+  ExternalLink,
   MessageCircle,
   MonitorPlay,
   Pencil,
@@ -12,7 +13,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
-import { Card, CardContent } from "./card";
+import { Card, CardContent } from "../card";
 
 import "dayjs/locale/en";
 import "dayjs/locale/es";
@@ -21,9 +22,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { handleLikeReview } from "services/api/flixy/client/reviews";
 import type { CommentDataGet } from "services/api/flixy/types/comment";
-import { CommentInput } from "./comment-input";
-import { CommentList } from "./comment-list";
-import { SingularBadge } from "./insights/singular-badge";
+import { CommentInput } from "../comment/comment-input";
+import { CommentList } from "../comment/comment-list";
+import { SingularBadge } from "../insights/singular-badge";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -42,7 +43,6 @@ export function ReviewCard({
   const { t } = useTranslation();
   const [likeDisabled, setLikeDisabled] = useState(false);
   const [showCommentInput, setShowCommentInput] = useState(false);
-  const [commentText, setCommentText] = useState("");
   const [currentReview, setCurrentReview] = useState(userReview);
 
   dayjs.locale(i18n.language || "en");
@@ -125,39 +125,47 @@ export function ReviewCard({
                 ))}
             </div>
             <p className="text-slate-300 mb-3">{currentReview.text}</p>
-            <div className="flex items-center gap-4">
-              <button
-                disabled={likeDisabled}
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
-                onClick={handleLike}
-              >
-                <ThumbsUp
-                  className="w-4 h-4"
-                  fill={
-                    currentReview.liked_by_user
-                      ? "var(--color-purple-400)"
-                      : "none"
-                  }
-                />
-                <span
-                  className={`text-sm ${
-                    currentReview.liked_by_user
-                      ? "text-purple-400 font-bold"
-                      : ""
-                  }`}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <button
+                  disabled={likeDisabled}
+                  className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+                  onClick={handleLike}
                 >
-                  {currentReview.likes}
-                </span>
-              </button>
-              <button
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
-                onClick={() => setShowCommentInput(true)}
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span className="text-sm">
-                  {t("review_card.comment_button")}
-                </span>
-              </button>
+                  <ThumbsUp
+                    className="w-4 h-4"
+                    fill={
+                      currentReview.liked_by_user
+                        ? "var(--color-purple-400)"
+                        : "none"
+                    }
+                  />
+                  <span
+                    className={`text-sm ${
+                      currentReview.liked_by_user
+                        ? "text-purple-400 font-bold"
+                        : ""
+                    }`}
+                  >
+                    {currentReview.likes}
+                  </span>
+                </button>
+                <button
+                  className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+                  onClick={() => setShowCommentInput(true)}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="text-sm">
+                    {t("review_card.comment_button")}
+                  </span>
+                </button>
+              </div>
+              <Link to={`/reviews/${currentReview.id}`} state={currentReview}>
+                <div className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+                  <ExternalLink className="h-4 w-4" />
+                  {t("review_card.view_details")}
+                </div>
+              </Link>
             </div>
           </div>
         </div>
@@ -179,6 +187,7 @@ export function ReviewCard({
       <CommentList
         accessToken={accessToken}
         comments={currentReview.comments}
+        reviewId={currentReview.id}
       />
     </Card>
   );

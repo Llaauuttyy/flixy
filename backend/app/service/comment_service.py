@@ -82,3 +82,21 @@ class CommentService:
         except Exception as e:
             db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
+
+    def get_comment(self, db: Database, review_id: int, user_id: int) -> list[CommentGetDTO]:
+        try:
+            comments = db.find_all(Comment, db.build_condition([Comment.review_id == review_id]))
+
+            return [CommentGetDTO(
+                id=comment.id,
+                review_id=comment.review_id,
+                text=comment.text,
+                likes=comment.likes,
+                user_id=comment.user_id,
+                user_name=getattr(comment.user, "name", None) if comment.user else None,
+                liked_by_user=any(cl.user_id == user_id for cl in comment.comment_likes),
+                created_at=comment.created_at
+            ) for comment in comments]
+
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))

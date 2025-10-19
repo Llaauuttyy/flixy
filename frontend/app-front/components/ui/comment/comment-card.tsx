@@ -5,8 +5,8 @@ import { Pencil, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 import { handleLikeComment } from "services/api/flixy/client/comment";
 import type { CommentDataGet } from "services/api/flixy/types/comment";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
-import { Card, CardContent } from "./card";
+import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
+import { Card, CardContent } from "../card";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);

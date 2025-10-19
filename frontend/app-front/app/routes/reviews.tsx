@@ -1,6 +1,6 @@
 import { HeaderFull } from "components/ui/header-full";
 import { Pagination } from "components/ui/pagination";
-import { ReviewDetailHandler } from "components/ui/review-detail-handler";
+import { ReviewDetailHandler } from "components/ui/review/review-detail-handler";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";

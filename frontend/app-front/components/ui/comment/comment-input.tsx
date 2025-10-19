@@ -7,8 +7,8 @@ import type {
   CommentDataGet,
 } from "services/api/flixy/types/comment";
 import type { ApiResponse } from "services/api/flixy/types/overall";
-import { Button } from "./button";
-import { Textarea } from "./textarea";
+import { Button } from "../button";
+import { Textarea } from "../textarea";
 
 interface CommentInputProps {
   accessToken: string;

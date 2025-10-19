@@ -29,6 +29,8 @@ class ReviewCreationDTO(BaseModel):
 class ReviewGetSingularDTO(ReviewDTO):
     name: str
     user_name: str
+    comments: list[CommentGetDTO] = []
+    has_more_comments: bool = False
 
 class ReviewGetSingularAchievementsDTO(ReviewGetSingularDTO):
     achievements: list[AchievementDTO] = []

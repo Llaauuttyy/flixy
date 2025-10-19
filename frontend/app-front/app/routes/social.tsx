@@ -10,7 +10,7 @@ import {
 } from "components/ui/card";
 import { HeaderFull } from "components/ui/header-full";
 import { Pagination } from "components/ui/pagination";
-import { ReviewCard } from "components/ui/review-card";
+import { ReviewCard } from "components/ui/review/review-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { RatingCard } from "components/ui/social/rating-card";
 import { TopMovies, type TopMovie } from "components/ui/social/top-movies";

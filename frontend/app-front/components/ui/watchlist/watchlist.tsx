@@ -14,8 +14,8 @@ import { handleWatchListDeletion } from "services/api/flixy/client/watchlists";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { WatchListDelete } from "services/api/flixy/types/watchlist";
-import { Button } from "./button";
-import { ConfirmationBox } from "./confirmation-box";
+import { Button } from "../button";
+import { ConfirmationBox } from "../confirmation-box";
 import WatchListMovies from "./watchlist-movies";
 
 dayjs.extend(relativeTime);

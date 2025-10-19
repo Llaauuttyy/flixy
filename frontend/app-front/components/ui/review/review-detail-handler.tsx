@@ -9,9 +9,9 @@ import "dayjs/locale/es";
 import i18n from "i18n/i18n";
 import { useState } from "react";
 import type { Page } from "services/api/flixy/types/overall";
-import { Separator } from "../../components/ui/separator";
-import { MovieCard } from "./movie-card";
-import MovieHeaderData from "./movie-header-data";
+import { MovieCard } from "../movie-card";
+import MovieHeaderData from "../movie-header-data";
+import { Separator } from "../separator";
 import { ReviewInput } from "./review-input";
 
 dayjs.extend(relativeTime);
