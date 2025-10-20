@@ -45,6 +45,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       name: "your-name",
       username: "your-username",
       email: "your-email",
+      about_me: "your-about-me",
     };
 
     if (err instanceof TypeError) {

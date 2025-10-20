@@ -189,6 +189,8 @@ export const esTranslation = {
       name: "Nombre",
       username: "Nombre de usuario",
       email: "Correo electrónico",
+      about_me: "Sobre mí",
+      about_me_empty: "Completa tu biografía. Cuéntanos sobre ti.",
       updating: "Actualizando...",
       update: "Actualizar",
     },
@@ -216,6 +218,7 @@ export const esTranslation = {
     },
     subtitle: "Descubrí tus patrones y logros como cinéfilo",
     edit_profile: "Editar Perfil",
+    joined: "Se unió en",
     following: "Siguiendo",
     followers: "Seguidores",
     insights: {

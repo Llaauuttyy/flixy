@@ -186,6 +186,8 @@ export const enTranslation = {
       name: "Name",
       username: "Username",
       email: "Email",
+      about_me: "About me",
+      about_me_empty: "Fill up your about me to get people to know you!",
       updating: "Updating...",
       update: "Update",
     },
@@ -213,6 +215,7 @@ export const enTranslation = {
     },
     subtitle: "Discover your patterns and achievements as a cinephile",
     edit_profile: "Edit Profile",
+    joined: "Joined",
     following: "Following",
     followers: "Followers",
     insights: {

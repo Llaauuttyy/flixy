@@ -6,6 +6,8 @@ export interface UserDataGet {
   name: string;
   username: string;
   email: string;
+  about_me: string;
+  created_at?: string | null;
   accessToken?: string | undefined;
   [key: string]: string | null | undefined;
 }
@@ -26,6 +28,7 @@ export interface UserDataChange {
   name?: string | null;
   username?: string | null;
   email?: string | null;
+  about_me?: string | null;
   [key: string]: string | null | undefined;
 }
 

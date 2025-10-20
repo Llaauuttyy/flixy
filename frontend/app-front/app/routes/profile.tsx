@@ -11,6 +11,7 @@ import { ReviewsStats } from "components/ui/insights/reviews-stats";
 import { Pagination } from "components/ui/pagination";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { UserCard } from "components/ui/user-card";
+import i18n from "i18n/i18n";
 import { Calendar, Settings, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -19,9 +20,14 @@ import {
   getUserFollowers,
   getUserFollowing,
   getUserInsights,
+  handleUserDataGet,
 } from "services/api/flixy/server/user-data";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
-import type { UserData, UserInsights } from "services/api/flixy/types/user";
+import type {
+  UserData,
+  UserDataGet,
+  UserInsights,
+} from "services/api/flixy/types/user";
 import { getAccessToken } from "services/api/utils";
 import type { Route } from "../+types/root";
 
@@ -49,8 +55,14 @@ export async function loader({ request }: Route.LoaderArgs) {
   let apiResponse: ApiResponse = {};
   let followResults = {} as FollowResults;
   let userInsights: UserInsights = {} as UserInsights;
+  let userData: UserDataGet = {} as UserDataGet;
 
   try {
+    userData = await handleUserDataGet(request);
+
+    console.log("Got user data successfully");
+    console.log(userData);
+
     followResults.followers = await getUserFollowers(
       followersPage,
       DEFAULT_FOLLOWERS_PAGE_SIZE,
@@ -64,7 +76,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
     userInsights = await getUserInsights(request);
 
-    apiResponse.data = { followResults, userInsights };
+    apiResponse.data = { followResults, userInsights, userData };
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -84,6 +96,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function MovieInsights() {
+  const locale = i18n.language === "en" ? "en-US" : "es-ES";
   const { t } = useTranslation();
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
@@ -123,12 +136,14 @@ export default function MovieInsights() {
             <div className="flex items-start space-x-6 mb-6">
               <Avatar className="w-24 h-24">
                 <AvatarFallback className="bg-gradient-to-br from-purple-600 to-pink-600 text-white text-2xl font-bold">
-                  JD
+                  {apiResponse.data.userData.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
-                  <h1 className="text-3xl font-bold text-white">John Doe</h1>
+                  <h1 className="text-3xl font-bold text-white">
+                    {apiResponse.data.userData.name}
+                  </h1>
                   <Link to={`/settings`}>
                     <Button
                       variant="outline"
@@ -141,14 +156,20 @@ export default function MovieInsights() {
                   </Link>
                 </div>
                 <p className="text-gray-300 mb-3">
-                  Passionate cinephile and film critic. Love exploring indie
-                  films and classic cinema. Always looking for hidden gems and
-                  thought-provoking stories.
+                  {apiResponse.data.userData.about_me}
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-400">
                   <div className="flex items-center space-x-1">
                     <Calendar className="h-4 w-4" />
-                    <span>Joined March 2022</span>
+                    <span>
+                      {t("profile.joined")}{" "}
+                      {new Date(
+                        apiResponse.data.userData.created_at
+                      ).toLocaleString(locale, {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
                   </div>
                 </div>
               </div>

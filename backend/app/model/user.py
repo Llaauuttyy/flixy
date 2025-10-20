@@ -1,5 +1,6 @@
 from typing import List
 from sqlmodel import Field, SQLModel, Relationship
+from datetime import datetime as datetime
 
 from app.model.user_achievement import UserAchievement
 
@@ -14,6 +15,8 @@ class User(SQLModel, table=True):
     followers: int = Field(default=0)
     following: int = Field(default=0)
     about_me: str = Field(default="")
+
+    created_at: datetime = Field(default_factory=datetime.now)
 
     reviews: List["Review"] = Relationship(back_populates="user")
     comments: List["Comment"] = Relationship(back_populates="user")
