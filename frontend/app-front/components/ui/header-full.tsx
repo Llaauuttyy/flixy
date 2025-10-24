@@ -4,7 +4,7 @@ import { Input } from "components/ui/input";
 import { Bell, Loader2, Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLoaderData, useNavigate, useSubmit } from "react-router-dom";
+import { Link, useLoaderData, useNavigate, useSubmit } from "react-router-dom";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 
 export function HeaderFull() {
@@ -73,12 +73,14 @@ export function HeaderFull() {
           >
             <Bell className="h-5 w-5" />
           </Button>
-          <Avatar>
-            <AvatarImage src="/placeholder.svg?height=32&width=32" />
-            <AvatarFallback className="bg-gray-700 text-gray-300">
-              {user?.name[0].toUpperCase() || "JD"}
-            </AvatarFallback>
-          </Avatar>
+          <Link to="/profile">
+            <Avatar>
+              <AvatarImage src="/placeholder.svg?height=32&width=32" />
+              <AvatarFallback className="bg-gray-700 text-gray-300">
+                {user?.name[0].toUpperCase() || "JD"}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
         </div>
       </div>
     </header>
