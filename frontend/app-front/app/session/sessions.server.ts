@@ -1,4 +1,5 @@
 import { createCookieSessionStorage } from "react-router";
+import type { UserDataGet } from "services/api/flixy/types/user";
 
 type AccessTokenSessionData = {
   accessToken: string;
@@ -6,6 +7,10 @@ type AccessTokenSessionData = {
 
 type RefreshTokenSessionData = {
   refreshToken: string;
+};
+
+type UserSessionData = {
+  user: UserDataGet;
 };
 
 const accessTokenStorage = createCookieSessionStorage<AccessTokenSessionData>({
@@ -34,6 +39,18 @@ const refreshTokenStorage = createCookieSessionStorage<RefreshTokenSessionData>(
   }
 );
 
+const userDataStorage = createCookieSessionStorage<UserSessionData>({
+  cookie: {
+    name: "__user_data",
+    httpOnly: true,
+    maxAge: 60 * 60 * 6,
+    path: "/",
+    sameSite: "lax",
+    secrets: ["super_secret_secret"],
+    secure: true,
+  },
+});
+
 export const {
   getSession: getAccessSession,
   commitSession: commitAccessSession,
@@ -44,3 +61,8 @@ export const {
   commitSession: commitRefreshSession,
   destroySession: destroyRefreshSession,
 } = refreshTokenStorage;
+export const {
+  getSession: getUserSession,
+  commitSession: commitUserSession,
+  destroySession: destroyUserSession,
+} = userDataStorage;

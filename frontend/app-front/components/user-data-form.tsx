@@ -14,10 +14,12 @@ import type {
 } from "services/api/flixy/types/user";
 import { MaxLengthInput } from "./ui/max-length-input";
 
-function UserDataForm({ userData }: { userData: UserDataGet }) {
-  console.log("HOLA");
-  console.log(userData);
+interface UserDataFormProps {
+  userData: UserDataGet;
+  accessToken: string;
+}
 
+function UserDataForm({ userData, accessToken }: UserDataFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [pending, setPending] = useState(false);
   const { t } = useTranslation();
@@ -49,9 +51,6 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
     const email = emailRef.current?.value;
     const about_me = aboutMe;
 
-    console.log("AVER");
-    console.log(about_me);
-
     const updates: { [key: string]: string | undefined | null } = {
       name,
       username,
@@ -78,7 +77,7 @@ function UserDataForm({ userData }: { userData: UserDataGet }) {
     } else {
       try {
         const userDataChangeResponse: UserDataChange =
-          await handleUserDataChange(userData.accessToken, dataToUpdate);
+          await handleUserDataChange(accessToken, dataToUpdate);
         console.log("Change user data successfully");
 
         setCurrentUserData({

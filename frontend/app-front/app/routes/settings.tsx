@@ -28,39 +28,46 @@ import { Select } from "components/ui/select";
 import UserDataForm from "components/user-data-form";
 import i18n, { getLanguageIcon, getLanguageLabel } from "i18n/i18n";
 import { useTranslation } from "react-i18next";
+import type { ApiResponse } from "services/api/flixy/types/overall";
 import type { UserDataGet } from "../../services/api/flixy/types/user";
 
 export async function loader({ request }: Route.LoaderArgs) {
+  let apiResponse: ApiResponse = {};
+
   try {
     const userDataResponse: UserDataGet = await handleUserDataGet(request);
     console.log("Got user data successfully");
 
-    userDataResponse.accessToken = await getAccessToken(request);
+    apiResponse.data = { user: userDataResponse };
+    apiResponse.accessToken = await getAccessToken(request);
 
-    return userDataResponse;
+    return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /user said: ", err.message);
 
-    var userDataError: UserDataGet = {
-      name: "your-name",
-      username: "your-username",
-      email: "your-email",
-      about_me: "your-about-me",
+    apiResponse.data = {
+      user: {
+        name: "your-name",
+        username: "your-username",
+        email: "your-email",
+        about_me: "your-about-me",
+      },
     };
 
     if (err instanceof TypeError) {
-      userDataError.error =
+      apiResponse.error =
         "Service's not working properly. Please try again later.";
-      return userDataError;
+      return apiResponse;
     }
 
-    userDataError.error = err.message;
-    return userDataError;
+    apiResponse.error = err.message;
+    return apiResponse;
   }
 }
 
 export default function SettingsPage() {
-  const currentUserData: UserDataGet = useLoaderData();
+  const apiResponse: ApiResponse = useLoaderData();
+  const currentUserData: UserDataGet = apiResponse?.data?.user!;
   const { t } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || "en");
   const availableLanguages = i18n.options.resources
@@ -136,7 +143,10 @@ export default function SettingsPage() {
                                   i18n.changeLanguage(value);
                                 }}
                               />
-                              <UserDataForm userData={currentUserData} />
+                              <UserDataForm
+                                userData={currentUserData}
+                                accessToken={String(apiResponse.accessToken)}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>
@@ -205,7 +215,7 @@ export default function SettingsPage() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <PasswordForm
-                                accessToken={currentUserData.accessToken}
+                                accessToken={String(apiResponse.accessToken)}
                               />
                             </CardContent>
                           </Card>

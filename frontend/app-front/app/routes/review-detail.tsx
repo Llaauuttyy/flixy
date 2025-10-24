@@ -3,11 +3,11 @@ import { useFetcher, useLoaderData } from "react-router-dom";
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
 
-import type { Route } from "./+types/movie-detail";
+import type { Route } from "./+types/review-detail";
 
 import { useTranslation } from "react-i18next";
 
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 
 import { Avatar, AvatarFallback } from "components/ui/avatar";
@@ -75,9 +75,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     apiResponse.data = {
       review: reviewData,
       comments: commentsData,
+      user: await getCachedUserData(request),
     };
-
-    console.log("FRAN 2 ", apiResponse);
 
     return apiResponse;
   } catch (err: Error | any) {

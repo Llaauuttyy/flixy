@@ -29,7 +29,7 @@ import type {
   WatchListEdit,
   WatchListGet,
 } from "services/api/flixy/types/watchlist";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { ApiResponse } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/watchlist-detail";
 
@@ -70,7 +70,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
     apiResponse.accessToken = await getAccessToken(request);
 
-    apiResponse.data = watchlist;
+    apiResponse.data = { watchlist, user: await getCachedUserData(request) };
     return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /watchlist/:watchListId said: ", err.message);
@@ -99,7 +99,7 @@ export default function WatchListsPage() {
   const [apiEditResponse, setApiEditResponse] = useState<ApiResponse>({});
 
   const [watchlist, setWatchlist] = useState<WatchListGet>(
-    apiResponse.data || {}
+    apiResponse.data?.watchlist || {}
   );
 
   const [moviesToDelete, setMoviesToDelete] = useState<MovieDataGet[]>([]);

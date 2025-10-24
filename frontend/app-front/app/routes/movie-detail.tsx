@@ -23,7 +23,7 @@ import {
   getWatchLists,
   handleWatchListEdition,
 } from "services/api/flixy/client/watchlists";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type {
   MovieDataGet,
@@ -98,6 +98,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     let overallData: MovieOverallData = {
       movie: movieData,
       reviews: reviewsData,
+      user: await getCachedUserData(request),
     };
     apiResponse.data = overallData;
 

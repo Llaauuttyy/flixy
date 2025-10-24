@@ -10,7 +10,8 @@ import { useFetcher, useLoaderData } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/server/movies";
 import { searchUsers } from "services/api/flixy/server/user-data";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
-import { getAccessToken } from "services/api/utils";
+import type { UserDataGet } from "services/api/flixy/types/user";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "./+types/search";
 
 const DEFAULT_PAGE = 1;
@@ -21,6 +22,7 @@ interface SearchResults {
   query: string;
   movies: Page<Movie>;
   users: Page<any>;
+  user?: UserDataGet;
 }
 
 interface Movie {
@@ -82,6 +84,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       reviews: 234,
       verified: true,
     }));
+    searchResults.user = await getCachedUserData(request);
 
     apiResponse.accessToken = await getAccessToken(request);
 

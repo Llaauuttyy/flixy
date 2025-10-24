@@ -1,7 +1,7 @@
 import { getAccessToken } from "../../utils";
 
-export async function handleUserDataGet(request: Request) {
-  const token = await getAccessToken(request);
+export async function handleUserDataGet(request: Request, token?: string) {
+  token = token || (await getAccessToken(request));
 
   const response = await fetch(process.env.VITE_API_URL + "/user", {
     method: "GET",

@@ -55,13 +55,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   let apiResponse: ApiResponse = {};
   let followResults = {} as FollowResults;
   let userInsights: UserInsights = {} as UserInsights;
-  let userData: UserDataGet = {} as UserDataGet;
+  let user: UserDataGet = {} as UserDataGet;
 
   try {
-    userData = await handleUserDataGet(request);
-
-    console.log("Got user data successfully");
-    console.log(userData);
+    user = await handleUserDataGet(request);
 
     followResults.followers = await getUserFollowers(
       followersPage,
@@ -76,7 +73,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
     userInsights = await getUserInsights(request);
 
-    apiResponse.data = { followResults, userInsights, userData };
+    apiResponse.data = { followResults, userInsights, user };
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -136,13 +133,13 @@ export default function MovieInsights() {
             <div className="flex items-start space-x-6 mb-6">
               <Avatar className="w-24 h-24">
                 <AvatarFallback className="bg-gradient-to-br from-purple-600 to-pink-600 text-white text-2xl font-bold">
-                  {apiResponse.data.userData.username.slice(0, 2).toUpperCase()}
+                  {apiResponse.data.user.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <h1 className="text-3xl font-bold text-white">
-                    {apiResponse.data.userData.name}
+                    {apiResponse.data.user.name}
                   </h1>
                   <Link to={`/settings`}>
                     <Button
@@ -156,7 +153,7 @@ export default function MovieInsights() {
                   </Link>
                 </div>
                 <p className="text-gray-300 mb-3">
-                  {apiResponse.data.userData.about_me}
+                  {apiResponse.data.user.about_me}
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-400">
                   <div className="flex items-center space-x-1">
@@ -164,7 +161,7 @@ export default function MovieInsights() {
                     <span>
                       {t("profile.joined")}{" "}
                       {new Date(
-                        apiResponse.data.userData.created_at
+                        apiResponse.data.user.created_at
                       ).toLocaleString(locale, {
                         month: "long",
                         year: "numeric",
