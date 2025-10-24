@@ -1,14 +1,18 @@
+import secrets
+
 from app.model.user import User
 from app.db.database import Database
 from app.dto.user import UserDTO
 from app.dto.login import LoginResponse, RefreshTokenDTO
-from app.dto.auth import PasswordUpdateDTO
-from app.constants.message import LOGIN_CREDENTIALS_ERROR, OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR, OLD_PASSWORD_DOESNT_MATCH_ERROR, PASSWORD_VALIDATION_ERROR, USER_NOT_FOUND
+from app.dto.auth import PasswordUpdateDTO, ForgotPasswordDTO, ResetPasswordDTO
+from app.constants.message import EMAIL_NOT_SEND, LOGIN_CREDENTIALS_ERROR, NON_EXISTENT_TOKEN, OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR, OLD_PASSWORD_DOESNT_MATCH_ERROR, PASSWORD_VALIDATION_ERROR, TOKEN_HAS_EXPIRED, USER_NOT_FOUND, USER_NOT_FOUND_BY_EMAIL
 from fastapi import HTTPException
 
 from app.security.security_service import SecurityService
-
+from os import getenv
 from ..dto.register import RegisterDTO, RegisterForm
+from ..email_sender.sender import EmailSender
+from datetime import datetime, timedelta, timezone
 
 
 class AuthService:
@@ -86,4 +90,57 @@ class AuthService:
             raise Exception(PASSWORD_VALIDATION_ERROR)
 
         user.password = self.security_service.get_password_hash(password_update_dto.new_password)
+        db.save(user)
+
+    def generate_urlsafe_token(length=16):
+        token = secrets.token_urlsafe(16)
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+
+        return token, expires_at
+
+    def forgot_password(self, forgot_password_dto: ForgotPasswordDTO, db: Database):
+        user = db.find_by(User, "email", forgot_password_dto.email)
+
+        if user is None:
+            raise Exception(USER_NOT_FOUND_BY_EMAIL)
+        
+        token, expires_at = self.generate_urlsafe_token()
+
+        reset_link = f"{getenv('FRONT_URL_CLIENT')}/reset-password?token={token}"
+
+        success = EmailSender().send_forgot_password_email(user.email, reset_link)
+
+        if not success:
+            raise Exception(EMAIL_NOT_SEND)
+        
+        user.reset_token = token
+        user.reset_token_expires_at = expires_at
+        
+        db.save(user)
+
+    def is_token_valid(self, expires_at: datetime) -> bool:
+        if datetime.now(timezone.utc) > expires_at.replace(tzinfo=timezone.utc):
+            return False
+        
+        return True
+    
+    def reset_password(self, reset_password_dto: ResetPasswordDTO, db: Database):
+        user = db.find_by(User, "reset_token", reset_password_dto.token)
+
+        if user is None:
+            raise Exception(NON_EXISTENT_TOKEN)
+        
+        if not self.is_token_valid(user.reset_token_expires_at):
+            raise Exception(TOKEN_HAS_EXPIRED)
+        
+        if self.security_service.verify_password(reset_password_dto.new_password, user.password):
+            raise Exception(OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR)
+        
+        if not self.security_service.is_password_valid(reset_password_dto.new_password):
+            raise Exception(PASSWORD_VALIDATION_ERROR)
+
+        user.password = self.security_service.get_password_hash(reset_password_dto.new_password)
+        user.reset_token = None
+        user.reset_token_expires_at = None
+
         db.save(user)

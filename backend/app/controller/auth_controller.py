@@ -4,7 +4,7 @@ from app.db.database import Database
 from app.dto.login import LoginDTO, LoginResponse, RefreshTokenDTO
 from app.db.database_setup import SessionDep
 from app.service.auth_service import AuthService
-from app.dto.auth import PasswordUpdateDTO
+from app.dto.auth import ForgotPasswordDTO, PasswordUpdateDTO, ResetPasswordDTO
 from fastapi import APIRouter, Depends, Request, HTTPException
 
 auth_router = APIRouter()
@@ -28,5 +28,19 @@ async def update_password(password_update_dto: PasswordUpdateDTO, request: Reque
     try:
         user_id = request.state.user_id
         return auth_service.update_password(password_update_dto, user_id, Database(session))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@auth_router.patch("/forgot-password")
+async def forgot_password(forgot_password_dto: ForgotPasswordDTO, session: SessionDep, auth_service: AuthServiceDep):
+    try:
+        return auth_service.forgot_password(forgot_password_dto, Database(session))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@auth_router.patch("/reset-password")
+async def reset_password(reset_password_dto: ResetPasswordDTO, session: SessionDep, auth_service: AuthServiceDep):
+    try:
+        return auth_service.reset_password(reset_password_dto, Database(session))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

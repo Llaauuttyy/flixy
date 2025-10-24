@@ -5,6 +5,8 @@ from os import getenv
 MAX_RETRIES = 3
 DELAY = 5
 
+BASE_DIR = getenv("BASE_DIR", ".") + "/app/email_sender/"
+
 class EmailSender:
     def __init__(self, max_retries: int = MAX_RETRIES, delay: int = DELAY):
         """
@@ -19,7 +21,7 @@ class EmailSender:
         self.delay = delay
         self.yag = yagmail.SMTP(self.sender_email, self.app_password)
 
-    def send_forgot_password_email(self, to_email: str, reset_link: str):
+    def send_forgot_password_email(self, to_email: str, reset_link: str) -> bool:
         return self.send_email(to_email, "Reset Your Password - Flixy", "forgot-password.html", {"link": reset_link})
     
     def prepare_email(self, template_path: str, variables: dict) -> str:
@@ -28,7 +30,7 @@ class EmailSender:
         template_path: ruta al archivo HTML
         variables: diccionario con las variables a reemplazar
         """
-        with open(template_path, "r", encoding="utf-8") as f:
+        with open(BASE_DIR + template_path, "r", encoding="utf-8") as f:
             html_content = f.read()
             for key, value in variables.items():
                 placeholder = f"{{{{{key}}}}}"

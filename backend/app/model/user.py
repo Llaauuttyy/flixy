@@ -11,6 +11,8 @@ class User(SQLModel, table=True):
     username: str = Field(index=True, unique=True)
     email: str
     password: str
+    reset_token: str = Field(default=None, nullable=True)
+    reset_token_expires_at: str = Field(default=None, nullable=True)
     followers: int = Field(default=0)
     following: int = Field(default=0)
     about_me: str = Field(default="")
