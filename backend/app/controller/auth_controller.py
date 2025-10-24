@@ -31,14 +31,14 @@ async def update_password(password_update_dto: PasswordUpdateDTO, request: Reque
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@auth_router.patch("/forgot-password")
+@auth_router.post("/forgot-password")
 async def forgot_password(forgot_password_dto: ForgotPasswordDTO, session: SessionDep, auth_service: AuthServiceDep):
     try:
         return auth_service.forgot_password(forgot_password_dto, Database(session))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@auth_router.patch("/reset-password")
+@auth_router.post("/reset-password")
 async def reset_password(reset_password_dto: ResetPasswordDTO, session: SessionDep, auth_service: AuthServiceDep):
     try:
         return auth_service.reset_password(reset_password_dto, Database(session))

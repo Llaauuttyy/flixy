@@ -13,3 +13,7 @@ export type RegistrationData = {
 export type RefreshTokenData = {
   refresh_token: string | null;
 };
+
+export type ForgotPasswordData = {
+  email: string | null;
+};

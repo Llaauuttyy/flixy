@@ -1,4 +1,5 @@
 import type {
+  ForgotPasswordData,
   LoginCredentials,
   RefreshTokenData,
   RegistrationData,
@@ -56,4 +57,22 @@ export async function handleRegistration(userData: RegistrationData) {
   }
 
   return response_json.id;
+}
+
+export async function handleForgotPassword(userData: ForgotPasswordData) {
+  const response = await fetch(process.env.VITE_API_URL + "/forgot-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userData),
+  });
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
 }

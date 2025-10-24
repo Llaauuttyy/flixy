@@ -38,6 +38,14 @@ export const enTranslation = {
     sign_up_button_loading: "Registering...",
     sign_up_button: "Register",
   },
+  forgot_password: {
+    title: "Reset your password",
+    description:
+      "Enter your email address below to receive a password reset link.",
+    email: "Email",
+    send_button_loading: "Sending...",
+    send_button: "Send",
+  },
   sidebar_nav: {
     home: "Home",
     movies: "Movies",

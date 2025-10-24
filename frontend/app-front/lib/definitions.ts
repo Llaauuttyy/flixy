@@ -56,6 +56,10 @@ export const PasswordFormSchema = z
     message: "Passwords do not match.",
   });
 
+export const ForgotPassword = z.object({
+  email: z.string().email({ message: "Please enter a valid email." }).trim(),
+});
+
 export type FormState =
   | {
       errors?: {
