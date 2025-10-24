@@ -12,9 +12,18 @@ export async function action({ request }: Route.ActionArgs) {
 
   const newPassword = form.get("newPassword");
 
+  let token = request.url.split("token=")[1];
+
+  if (!token) {
+    return {
+      success: undefined,
+      error: "Invalid or missing token.",
+    };
+  }
+
   try {
     let data: ResetPasswordData = {
-      token: request.url.split("token=")[1],
+      token,
       new_password: String(newPassword),
     };
 
