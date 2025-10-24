@@ -14,6 +14,7 @@ export function HeaderFull() {
   const [searchText, setSearchText] = useState(apiResponse?.data?.query ?? "");
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const user = apiResponse?.data?.user ?? null;
 
   function signOut() {
     setIsLoading(true);
@@ -75,7 +76,7 @@ export function HeaderFull() {
           <Avatar>
             <AvatarImage src="/placeholder.svg?height=32&width=32" />
             <AvatarFallback className="bg-gray-700 text-gray-300">
-              JD
+              {user?.name[0].toUpperCase() || "JD"}
             </AvatarFallback>
           </Avatar>
         </div>

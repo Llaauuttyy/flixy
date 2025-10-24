@@ -5,8 +5,10 @@ import LoginForm from "../../components/login-form";
 import {
   commitAccessSession,
   commitRefreshSession,
+  commitUserSession,
   getAccessSession,
   getRefreshSession,
+  getUserSession,
 } from "../session/sessions.server";
 import type { Route } from "./+types/login";
 
@@ -15,10 +17,12 @@ import i18n, { getLanguageIcon, getLanguageLabel } from "i18n/i18n";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { handleLogin } from "services/api/flixy/server/auth";
+import { handleUserDataGet } from "services/api/flixy/server/user-data";
 
 export async function action({ request }: Route.ActionArgs) {
   const accessSession = await getAccessSession(request.headers.get("Cookie"));
   const refreshSession = await getRefreshSession(request.headers.get("Cookie"));
+  const userDataSession = await getUserSession(request.headers.get("Cookie"));
   const form = await request.formData();
 
   const username = form.get("username");
@@ -34,10 +38,13 @@ export async function action({ request }: Route.ActionArgs) {
       username,
       password,
     });
+    const userDataResponse = await handleUserDataGet(request, access_token);
+
     console.log("Login successful:", access_token);
 
     accessSession.set("accessToken", access_token);
     refreshSession.set("refreshToken", refresh_token);
+    userDataSession.set("user", userDataResponse);
 
     return redirect("/", {
       headers: {
@@ -48,6 +55,10 @@ export async function action({ request }: Route.ActionArgs) {
           await commitRefreshSession(refreshSession, {
             maxAge: refresh_token_expiration_time,
           }),
+          await commitRefreshSession(refreshSession, {
+            maxAge: refresh_token_expiration_time,
+          }),
+          await commitUserSession(userDataSession),
         ].join(", "),
       },
     });

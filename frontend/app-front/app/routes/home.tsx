@@ -14,14 +14,17 @@ import { getHomeFeed } from "services/api/flixy/server/feed";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Dictionary } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "./+types/home";
 
 export async function loader({ request }: Route.LoaderArgs) {
   let apiResponse: ApiResponse = {};
 
   try {
-    apiResponse.data = await getHomeFeed(request);
+    const feed = await getHomeFeed(request);
+    const user = await getCachedUserData(request);
+
+    apiResponse.data = { feed, user };
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -45,16 +48,17 @@ export default function HomePage() {
 
   const apiResponse: ApiResponse = useLoaderData();
 
-  const featuredMovie: MovieDataGet = apiResponse.data?.featured_movie;
+  const featuredMovie: MovieDataGet = apiResponse.data?.feed?.featured_movie;
   const trendingNowMovies: MovieDataGet[] =
-    apiResponse.data?.trending_now_movies;
-  const topRatedMovies: MovieDataGet[] = apiResponse.data?.top_rated_movies;
+    apiResponse.data?.feed?.trending_now_movies;
+  const topRatedMovies: MovieDataGet[] =
+    apiResponse.data?.feed?.top_rated_movies;
   const lastWatchedMoviesReviews: ReviewDataGet[] =
-    apiResponse.data?.last_watched_movies;
+    apiResponse.data?.feed?.last_watched_movies;
 
-  const recentReviews: ReviewDataGet[] = apiResponse.data?.recent_reviews;
+  const recentReviews: ReviewDataGet[] = apiResponse.data?.feed?.recent_reviews;
   const MoviesCountByGenre: Dictionary<string> =
-    apiResponse.data?.movies_count_by_genre;
+    apiResponse.data?.feed?.movies_count_by_genre;
 
   console.log("Featured Movie: ", recentReviews);
 

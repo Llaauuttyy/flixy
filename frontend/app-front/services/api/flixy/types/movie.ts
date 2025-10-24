@@ -1,4 +1,5 @@
 import type { ReviewsData } from "./review";
+import type { UserDataGet } from "./user";
 
 export interface MovieDataGet {
   error?: string | undefined;
@@ -25,7 +26,8 @@ export interface MovieDataGet {
 export interface MovieOverallData {
   movie: MovieDataGet;
   reviews: ReviewsData;
-  [key: string]: null | undefined | MovieDataGet | ReviewsData;
+  user?: UserDataGet;
+  [key: string]: null | undefined | MovieDataGet | ReviewsData | UserDataGet;
 }
 
 export interface MovieGenre {

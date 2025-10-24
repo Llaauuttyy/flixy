@@ -15,7 +15,7 @@ import "dayjs/locale/en";
 import "dayjs/locale/es";
 import { useTranslation } from "react-i18next";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 
 interface WatchListFace {
   id: number;
@@ -51,7 +51,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     apiResponse.accessToken = await getAccessToken(request);
 
-    apiResponse.data = watchlists;
+    apiResponse.data = { watchlists, user: await getCachedUserData(request) };
     return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /movies said: ", err.message);
@@ -75,8 +75,8 @@ export default function WatchListsPage() {
   const [isCreation, setIsCreation] = useState(false);
 
   const [watchlists, setWatchlists] = useState<Page<WatchListFace>>(
-    fetcher.data?.data.items ??
-      apiResponse.data.items ?? {
+    fetcher.data?.data?.watchlists.items ??
+      apiResponse.data?.watchlists.items ?? {
         items: [],
         total: 0,
         page: 1,
