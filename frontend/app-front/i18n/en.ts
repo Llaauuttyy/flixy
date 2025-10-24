@@ -46,6 +46,14 @@ export const enTranslation = {
     send_button_loading: "Sending...",
     send_button: "Send",
   },
+  reset_password: {
+    title: "Set a new password",
+    subtitle: "Enter your new password below",
+    new_password: "New Password",
+    confirm_new_password: "Confirm New Password",
+    reset_button_loading: "Resetting...",
+    reset_button: "Reset Password",
+  },
   sidebar_nav: {
     home: "Home",
     movies: "Movies",

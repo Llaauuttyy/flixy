@@ -48,6 +48,14 @@ export const esTranslation = {
     send_button_loading: "Enviando...",
     send_button: "Enviar",
   },
+  reset_password: {
+    title: "Restablecer tu contraseña",
+    subtitle: "Ingresá tu nueva contraseña a continuación",
+    new_password: "Nueva contraseña",
+    confirm_new_password: "Confirmar nueva contraseña",
+    reset_button_loading: "Restableciendo...",
+    reset_button: "Restablecer contraseña",
+  },
   sidebar_nav: {
     home: "Inicio",
     movies: "Películas",

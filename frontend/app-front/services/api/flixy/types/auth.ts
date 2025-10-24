@@ -17,3 +17,8 @@ export type RefreshTokenData = {
 export type ForgotPasswordData = {
   email: string | null;
 };
+
+export type ResetPasswordData = {
+  token: string | null;
+  new_password: string | null;
+};
