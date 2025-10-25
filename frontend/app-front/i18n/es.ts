@@ -40,6 +40,22 @@ export const esTranslation = {
     sign_up_button_loading: "Registrando...",
     sign_up_button: "Registrarse",
   },
+  forgot_password: {
+    title: "Restablecer tu contraseña",
+    description:
+      "Ingresa tu dirección de correo electrónico a continuación para recibir un enlace de restablecimiento de contraseña.",
+    email: "Correo electrónico",
+    send_button_loading: "Enviando...",
+    send_button: "Enviar",
+  },
+  reset_password: {
+    title: "Restablecer tu contraseña",
+    subtitle: "Ingresá tu nueva contraseña a continuación",
+    new_password: "Nueva contraseña",
+    confirm_new_password: "Confirmar nueva contraseña",
+    reset_button_loading: "Restableciendo...",
+    reset_button: "Restablecer contraseña",
+  },
   sidebar_nav: {
     home: "Inicio",
     movies: "Películas",

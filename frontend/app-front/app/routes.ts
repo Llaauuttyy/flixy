@@ -3,6 +3,8 @@ import { index, route, type RouteConfig } from "@react-router/dev/routes";
 export default [
   // rutas públicas.
   route("register", "routes/register.tsx"),
+  route("forgot-password", "routes/forgot-password.tsx"),
+  route("reset-password", "routes/reset-password.tsx"),
 
   // chequea si ya está logueado.
   route("", "routes/auth/logged.tsx", {}, [route("login", "routes/login.tsx")]),

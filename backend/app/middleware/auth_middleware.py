@@ -6,7 +6,7 @@ from starlette.responses import Response
 import jwt
 from app.security.security_service import ALGORITHM, SECRET_KEY
 
-PUBLIC_ROUTES = ["/login", "/register", "/refresh_token", "/docs", "/openapi.json"]
+PUBLIC_ROUTES = ["/login", "/register", "/refresh_token", "/forgot-password", "/reset-password", "/docs", "/openapi.json"]
 
 def is_localhost(url: str) -> bool:
     return "localhost" in url or "127.0.0.1" in url

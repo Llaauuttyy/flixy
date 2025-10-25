@@ -81,7 +81,7 @@ export default function LoginForm() {
                 {t("login.password")}
               </Label>
               <Link
-                to="#"
+                to="/forgot-password"
                 className="text-sm text-purple-400 hover:text-purple-300"
               >
                 {t("login.forgot_password")}

@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(255) UNIQUE NOT NULL,
   email VARCHAR(255) NOT NULL,
   password VARCHAR(255) NOT NULL,
+  reset_token varchar(45) DEFAULT NULL,
+  reset_token_expires_at timestamp NULL DEFAULT NULL,
   followers INT DEFAULT 0,
   following INT DEFAULT 0,
   about_me VARCHAR(512) DEFAULT NULL,
