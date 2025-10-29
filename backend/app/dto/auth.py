@@ -10,3 +10,6 @@ class ForgotPasswordDTO(BaseModel):
 class ResetPasswordDTO(BaseModel):
     token: str
     new_password: str
+
+class ConfirmAccountDTO(BaseModel):
+    token: str

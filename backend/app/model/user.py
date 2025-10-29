@@ -10,8 +10,10 @@ class User(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     name: str
     username: str = Field(index=True, unique=True)
-    email: str
+    email: str = Field(unique=True)
     password: str
+    confirmation_token: str = Field(default=None, nullable=True)
+    is_confirmed: int = Field(default=0)
     reset_token: str = Field(default=None, nullable=True)
     reset_token_expires_at: str = Field(default=None, nullable=True)
     followers: int = Field(default=0)

@@ -11,6 +11,9 @@ PASSWORD_VALIDATION_ERROR = "Password must have: uppercase, lowercase, number an
 EMAIL_NOT_SEND = "Could not send email. Try again later."
 NON_EXISTENT_TOKEN = "Token does not exist for user."
 TOKEN_HAS_EXPIRED = "Token has expired. Get a new one and try again!"
+TAKEN_USERNAME = "Username is already taken."
+TAKEN_EMAIL = "Email is already taken."
+CONFIRMATION_REQUIRED_ERROR = "Account confirmation is required to log in. Check your email!"
 
 # Movie
 MOVIE_NOT_FOUND = "Movie not found by id."
