@@ -12,8 +12,10 @@ auth_router = APIRouter()
 AuthServiceDep = Annotated[AuthService, Depends(lambda: AuthService())]
 
 @auth_router.post("/register")
-async def create_user(register_form: RegisterForm, session: SessionDep, auth_service: AuthServiceDep) -> RegisterDTO:
-    return auth_service.register_user(register_form, Database(session))
+async def create_user(request: Request, register_form: RegisterForm, session: SessionDep, auth_service: AuthServiceDep) -> RegisterDTO:
+    is_local = getattr(request.state, "is_local", False)
+
+    return auth_service.register_user(register_form, Database(session), is_local)
 
 @auth_router.post("/confirm-registration")
 async def reset_password(confirm_account_dto: ConfirmAccountDTO, session: SessionDep, auth_service: AuthServiceDep):

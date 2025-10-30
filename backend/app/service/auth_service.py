@@ -20,7 +20,7 @@ class AuthService:
     def __init__(self):
         self.security_service = SecurityService()
 
-    def register_user(self, register_form: RegisterForm, db: Database) -> RegisterDTO:
+    def register_user(self, register_form: RegisterForm, db: Database, is_local=False) -> RegisterDTO:
         if not self.security_service.is_password_valid(register_form.password):
             raise HTTPException(
                 status_code=400,
@@ -41,17 +41,20 @@ class AuthService:
             if user is None:
                 raise Exception(USER_NOT_FOUND_BY_EMAIL)
         
-            token, _ = self.generate_urlsafe_token()
+            if not is_local:
+                token, _ = self.generate_urlsafe_token()
 
-            confirm_link = f"{getenv('FRONT_URL_CLIENT')}/confirm-registration?token={token}"
+                confirm_link = f"{getenv('FRONT_URL_CLIENT')}/confirm-registration?token={token}"
 
-            success = EmailSender().send_confirm_registration_email(user.email, confirm_link)
+                success = EmailSender().send_confirm_registration_email(user.email, confirm_link)
 
-            if not success:
-                raise Exception(EMAIL_NOT_SEND)
-            
-            user.confirmation_token = token
-            user.is_confirmed = 0
+                if not success:
+                    raise Exception(EMAIL_NOT_SEND)
+                
+                user.confirmation_token = token
+                user.is_confirmed = 0
+            else:
+                user.is_confirmed = 1
             
             db.save(user)
         except IntegrityError as e:
@@ -63,7 +66,7 @@ class AuthService:
             elif "for key 'users.email_UNIQUE'" in error_message:
                 raise HTTPException(status_code=400, detail=TAKEN_EMAIL)
             
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
             db.rollback()
             print(f"Error registering user: {e}")
@@ -90,11 +93,11 @@ class AuthService:
     def login(self, login_dto: UserDTO, db: Database) -> LoginResponse:
         user = db.find_by(User, 'username', login_dto.username)
 
-        if not user.is_confirmed:
-            raise HTTPException(status_code=400, detail=CONFIRMATION_REQUIRED_ERROR)
-
         if not user or not self.security_service.verify_password(login_dto.password, user.password):
             raise HTTPException(status_code=400, detail=LOGIN_CREDENTIALS_ERROR)
+        
+        if not user or not user.is_confirmed:
+            raise HTTPException(status_code=400, detail=CONFIRMATION_REQUIRED_ERROR)
         
         access_token, refresh_token = self.security_service.create_tokens(data={"username": user.username, "id": user.id})
         return LoginResponse(
