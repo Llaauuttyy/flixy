@@ -18,11 +18,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         # Omitir rutas públicas
         if request and (request.url.path in PUBLIC_ROUTES or request.method == "OPTIONS"):
+            if is_localhost(str(request.url)):
+                request.state.is_local = True
             return await call_next(request)
         
         if is_localhost(str(request.url)):
             # Si no tiene token, redirecciona la llamada
-            request.state.is_local = True
             if request.headers.get("Authorization") is None:
                 return await call_next(request)
             

@@ -42,6 +42,7 @@ class AuthService:
                 raise Exception(USER_NOT_FOUND_BY_EMAIL)
         
             if not is_local:
+                print("Entra en NOT LOCAL: is_local =", is_local)
                 token, _ = self.generate_urlsafe_token()
 
                 confirm_link = f"{getenv('FRONT_URL_CLIENT')}/confirm-registration?token={token}"
@@ -54,6 +55,7 @@ class AuthService:
                 user.confirmation_token = token
                 user.is_confirmed = 0
             else:
+                print("Entra en LOCAL: is_local =", is_local)
                 user.is_confirmed = 1
             
             db.save(user)
