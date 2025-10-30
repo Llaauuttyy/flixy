@@ -3,16 +3,19 @@ from app.security.token_data import TokenData
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
-import jwt
 from app.security.security_service import ALGORITHM, SECRET_KEY
+
+import jwt
+import os
 
 PUBLIC_ROUTES = ["/login", "/register", "/refresh_token", "/forgot-password", "/reset-password", "/confirm-registration", "/docs", "/openapi.json"]
 
 def is_localhost(url: str) -> bool:
-    return "localhost" in url or "127.0.0.1" in url
+    return "localhost" in url or "127.0.0.1" in url or os.getenv("IS_LOCAL", "false").lower() == "true"
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+
         # Omitir rutas públicas
         if request and (request.url.path in PUBLIC_ROUTES or request.method == "OPTIONS"):
             return await call_next(request)
