@@ -83,13 +83,15 @@ def get_users_data():
         name="Usuario Prueba 1",
         username="test_user_1",
         email="user1@example.com",
-        password="$2b$12$fzHB.Yl9Zwloqhnsx5dfZOS6HkPtth.NXgGQ3jbQa.yuIFtnHwO8e" # User.1234
+        password="$2b$12$fzHB.Yl9Zwloqhnsx5dfZOS6HkPtth.NXgGQ3jbQa.yuIFtnHwO8e", # User.1234
+        is_confirmed=1
     ))
     users.append(User(
         name="Usuario Prueba 2",
         username="test_user_2",
         email="user2@example.com",
-        password="$2b$12$fzHB.Yl9Zwloqhnsx5dfZOS6HkPtth.NXgGQ3jbQa.yuIFtnHwO8e" # User.1234
+        password="$2b$12$fzHB.Yl9Zwloqhnsx5dfZOS6HkPtth.NXgGQ3jbQa.yuIFtnHwO8e", # User.1234
+        is_confirmed=1
     ))
     return users
 

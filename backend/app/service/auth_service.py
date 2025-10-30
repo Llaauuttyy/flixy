@@ -4,8 +4,8 @@ from app.model.user import User
 from app.db.database import Database
 from app.dto.user import UserDTO
 from app.dto.login import LoginResponse, RefreshTokenDTO
-from app.dto.auth import PasswordUpdateDTO, ForgotPasswordDTO, ResetPasswordDTO
-from app.constants.message import EMAIL_NOT_SEND, LOGIN_CREDENTIALS_ERROR, NON_EXISTENT_TOKEN, OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR, OLD_PASSWORD_DOESNT_MATCH_ERROR, PASSWORD_VALIDATION_ERROR, TOKEN_HAS_EXPIRED, USER_NOT_FOUND, USER_NOT_FOUND_BY_EMAIL
+from app.dto.auth import ConfirmAccountDTO, PasswordUpdateDTO, ForgotPasswordDTO, ResetPasswordDTO
+from app.constants.message import CONFIRMATION_REQUIRED_ERROR, EMAIL_NOT_SEND, LOGIN_CREDENTIALS_ERROR, NON_EXISTENT_TOKEN, OLD_AND_NEW_PASSWORDS_ARE_THE_SAME_ERROR, OLD_PASSWORD_DOESNT_MATCH_ERROR, PASSWORD_VALIDATION_ERROR, TAKEN_EMAIL, TAKEN_USERNAME, TOKEN_HAS_EXPIRED, USER_NOT_FOUND, USER_NOT_FOUND_BY_EMAIL
 from fastapi import HTTPException
 
 from app.security.security_service import SecurityService
@@ -13,13 +13,14 @@ from os import getenv
 from ..dto.register import RegisterDTO, RegisterForm
 from ..email_sender.sender import EmailSender
 from datetime import datetime, timedelta, timezone
+from sqlalchemy.exc import IntegrityError
 
 
 class AuthService:
     def __init__(self):
         self.security_service = SecurityService()
 
-    def register_user(self, register_form: RegisterForm, db: Database) -> RegisterDTO:
+    def register_user(self, register_form: RegisterForm, db: Database, is_local=False) -> RegisterDTO:
         if not self.security_service.is_password_valid(register_form.password):
             raise HTTPException(
                 status_code=400,
@@ -36,8 +37,41 @@ class AuthService:
 
         try:
             db.save(user)
+
+            if user is None:
+                raise Exception(USER_NOT_FOUND_BY_EMAIL)
+        
+            if not is_local:
+                print("Entra en NOT LOCAL: is_local =", is_local)
+                token, _ = self.generate_urlsafe_token()
+
+                confirm_link = f"{getenv('FRONT_URL_CLIENT')}/confirm-registration?token={token}"
+
+                success = EmailSender().send_confirm_registration_email(user.email, confirm_link)
+
+                if not success:
+                    raise Exception(EMAIL_NOT_SEND)
+                
+                user.confirmation_token = token
+                user.is_confirmed = 0
+            else:
+                print("Entra en LOCAL: is_local =", is_local)
+                user.is_confirmed = 1
+            
+            db.save(user)
+        except IntegrityError as e:
+            db.rollback()
+            error_message = str(e)
+
+            if "for key 'users.username'" in error_message:
+                raise HTTPException(status_code=400, detail=TAKEN_USERNAME)
+            elif "for key 'users.email_UNIQUE'" in error_message:
+                raise HTTPException(status_code=400, detail=TAKEN_EMAIL)
+            
+            raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
             db.rollback()
+            print(f"Error registering user: {e}")
             raise HTTPException(status_code=400, detail=str(e))
         
         return RegisterDTO(
@@ -47,10 +81,25 @@ class AuthService:
             email=user.email
         )
     
+    def confirm_registration(self, confirm_account_dto: ConfirmAccountDTO, db: Database):
+        user = db.find_by(User, "confirmation_token", confirm_account_dto.token)
+
+        if user is None:
+            raise Exception(NON_EXISTENT_TOKEN)
+        
+        user.confirmation_token = None
+        user.is_confirmed = 1
+
+        db.save(user)
+    
     def login(self, login_dto: UserDTO, db: Database) -> LoginResponse:
         user = db.find_by(User, 'username', login_dto.username)
+
         if not user or not self.security_service.verify_password(login_dto.password, user.password):
             raise HTTPException(status_code=400, detail=LOGIN_CREDENTIALS_ERROR)
+        
+        if not user or not user.is_confirmed:
+            raise HTTPException(status_code=400, detail=CONFIRMATION_REQUIRED_ERROR)
         
         access_token, refresh_token = self.security_service.create_tokens(data={"username": user.username, "id": user.id})
         return LoginResponse(
@@ -97,7 +146,7 @@ class AuthService:
         expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
 
         return token, expires_at
-
+    
     def forgot_password(self, forgot_password_dto: ForgotPasswordDTO, db: Database):
         user = db.find_by(User, "email", forgot_password_dto.email)
 

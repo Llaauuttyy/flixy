@@ -2,10 +2,12 @@ import time
 import yagmail
 from os import getenv
 
+
 MAX_RETRIES = 3
 DELAY = 5
 
 BASE_DIR = getenv("BASE_DIR", ".") + "/app/email_sender/"
+
 
 class EmailSender:
     def __init__(self, max_retries: int = MAX_RETRIES, delay: int = DELAY):
@@ -23,6 +25,9 @@ class EmailSender:
 
     def send_forgot_password_email(self, to_email: str, reset_link: str) -> bool:
         return self.send_email(to_email, "Reset Your Password - Flixy", "forgot-password.html", {"link": reset_link})
+    
+    def send_confirm_registration_email(self, to_email: str, reset_link: str) -> bool:
+        return self.send_email(to_email, "Confirm Your Account - Flixy", "confirm-registration.html", {"link": reset_link})
     
     def prepare_email(self, template_path: str, variables: dict) -> str:
         """
@@ -51,7 +56,7 @@ class EmailSender:
                 return True
             except Exception as e:
                 attempt += 1
-                print(f"⚠️ Error enviando correo (intento {attempt}/{self.max_retries}): {e}")
+                print(f"Error enviando correo (intento {attempt}/{self.max_retries}): {e}")
                 if attempt < self.max_retries:
                     print(f"Reintentando en {self.delay} segundos...")
                     time.sleep(self.delay)

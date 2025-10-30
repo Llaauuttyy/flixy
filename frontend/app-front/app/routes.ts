@@ -5,6 +5,7 @@ export default [
   route("register", "routes/register.tsx"),
   route("forgot-password", "routes/forgot-password.tsx"),
   route("reset-password", "routes/reset-password.tsx"),
+  route("confirm-registration", "routes/confirm-registration.tsx"),
 
   // chequea si ya está logueado.
   route("", "routes/auth/logged.tsx", {}, [route("login", "routes/login.tsx")]),

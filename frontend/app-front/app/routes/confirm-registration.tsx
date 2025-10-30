@@ -1,43 +1,47 @@
-import { Link, useActionData } from "react-router-dom";
-import RegisterForm from "../../components/register-form";
+import { Link, redirect, useLoaderData } from "react-router-dom";
 
-import type { Route } from "./+types/login";
+import type { Route } from "./+types/confirm-registration";
 
+import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { redirect } from "react-router";
-import { handleRegistration } from "services/api/flixy/server/auth";
+import { handleConfirmRegistration } from "services/api/flixy/server/auth";
+import type { ConfirmRegistrationData } from "services/api/flixy/types/auth";
 
-export async function action({ request }: Route.ActionArgs) {
-  const form = await request.formData();
+export async function loader({ request }: Route.ActionArgs) {
+  let token = request.url.split("token=")[1];
 
-  const name = form.get("name");
-  const username = form.get("username");
-  const email = form.get("email");
-  const password = form.get("password");
+  if (!token) {
+    return {
+      success: undefined,
+      error: "Invalid or missing token.",
+    };
+  }
 
   try {
-    const userId = await handleRegistration({
-      name,
-      username,
-      email,
-      password,
-    });
-    console.log("Registration OK:", userId);
+    let data: ConfirmRegistrationData = {
+      token,
+    };
+
+    await handleConfirmRegistration(data);
 
     return redirect("/");
   } catch (err: Error | any) {
-    console.log("API POST /register said: ", err.message);
+    console.log("API POST /confirm-registration said: ", err.message);
 
-    return {
+    let message = {
+      success: undefined,
       error:
         err.message ||
         "Service's not working properly. Please try again later.",
     };
+    return message;
   }
 }
 
-export default function Register() {
-  const actionData = useActionData() as { error?: string } | undefined;
+export default function ConfirmRegistration() {
+  const actionData = useLoaderData() as
+    | { error?: string; success?: string }
+    | undefined;
   const { t } = useTranslation();
 
   return (
@@ -61,7 +65,13 @@ export default function Register() {
       <main className="flex-1 container mx-auto flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-10">
         <div className="w-full md:w-1/2 max-w-md">
           <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl border border-gray-700 shadow-xl">
-            <RegisterForm />
+            {actionData?.success && (
+              <div className="flex items-center">
+                {t("confirm_registration.confirmation_loader")}
+                <Loader2 className="ml-2 mr-2 size-4 animate-spin" />
+                <p className="text-green-400">{actionData?.success}</p>
+              </div>
+            )}
             {actionData?.error && (
               <p style={{ color: "red" }}>{actionData.error}</p>
             )}
