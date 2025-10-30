@@ -1,4 +1,5 @@
 import type {
+  ConfirmRegistrationData,
   ForgotPasswordData,
   LoginCredentials,
   RefreshTokenData,
@@ -86,6 +87,29 @@ export async function handleResetPassword(userData: ResetPasswordData) {
     },
     body: JSON.stringify(userData),
   });
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
+
+export async function handleConfirmRegistration(
+  userData: ConfirmRegistrationData
+) {
+  const response = await fetch(
+    process.env.VITE_API_URL + "/confirm-registration",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    }
+  );
 
   const response_json = await response.json();
 

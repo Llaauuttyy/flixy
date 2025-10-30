@@ -22,3 +22,7 @@ export type ResetPasswordData = {
   token: string | null;
   new_password: string | null;
 };
+
+export type ConfirmRegistrationData = {
+  token: string | null;
+};

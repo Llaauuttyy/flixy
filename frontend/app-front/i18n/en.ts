@@ -54,6 +54,9 @@ export const enTranslation = {
     reset_button_loading: "Resetting...",
     reset_button: "Reset Password",
   },
+  confirm_registration: {
+    confirmation_loader: "Confirming your account...",
+  },
   sidebar_nav: {
     home: "Home",
     movies: "Movies",
