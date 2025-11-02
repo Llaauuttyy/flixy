@@ -2,12 +2,13 @@ from app.db.database import Database
 from app.dto.movie import MovieDTO
 from app.model.review import Review
 from app.model.movie import Movie
+from app.model.user_relationship import UserRelationship
+from app.ai_model.gnn import GNNRatingTrainModel, GNNRecommender
 from sqlalchemy.orm import selectinload
 from math import log10
 from random import random
 from app.ai_model.decision_forest import DecisionForestTrainModel, characteristic_model
 from concurrent.futures import ThreadPoolExecutor, wait
-import time
 from app.db.database_setup import session_factory
 
 MAX_RECOMMENDATION_RESULTS = 100
@@ -16,7 +17,8 @@ executor = ThreadPoolExecutor(max_workers=4)
 
 class RecommendationService:
     def __init__(self):
-        self.executor = ThreadPoolExecutor(max_workers=2)
+        self.executor = ThreadPoolExecutor(max_workers=3)
+        self.gnn = prepare_gnn_model()
 
     def get_recommendations(self, user_id: int) -> list[MovieDTO]:
         """
@@ -27,13 +29,15 @@ class RecommendationService:
         """
         # Ejecutamos ambos criterios en paralelo
         future_genre = self.executor.submit(self.get_best_genre_recommendations, user_id)
-        future_ai = self.executor.submit(self.get_ai_recommendations, user_id)
+        future_decision_forest = self.executor.submit(self.get_decision_forest_recommendations, user_id)
+        future_gnn = self.executor.submit(self.get_gnn_recommendations, user_id)
 
         best_genre_recommendations = []
-        ai_recommendations = []
+        decision_forest_recommendations = []
+        gnn_recommendations = []
 
         # Esperamos hasta 4 segundos
-        done, _ = wait([future_genre, future_ai], timeout=MAX_RESPONSE_TIME_SECONDS)
+        done, _ = wait([future_genre, future_decision_forest, future_gnn], timeout=MAX_RESPONSE_TIME_SECONDS)
 
         # Cargamos los resultados disponibles
         if future_genre in done:
@@ -42,12 +46,18 @@ class RecommendationService:
             except Exception as e:
                 print(f"Error in Best Genre recommendations: {e}")
                 best_genre_recommendations = []
-        if future_ai in done:
+        if future_decision_forest in done:
             try:
-                ai_recommendations = future_ai.result()
+                decision_forest_recommendations = future_decision_forest.result()
             except Exception as e:
-                print(f"Error in AI recommendations: {e}")
-                ai_recommendations = []
+                print(f"Error in Decision Forest recommendations: {e}")
+                decision_forest_recommendations = []
+        if future_gnn in done:
+            try:
+                gnn_recommendations = future_gnn.result()
+            except Exception as e:
+                print(f"Error in GNN recommendations: {e}")
+                gnn_recommendations = []
 
         # Si la IA no está lista, generamos una lista vacía o parcial
         recommendations = []
@@ -55,8 +65,12 @@ class RecommendationService:
             rand = random()
             if rand <= 0.2 and best_genre_recommendations:
                 recommendations.append(best_genre_recommendations.pop(0))
-            elif ai_recommendations:
-                recommendations.append(ai_recommendations.pop(0))
+            elif rand <= 0.4 and decision_forest_recommendations:
+                recommendations.append(best_genre_recommendations.pop(0))
+            elif gnn_recommendations:
+                recommendations.append(gnn_recommendations.pop(0)) 
+            elif decision_forest_recommendations:
+                recommendations.append(decision_forest_recommendations.pop(0))
             elif best_genre_recommendations:
                 recommendations.append(best_genre_recommendations.pop(0))
             else:
@@ -65,7 +79,6 @@ class RecommendationService:
         return recommendations
 
     def get_best_genre_recommendations(self, user_id: int) -> list[MovieDTO]:
-        start = time.time()
         with session_factory() as session:
             db = Database(session)
             user_reviews = db.find_all_by_multiple(
@@ -137,7 +150,7 @@ class RecommendationService:
                 ) for movie in movies_recommended
             ]
     
-    def get_ai_recommendations(self, user_id: int):
+    def get_decision_forest_recommendations(self, user_id: int):
         with session_factory() as session:
             db = Database(session)
             user_reviews = list(db.find_all_by_multiple(
@@ -157,3 +170,47 @@ class RecommendationService:
                 MovieDTO(**pred)
                 for pred in characteristic_model.predict(user_id, list(unwatched_movies), rated_movies)
             ]
+        
+    def get_gnn_recommendations(self, user_id: int):
+        with session_factory() as session:
+            try:
+                db = Database(session)
+                user_reviews = list(db.find_all_by_multiple(
+                    Review,
+                    db.build_condition([Review.user_id == user_id]),
+                    options=[selectinload(Review.movie)]
+                ))
+                unwatched_movies = db.find_all_by_multiple(
+                    Movie,
+                    db.build_condition([Movie.id.notin_([review.movie.id for review in user_reviews])])
+                )
+
+                recommendations = self.gnn.recommend(user_id, unwatched_movies)
+                recommended_movies = db.find_all(Movie, db.build_condition([Movie.id.in_(recommendations["movie_id"].tolist())]))
+                return [MovieDTO(
+                    id=movie.id,
+                    title=movie.title,
+                    year=movie.year,
+                    imdb_rating=movie.imdb_rating,
+                    genres=movie.genres,
+                    countries=movie.countries,
+                    duration=movie.duration,
+                    cast=movie.cast,
+                    directors=movie.directors,
+                    writers=movie.writers,
+                    plot=movie.plot,
+                    logo_url=movie.logo_url
+                ) for movie in recommended_movies]
+            except Exception as e:
+                print("ERROR GNN", e)
+                return []
+            
+
+def prepare_gnn_model():
+    model = GNNRecommender()
+    with session_factory() as session:
+        db = Database(session)
+        reviews = db.find_all(Review, db.build_condition([Review.rating != None]), options=[selectinload(Review.movie)])
+        user_relations = db.find_all(UserRelationship)
+        model.train([GNNRatingTrainModel(review) for review in reviews], user_relations)
+    return model
