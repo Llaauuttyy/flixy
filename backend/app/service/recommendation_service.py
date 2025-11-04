@@ -10,15 +10,21 @@ from random import random
 from app.ai_model.decision_forest import DecisionForestTrainModel, characteristic_model
 from concurrent.futures import ThreadPoolExecutor, wait
 from app.db.database_setup import session_factory
+from threading import Thread
+from time import sleep
 
 MAX_RECOMMENDATION_RESULTS = 100
 MAX_RESPONSE_TIME_SECONDS = 4
+INTERVAL_TRAIN_GNN_SECONDS = 3600
 executor = ThreadPoolExecutor(max_workers=4)
 
 class RecommendationService:
     def __init__(self):
         self.executor = ThreadPoolExecutor(max_workers=3)
         self.gnn = prepare_gnn_model()
+        thread = Thread(target=train_gnn_model, args=(self.gnn, INTERVAL_TRAIN_GNN_SECONDS))
+        thread.daemon = True
+        thread.start()
 
     def get_recommendations(self, user_id: int) -> list[MovieDTO]:
         """
@@ -208,9 +214,15 @@ class RecommendationService:
 
 def prepare_gnn_model():
     model = GNNRecommender()
-    with session_factory() as session:
-        db = Database(session)
-        reviews = db.find_all(Review, db.build_condition([Review.rating != None]), options=[selectinload(Review.movie)])
-        user_relations = db.find_all(UserRelationship)
-        model.train([GNNRatingTrainModel(review) for review in reviews], user_relations)
+    train_gnn_model(model)
     return model
+
+def train_gnn_model(model, interval = 0):
+    while interval != 0:
+        with session_factory() as session:
+            db = Database(session)
+            reviews = db.find_all(Review, db.build_condition([Review.rating != None]), options=[selectinload(Review.movie)])
+            user_relations = db.find_all(UserRelationship)
+            model.train([GNNRatingTrainModel(review) for review in reviews], user_relations)
+        if interval != 0:
+            sleep(interval)
