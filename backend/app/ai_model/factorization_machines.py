@@ -8,7 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 FEATURES = 3
 RATING_MIN = 1
 RATING_MAX = 5
-MAX_EPOCS = 1500
+MAX_EPOCHS = 1500
 MIN_RATING_PREDICTION = 4.5
 
 
@@ -102,7 +102,7 @@ class FMModelHandler():
         optimizer = optim.Adam(self.model.parameters(), lr=0.01, weight_decay=1e-4)
         criterion = nn.MSELoss()
 
-        for epoch in range(MAX_EPOCS):
+        for epoch in range(MAX_EPOCHS):
             optimizer.zero_grad()
             y_pred = self.model(self.X)
             loss = criterion(y_pred, self.y)
