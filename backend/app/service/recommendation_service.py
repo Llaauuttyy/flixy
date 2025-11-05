@@ -12,6 +12,8 @@ from concurrent.futures import ThreadPoolExecutor, wait
 from app.db.database_setup import session_factory
 from threading import Thread
 from time import sleep
+from app.ai_model.factorization_machines import FMModelHandler
+from datetime import datetime as datetime
 
 MAX_RECOMMENDATION_RESULTS = 100
 MAX_RESPONSE_TIME_SECONDS = 4
@@ -33,17 +35,20 @@ class RecommendationService:
         no haya terminado, se sigue ejecutando en background hasta su finalización.
         Devuelve una mezcla de 80% IA y 20% mejor género.
         """
+
         # Ejecutamos ambos criterios en paralelo
         future_genre = self.executor.submit(self.get_best_genre_recommendations, user_id)
         future_decision_forest = self.executor.submit(self.get_decision_forest_recommendations, user_id)
         future_gnn = self.executor.submit(self.get_gnn_recommendations, user_id)
+        future_fm = self.executor.submit(self.get_factorization_machines_recommendations, user_id)
 
         best_genre_recommendations = []
         decision_forest_recommendations = []
         gnn_recommendations = []
+        fm_recommendations = []
 
         # Esperamos hasta 4 segundos
-        done, _ = wait([future_genre, future_decision_forest, future_gnn], timeout=MAX_RESPONSE_TIME_SECONDS)
+        done, _ = wait([future_genre, future_decision_forest, future_gnn, future_fm], timeout=MAX_RESPONSE_TIME_SECONDS)
 
         # Cargamos los resultados disponibles
         if future_genre in done:
@@ -64,6 +69,12 @@ class RecommendationService:
             except Exception as e:
                 print(f"Error in GNN recommendations: {e}")
                 gnn_recommendations = []
+        if future_fm in done:
+            try:
+                fm_recommendations = future_fm.result()
+            except Exception as e:
+                print(f"Error in Factorization Machines recommendations: {e}")
+                fm_recommendations = []
 
         # Si la IA no está lista, generamos una lista vacía o parcial
         recommendations = []
@@ -73,6 +84,8 @@ class RecommendationService:
                 recommendations.append(best_genre_recommendations.pop(0))
             elif rand <= 0.4 and decision_forest_recommendations:
                 recommendations.append(best_genre_recommendations.pop(0))
+            elif rand <= 0.6 and fm_recommendations: # Son pocos, por eso tiene mas peso.
+                recommendations.append(fm_recommendations.pop(0))
             elif gnn_recommendations:
                 recommendations.append(gnn_recommendations.pop(0)) 
             elif decision_forest_recommendations:
@@ -155,7 +168,70 @@ class RecommendationService:
                     logo_url=movie.logo_url
                 ) for movie in movies_recommended
             ]
-    
+
+    def get_factorization_machines_recommendations(self, user_id: int):
+        start = datetime.now()
+        with session_factory() as session:
+            db = Database(session)
+            user_reviews = list(db.find_all_by_multiple(
+                Review,
+                db.build_condition([Review.user_id == user_id, Review.rating != None]),
+                options=[selectinload(Review.movie)]
+            ))
+
+            all_movie_ratings = list(db.find_all_by_multiple(
+                Review,
+                db.build_condition([Review.rating != None]),
+                options=[selectinload(Review.movie)]
+            ))
+
+            watched_movies = {review.movie.id for review in user_reviews}
+            
+            not_watched_movies_ids = []
+            not_watched_movies = []
+            for rating in all_movie_ratings:
+                if (rating.movie.id not in watched_movies) and (rating.movie.id not in not_watched_movies_ids):
+                    rating.user_id = user_id  # user_id para la predicción
+                    not_watched_movies.append(rating)
+                    not_watched_movies_ids.append(rating.movie.id)
+
+            if not not_watched_movies or not user_reviews:
+                # El usuario no vió ninguna pelicula o ya vió todas las que 
+                # vieron todos los usuarios que dieron rating a películas.
+                return []
+            
+            movies_to_train = FMModelHandler.build_data(all_movie_ratings)
+            # Son las películas que tienen ratings de otros usuarios pero que el usuario no vio.
+            movies_to_predict = FMModelHandler.build_data(not_watched_movies, for_prediction=True)
+
+            handler = FMModelHandler(movies_to_train)
+
+            recommendation_ids = handler.predict(movies_to_predict)
+
+            # Devuelvo las películas recomendadas
+            movies_to_recommend = []
+
+            for review in not_watched_movies:
+                if review.movie.id in recommendation_ids:
+                    movies_to_recommend.append(review.movie)
+
+            return [
+                MovieDTO(
+                    id=movie.id,
+                    title=movie.title,
+                    year=movie.year,
+                    imdb_rating=movie.imdb_rating,
+                    genres=movie.genres,
+                    countries=movie.countries,
+                    duration=movie.duration,
+                    cast=movie.cast,
+                    directors=movie.directors,
+                    writers=movie.writers,
+                    plot=movie.plot,
+                    logo_url=movie.logo_url
+                ) for movie in movies_to_recommend
+            ]
+
     def get_decision_forest_recommendations(self, user_id: int):
         with session_factory() as session:
             db = Database(session)

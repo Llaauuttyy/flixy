@@ -18,3 +18,4 @@ scikit-learn==1.6.1
 yagmail
 torch==2.4.0
 torch-geometric==2.5.3
+pandas
