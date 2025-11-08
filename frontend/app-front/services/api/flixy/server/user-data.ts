@@ -1,9 +1,20 @@
 import { getAccessToken } from "../../utils";
 
-export async function handleUserDataGet(request: Request, token?: string) {
-  token = token || (await getAccessToken(request));
+interface UserDataGetProps {
+  request: Request;
+  token?: string;
+  userId?: number;
+}
 
-  const response = await fetch(process.env.VITE_API_URL + "/user", {
+export async function handleUserDataGet({
+  request,
+  token,
+  userId,
+}: UserDataGetProps) {
+  token = token || (await getAccessToken(request));
+  const idParam = userId ? `?id=${userId}` : "";
+
+  const response = await fetch(process.env.VITE_API_URL + `/user${idParam}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -20,14 +31,18 @@ export async function handleUserDataGet(request: Request, token?: string) {
   return response_json;
 }
 
-export async function getUserInsights(request: Request) {
+export async function getUserInsights(request: Request, id?: number) {
   const token = await getAccessToken(request);
+  const idParam = id ? `?id=${id}` : "";
 
-  const response = await fetch(process.env.VITE_API_URL + `/user/insights`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetch(
+    process.env.VITE_API_URL + `/user/insights${idParam}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   const response_json = await response.json();
 
@@ -89,12 +104,15 @@ export async function getUserAchievements(request: Request) {
 export async function getUserFollowers(
   page: number,
   size: number,
-  request: Request
+  request: Request,
+  id?: number
 ) {
   const token = await getAccessToken(request);
+  const idParam = id ? `&id=${id}` : "";
 
   const response = await fetch(
-    process.env.VITE_API_URL + `/user/followers?page=${page}&size=${size}`,
+    process.env.VITE_API_URL +
+      `/user/followers?page=${page}&size=${size}${idParam}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -114,12 +132,15 @@ export async function getUserFollowers(
 export async function getUserFollowing(
   page: number,
   size: number,
-  request: Request
+  request: Request,
+  id?: number
 ) {
   const token = await getAccessToken(request);
+  const idParam = id ? `&id=${id}` : "";
 
   const response = await fetch(
-    process.env.VITE_API_URL + `/user/following?page=${page}&size=${size}`,
+    process.env.VITE_API_URL +
+      `/user/following?page=${page}&size=${size}${idParam}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

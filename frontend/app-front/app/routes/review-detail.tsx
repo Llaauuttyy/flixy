@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 
-import { Avatar, AvatarFallback } from "components/ui/avatar";
+import { UserAvatar } from "components/ui/avatar";
 import { Card, CardContent } from "components/ui/card";
 import { CommentCard } from "components/ui/comment/comment-card";
 import { CommentInput } from "components/ui/comment/comment-input";
@@ -167,12 +167,11 @@ export default function ReviewDetail() {
                             {currentReview.movie.title}
                           </h1>
                           <div className="flex items-center gap-3 mb-3">
-                            <Avatar className="h-12 w-12">
-                              <AvatarFallback className="bg-purple-600">
-                                {currentReview.user_name[0]?.toUpperCase() ||
-                                  "NN"}
-                              </AvatarFallback>
-                            </Avatar>
+                            <UserAvatar
+                              userId={currentReview.user_id}
+                              userName={currentReview.user_name}
+                              className="bg-purple-600"
+                            />
                             <div>
                               <p className="font-semibold">
                                 {currentReview.name}

@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
+import { UserAvatar } from "components/ui/avatar";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { handleUserFollow } from "services/api/flixy/client/user-data-client";
@@ -35,12 +35,11 @@ export function UserCard({ user, accessToken }: UserCardProps) {
       className="bg-slate-800 rounded-lg p-4 hover:bg-slate-750 transition-colors cursor-pointer"
     >
       <div className="flex items-center gap-3">
-        <Avatar className="w-12 h-12">
-          <AvatarImage src={currentUser.avatar || "/placeholder.svg"} />
-          <AvatarFallback className="bg-pink-500">
-            {currentUser.name[0].toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <UserAvatar
+          userId={currentUser.id}
+          userName={currentUser.name}
+          className="bg-pink-500"
+        />
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h3 className="font-medium">{currentUser.name}</h3>

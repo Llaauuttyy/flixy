@@ -15,6 +15,7 @@ export interface ReviewDataGet {
   id: number;
   name: string;
   user_name: string;
+  user_id: number;
   movie_id: number;
   rating: number | null;
   text: string | null;

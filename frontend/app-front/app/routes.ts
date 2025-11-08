@@ -20,6 +20,7 @@ export default [
     route("watchlists/:watchListId", "routes/watchlist-detail.tsx"),
 
     route("profile", "routes/profile.tsx"),
+    route("profile/:userId", "routes/user-profile.tsx"),
     route("search", "routes/search.tsx"),
 
     route("social", "routes/social.tsx"),

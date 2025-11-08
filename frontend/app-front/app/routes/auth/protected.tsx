@@ -29,7 +29,10 @@ export async function loader({ request }: Route.LoaderArgs) {
         access_token_expiration_time,
         refresh_token_expiration_time,
       } = await handleRefreshToken({ refresh_token: refreshToken ?? null });
-      const userDataResponse = await handleUserDataGet(request, access_token);
+      const userDataResponse = await handleUserDataGet({
+        request,
+        token: access_token,
+      });
 
       accessSession.set("accessToken", access_token);
       refreshSession.set("refreshToken", refresh_token);

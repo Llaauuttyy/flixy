@@ -47,8 +47,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     watchlists = await getWatchLists(page, DEFAULT_PAGE_SIZE, request);
 
-    console.log("Watchlists: ", watchlists);
-
     apiResponse.accessToken = await getAccessToken(request);
 
     apiResponse.data = { watchlists, user: await getCachedUserData(request) };

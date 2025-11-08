@@ -2,6 +2,7 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import * as React from "react";
 
 import { cn } from "lib/utils";
+import { Link } from "react-router-dom";
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
@@ -45,4 +46,29 @@ const AvatarFallback = React.forwardRef<
 ));
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 
-export { Avatar, AvatarFallback, AvatarImage };
+interface UserAvatarProps {
+  userId: number;
+  userName: string;
+  ownUser?: boolean;
+  className?: string;
+}
+
+const UserAvatar = ({
+  userId,
+  userName,
+  ownUser,
+  className,
+}: UserAvatarProps) => {
+  return (
+    <Link to={ownUser ? "/profile" : `/profile/${userId}`}>
+      <Avatar>
+        <AvatarImage src={"/placeholder.svg"} />
+        <AvatarFallback className={className ?? "bg-slate-700 text-white"}>
+          {userName[0].toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+    </Link>
+  );
+};
+
+export { Avatar, AvatarFallback, AvatarImage, UserAvatar };

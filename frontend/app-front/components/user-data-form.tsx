@@ -65,8 +65,6 @@ function UserDataForm({ userData, accessToken }: UserDataFormProps) {
       }
     }
 
-    console.log(dataToUpdate);
-
     if (Object.keys(dataToUpdate).length === 0) {
       console.log("No changes detected, not calling API.");
 

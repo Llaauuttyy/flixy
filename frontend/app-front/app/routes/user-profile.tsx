@@ -20,15 +20,16 @@ import {
 } from "services/api/flixy/server/user-data";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 import type { UserDataGet, UserInsights } from "services/api/flixy/types/user";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "../+types/root";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_FOLLOWERS_PAGE_SIZE = 10;
 const DEFAULT_FOLLOWING_PAGE_SIZE = 10;
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const url = new URL(request.url);
+  const userId: number = Number(params.userId);
 
   const followersPage = parseInt(
     url.searchParams.get("followers") ?? `${DEFAULT_PAGE}`,
@@ -42,25 +43,29 @@ export async function loader({ request }: Route.LoaderArgs) {
   let apiResponse: ApiResponse = {};
   let followResults = {} as FollowResults;
   let userInsights: UserInsights = {} as UserInsights;
-  let user: UserDataGet = {} as UserDataGet;
+  let userData: UserDataGet = {} as UserDataGet;
+  let user: UserDataGet | undefined = {} as UserDataGet;
 
   try {
-    user = await handleUserDataGet({ request });
+    userData = await handleUserDataGet({ request, userId });
+    user = await getCachedUserData(request);
 
     followResults.followers = await getUserFollowers(
       followersPage,
       DEFAULT_FOLLOWERS_PAGE_SIZE,
-      request
+      request,
+      userId
     );
 
     followResults.following = await getUserFollowing(
       followingPage,
       DEFAULT_FOLLOWING_PAGE_SIZE,
-      request
+      request,
+      userId
     );
-    userInsights = await getUserInsights(request);
+    userInsights = await getUserInsights(request, userId);
 
-    apiResponse.data = { followResults, userInsights, user };
+    apiResponse.data = { followResults, userInsights, user, userData };
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -79,7 +84,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
-export default function MovieInsights() {
+export default function UserProfile() {
   const { t } = useTranslation();
 
   let apiResponse: ApiResponse = useLoaderData();
@@ -113,10 +118,9 @@ export default function MovieInsights() {
         </div>
         {/* User data */}
         <ProfileUserData
-          user={apiResponse.data.user}
+          user={apiResponse.data.userData}
           accessToken={String(apiResponse.accessToken)}
           followResults={followResults}
-          canEditData
         />
         {/* Header */}
         <div className="p-6 pb-0">
