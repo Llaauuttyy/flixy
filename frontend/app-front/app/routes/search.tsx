@@ -4,13 +4,16 @@ import { MovieCard } from "components/ui/movie-card";
 import { Pagination } from "components/ui/pagination";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { UserCard } from "components/ui/user-card";
-import { Film, Users } from "lucide-react";
+import WatchList from "components/ui/watchlist/watchlist";
+import { Eye, Film, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { searchMovies } from "services/api/flixy/server/movies";
 import { searchUsers } from "services/api/flixy/server/user-data";
+import { searchWatchLists } from "services/api/flixy/server/watchlists";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { UserDataGet } from "services/api/flixy/types/user";
+import type { WatchLists } from "services/api/flixy/types/watchlist";
 import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "./+types/search";
 
@@ -22,6 +25,7 @@ interface SearchResults {
   query: string;
   movies: Page<Movie>;
   users: Page<any>;
+  watchlists: WatchLists;
   user?: UserDataGet;
 }
 
@@ -53,6 +57,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     url.searchParams.get("users_page") ?? `${DEFAULT_PAGE}`,
     10
   );
+  const watchlistsPage = parseInt(
+    url.searchParams.get("watchlists_page") ?? `${DEFAULT_PAGE}`,
+    10
+  );
 
   let apiResponse: ApiResponse = {};
 
@@ -73,6 +81,12 @@ export async function loader({ request }: Route.LoaderArgs) {
       request
     );
     searchResults.users = await searchUsers(
+      query,
+      usersPage,
+      DEFAULT_USERS_PAGE_SIZE,
+      request
+    );
+    searchResults.watchlists = await searchWatchLists(
       query,
       usersPage,
       DEFAULT_USERS_PAGE_SIZE,
@@ -206,6 +220,40 @@ export default function SearchPage() {
                           key={user.id}
                           user={user}
                           accessToken={String(apiResponse.accessToken)}
+                        />
+                      ))}
+                    </div>
+                  </Pagination>
+                </div>
+                {/* Watchlists Section */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Eye className="w-5 h-5 text-pink-500" />
+                    <h2 className="text-xl font-semibold">
+                      {t("search.watchlists_section_title")}
+                    </h2>
+                    <Badge
+                      variant="secondary"
+                      className="bg-slate-700 text-slate-300"
+                    >
+                      {searchResults.watchlists.total_watchlists}{" "}
+                      {t("search.results")}
+                    </Badge>
+                  </div>
+                  <Pagination
+                    itemsPage={searchResults.watchlists.items}
+                    onPageChange={(page: number) => {
+                      fetcher.load(
+                        `/search?query=${searchResults.query}&watchlists_page=${page}&users_page=${searchResults.users.page}&movies_page=${searchResults.movies.page}`
+                      );
+                    }}
+                  >
+                    <div className="grid grid-cols-1 gap-4">
+                      {searchResults.watchlists.items.items.map((watchlist) => (
+                        <WatchList
+                          key={watchlist.id}
+                          accessToken={String(apiResponse.accessToken)}
+                          watchlist={watchlist}
                         />
                       ))}
                     </div>

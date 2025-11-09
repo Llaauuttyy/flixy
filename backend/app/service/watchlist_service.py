@@ -75,6 +75,7 @@ class WatchListService:
                 name=w.name,
                 description=w.description,
                 movies=paginate(watchlists_movies, movies_params),
+                editable=w.user_id==user_id,
                 created_at=w.created_at,
                 updated_at=w.updated_at
             ))
@@ -358,3 +359,64 @@ class WatchListService:
                     
         except HTTPException as e:
             raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+        
+    def search_watchlists(self, db: Database, search_query: str, user_id: int, params: Params) -> Tuple[WatchListsGetResponse, List[WatchListDTO]]:
+        search_conditions = db.build_condition([WatchList.name.ilike(f"%{search_query}%")])
+        watchlists_found = db.find_all(WatchList, search_conditions)
+
+        watchlists = []
+
+        total_watchlists = 0
+        total_movies = 0
+
+        for w in watchlists_found:
+            watchlists_movies = []
+
+            for wm in w.watchlist_movies:
+                movie_data = wm.movie
+
+                movie_user_rating = None
+                if movie_data.reviews:
+                    movie_user_rating = movie_data.reviews[0].rating
+
+                watchlists_movies.append(MovieGetResponse(
+                    id=movie_data.id,
+                    title=movie_data.title,
+                    year=movie_data.year,
+                    imdb_rating=movie_data.imdb_rating,
+                    genres=movie_data.genres,
+                    countries=movie_data.countries,
+                    duration=movie_data.duration,
+                    cast=movie_data.cast,
+                    directors=movie_data.directors,
+                    writers=movie_data.writers,
+                    plot=movie_data.plot,
+                    logo_url=movie_data.logo_url,
+                    user_rating=movie_user_rating,
+                    flixy_rating = utils.get_movie_average_rating(movie_data)
+                ))
+
+                total_movies += 1
+
+            movies_params = Params(
+                page=params.page,
+                size=params.size,
+            )
+
+            watchlists.append(WatchListBase(
+                id=w.id,
+                name=w.name,
+                description=w.description,
+                movies=paginate(watchlists_movies, movies_params),
+                editable=w.user_id==user_id,
+                created_at=w.created_at,
+                updated_at=w.updated_at
+            ))
+
+            total_watchlists += 1
+        
+        watchlists.sort(key=lambda x: x.updated_at, reverse=True)
+        return WatchListsGetResponse(
+            total_movies=total_movies,
+            total_watchlists=total_watchlists
+        ), watchlists
