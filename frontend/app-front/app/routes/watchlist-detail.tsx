@@ -66,8 +66,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       request
     );
 
-    console.log(`Watchlist ${watchListId}: `, watchlist);
-
     apiResponse.accessToken = await getAccessToken(request);
 
     apiResponse.data = { watchlist, user: await getCachedUserData(request) };
@@ -177,8 +175,6 @@ export default function WatchListsPage() {
         return [...prevMovies, movie];
       }
     });
-
-    console.log(moviesToDelete);
   };
 
   const handleEditWatchListMovieAddition = (movie: MovieDataGet) => {
@@ -211,8 +207,6 @@ export default function WatchListsPage() {
         String(apiResponse.accessToken),
         watchListDelete
       );
-
-      console.log(response);
 
       navigator("/watchlists");
     } catch (err: Error | any) {

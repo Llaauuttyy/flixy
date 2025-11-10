@@ -5,7 +5,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { Star } from "lucide-react";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
-import { Avatar } from "../avatar";
+import { UserAvatar } from "../avatar";
 import { Badge } from "../badge";
 import { Card } from "../card";
 
@@ -20,11 +20,7 @@ export const RatingCard = ({ review }: RatingCardProps) => {
   return (
     <Card key={review.id} className="bg-slate-800/50 border-slate-700 p-4">
       <div className="flex items-center gap-2 mb-3">
-        <Avatar className="h-8 w-8 bg-slate-700 flex items-center justify-center">
-          <span className="text-white font-medium text-sm">
-            {review.name[0].toUpperCase()}
-          </span>
-        </Avatar>
+        <UserAvatar userId={review.user_id} userName={review.user_name} />
         <span className="text-slate-300 text-sm font-medium">
           {review.name}
         </span>

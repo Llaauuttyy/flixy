@@ -234,7 +234,6 @@ export default function MovieDetail() {
 
       setApiResponseWatchLists(watchLists);
 
-      console.log("Watchlists: ", watchLists);
       if (!watchLists.data.items || watchLists.data.items.items.length === 0) {
         console.log("No more watchlists to load.");
         setReachWatchListsEnd(true);

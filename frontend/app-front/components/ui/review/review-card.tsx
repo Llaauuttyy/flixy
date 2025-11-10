@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
+import { UserAvatar } from "components/ui/avatar";
 import { Badge } from "components/ui/badge";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -85,12 +85,10 @@ export function ReviewCard({
           </div>
         )}
         <div className="flex items-start gap-4">
-          <Avatar>
-            <AvatarImage src={"/placeholder.svg?height=32&width=32"} />
-            <AvatarFallback className="bg-slate-700 text-white">
-              {currentReview.name[0]?.toUpperCase() || "NN"}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            userId={currentReview.user_id}
+            userName={currentReview.user_name}
+          />
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <span className="font-medium">{currentReview.name}</span>

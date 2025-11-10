@@ -60,8 +60,6 @@ export default function HomePage() {
   const MoviesCountByGenre: Dictionary<string> =
     apiResponse.data?.feed?.movies_count_by_genre;
 
-  console.log("Featured Movie: ", recentReviews);
-
   if (apiResponse.error) {
     return (
       <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-950">

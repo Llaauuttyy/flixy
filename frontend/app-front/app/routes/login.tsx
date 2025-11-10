@@ -38,9 +38,10 @@ export async function action({ request }: Route.ActionArgs) {
       username,
       password,
     });
-    const userDataResponse = await handleUserDataGet(request, access_token);
-
-    console.log("Login successful:", access_token);
+    const userDataResponse = await handleUserDataGet({
+      request,
+      token: access_token,
+    });
 
     accessSession.set("accessToken", access_token);
     refreshSession.set("refreshToken", refresh_token);

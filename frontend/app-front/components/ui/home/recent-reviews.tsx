@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
-import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
+import { UserAvatar } from "../avatar";
 import { Card } from "../card";
 
 interface RecentReviewsProps {
@@ -61,10 +61,10 @@ export function RecentReviews({ reviews }: RecentReviewsProps) {
 
             <div className="flex items-center justify-between pt-3 border-t border-slate-700">
               <div className="flex items-center gap-2">
-                <Avatar className="w-6 h-6">
-                  <AvatarImage alt={review.user_name} />
-                  <AvatarFallback>{review.name[0]}</AvatarFallback>
-                </Avatar>
+                <UserAvatar
+                  userId={review.user_id}
+                  userName={review.user_name}
+                />
                 <div className="flex flex-col">
                   <span className="text-xs font-medium text-white">
                     {review.name}

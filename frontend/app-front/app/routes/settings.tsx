@@ -35,7 +35,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   let apiResponse: ApiResponse = {};
 
   try {
-    const userDataResponse: UserDataGet = await handleUserDataGet(request);
+    const userDataResponse: UserDataGet = await handleUserDataGet({ request });
     console.log("Got user data successfully");
 
     apiResponse.data = { user: userDataResponse };

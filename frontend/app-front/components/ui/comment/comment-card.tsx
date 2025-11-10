@@ -5,7 +5,7 @@ import { Pencil, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 import { handleLikeComment } from "services/api/flixy/client/comment";
 import type { CommentDataGet } from "services/api/flixy/types/comment";
-import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
+import { UserAvatar } from "../avatar";
 import { Card, CardContent } from "../card";
 
 dayjs.extend(relativeTime);
@@ -37,12 +37,11 @@ export function CommentCard({ accessToken, comment }: CommentCardProps) {
     <Card className="bg-slate-800/50 border-slate-700">
       <CardContent className="flex flex-col p-6 space-y-4">
         <div className="flex items-start gap-4">
-          <Avatar>
-            <AvatarImage src={"/placeholder.svg?height=32&width=32"} />
-            <AvatarFallback className="bg-slate-700 text-white">
-              {currentComment.user_name[0]?.toUpperCase() || "NN"}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            userId={currentComment.user_id}
+            userName={currentComment.user_name}
+            className="bg-slate-700 text-white"
+          />
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <span className="font-medium">{currentComment.user_name}</span>
