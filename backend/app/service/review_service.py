@@ -251,6 +251,12 @@ class ReviewService:
         for like in review_likes:
             db.remove(like)
             review_to_delete.likes = 0
+
+    def remove_review_comments(self, db: Database, review_to_delete: Review):
+        review_comments = db.find_all(Comment, Comment.review_id == review_to_delete.id)
+
+        for comment in review_comments:
+            db.remove(comment)
         
     def delete_review_text(self, db: Database, user_id: int, id: int):
         try:
@@ -263,6 +269,7 @@ class ReviewService:
             review_to_delete.visible_updated_at = datetime.now()
 
             self.remove_review_likes(db, review_to_delete)
+            self.remove_review_comments(db, review_to_delete)
 
             db.save(review_to_delete)
         except IntegrityError as e:
