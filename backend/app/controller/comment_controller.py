@@ -34,3 +34,11 @@ def get_comment(session: SessionDep, request: Request, comment_service: CommentS
         return paginate(comments)
     except Exception as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+
+@comment_router.delete("/comment/{id}")
+def delete_comment(session: SessionDep, request: Request, comment_service: CommentServiceDep, id: int = Path(..., title="id", ge=1)):
+    user_id = request.state.user_id
+    try:
+        comment_service.delete_comment(Database(session), user_id, id)
+    except Exception as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))

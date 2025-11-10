@@ -100,3 +100,16 @@ class CommentService:
 
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
+
+    def delete_comment(self, db: Database, user_id: int, id: int):
+        try:
+            comment_to_delete = db.find_by_multiple(Comment, id=id, user_id=user_id)
+
+            if not comment_to_delete:
+                raise HTTPException(status_code=404, detail=COMMENT_NOT_FOUND)
+
+            db.delete(comment_to_delete)
+
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))
