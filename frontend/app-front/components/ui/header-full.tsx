@@ -73,7 +73,11 @@ export function HeaderFull() {
           >
             <Bell className="h-5 w-5" />
           </Button>
-          <UserAvatar userId={user.id} userName={user.name} ownUser />
+          <UserAvatar
+            userId={user?.id ?? 0}
+            userName={user?.name ?? "NN"}
+            ownUser
+          />
         </div>
       </div>
     </header>

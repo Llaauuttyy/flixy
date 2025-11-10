@@ -46,6 +46,7 @@ class WatchListGetResponse(BaseModel):
     movies: Optional[Page[MovieGetResponse]] = []
     activity: Optional[list[WatchListActivity]] = []
     insights: Optional[WatchListInsights] = None
+    editable: bool
     created_at: datetime
     updated_at: datetime
 

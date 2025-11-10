@@ -89,8 +89,8 @@ class WatchListService:
         ), watchlists
 
     def get_watchlist(self, db: Database, user_id: int, watchlist_id: int) -> Tuple[WatchListGetResponse, List[MovieGetResponse]]:
-        user = db.find_by(User, "id", user_id, options=[
-            selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+        watchlist = db.find_by(WatchList, "id", watchlist_id, options=[
+            selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
             with_loader_criteria(
                 WatchList,
                 lambda watchlist: watchlist.id == watchlist_id
@@ -98,13 +98,10 @@ class WatchListService:
             with_loader_criteria(
                 Review,
                 lambda review: review.user_id == user_id
-            )
-        ])
+            )])
 
-        if not user.watchlists:
+        if not watchlist:
             raise HTTPException(status_code=404, detail=WATCHLIST_NOT_FOUND)
-
-        watchlist = user.watchlists[0]
 
         watchlist_movie_objects = watchlist.watchlist_movies
         watchlist_movie_objects.sort(key=lambda x: x.updated_at, reverse=True)
@@ -180,6 +177,7 @@ class WatchListService:
             description=watchlist.description,
             activity=watchlist_activities,
             insights=watchlist_insights,
+            editable=user_id==watchlist.user_id,
             created_at=watchlist.created_at,
             updated_at=watchlist.updated_at
         ), watchlists_movies

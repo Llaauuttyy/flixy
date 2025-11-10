@@ -67,8 +67,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     );
 
     apiResponse.accessToken = await getAccessToken(request);
+    const user = await getCachedUserData(request);
 
-    apiResponse.data = { watchlist, user: await getCachedUserData(request) };
+    apiResponse.data = { watchlist, user };
     return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /watchlist/:watchListId said: ", err.message);
@@ -308,7 +309,7 @@ export default function WatchListsPage() {
                 )}
               </div>
               <div className="flex item-center">
-                {!isEditing && (
+                {watchlist.editable && !isEditing && (
                   <Button
                     onClick={setEditWatchList}
                     className="mr-1 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
@@ -316,7 +317,7 @@ export default function WatchListsPage() {
                     <Edit size={30} />
                   </Button>
                 )}
-                {!isEditing && (
+                {watchlist.editable && !isEditing && (
                   <ConfirmationBox
                     isAccepted={(value) => handleConfirmationBox(value)}
                     title={t("confirmation_box.watchlist.title")}

@@ -20,6 +20,7 @@ import type { Route } from "./+types/search";
 const DEFAULT_PAGE = 1;
 const DEFAULT_MOVIES_PAGE_SIZE = 8;
 const DEFAULT_USERS_PAGE_SIZE = 8;
+const DEFAULT_WATCHLISTS_PAGE_SIZE = 4;
 
 interface SearchResults {
   query: string;
@@ -88,8 +89,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
     searchResults.watchlists = await searchWatchLists(
       query,
-      usersPage,
-      DEFAULT_USERS_PAGE_SIZE,
+      watchlistsPage,
+      DEFAULT_WATCHLISTS_PAGE_SIZE,
       request
     );
 
@@ -177,7 +178,7 @@ export default function SearchPage() {
                     itemsPage={searchResults.movies}
                     onPageChange={(page: number) => {
                       fetcher.load(
-                        `/search?query=${searchResults.query}&movies_page=${page}&users_page=${searchResults.users.page}`
+                        `/search?query=${searchResults.query}&movies_page=${page}&users_page=${searchResults.users.page}&watchlists_page=${searchResults.watchlists.items.page}`
                       );
                     }}
                   >
@@ -210,7 +211,7 @@ export default function SearchPage() {
                     itemsPage={searchResults.users}
                     onPageChange={(page: number) => {
                       fetcher.load(
-                        `/search?query=${searchResults.query}&users_page=${page}&movies_page=${searchResults.movies.page}`
+                        `/search?query=${searchResults.query}&users_page=${page}&movies_page=${searchResults.movies.page}&watchlists_page=${searchResults.watchlists.items.page}`
                       );
                     }}
                   >
