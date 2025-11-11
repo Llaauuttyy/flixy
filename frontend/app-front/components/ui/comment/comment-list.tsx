@@ -15,15 +15,21 @@ interface CommentCardProps {
   accessToken: string;
   comments: CommentDataGet[];
   reviewId: number;
+  onDeletion: (commentId: number) => void;
 }
 
 export function CommentList({
   accessToken,
   comments,
   reviewId,
+  onDeletion,
 }: CommentCardProps) {
   const { t } = useTranslation();
   const [showComments, setShowComments] = useState(false);
+
+  const handleCommentDeletion = (commentId: number) => {
+    onDeletion(commentId);
+  };
 
   const getCommentsRender = () => {
     let commentsToRender = comments.slice(0, 3);
@@ -32,7 +38,11 @@ export function CommentList({
     return (
       <>
         {commentsToRender.map((comment) => (
-          <CommentCard comment={comment} accessToken={accessToken} />
+          <CommentCard
+            comment={comment}
+            accessToken={accessToken}
+            onDeletion={handleCommentDeletion}
+          />
         ))}
         {showMoreLink && (
           <Link to={`/reviews/${reviewId}`}>

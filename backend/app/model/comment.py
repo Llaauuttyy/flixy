@@ -15,4 +15,9 @@ class Comment(SQLModel, table=True):
     
     user: Optional["User"] = Relationship(back_populates="comments")
     review: Optional["Review"] = Relationship(back_populates="comments")
-    comment_likes: list["CommentLike"] = Relationship(back_populates="comment")
+    
+    comment_likes: list["CommentLike"] = Relationship(
+        back_populates="comment",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+

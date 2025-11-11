@@ -13,4 +13,5 @@ class CommentGetDTO(BaseModel):
     liked_by_user: bool = False
     created_at: datetime
     user_id: int
+    is_deletable: bool
     user_name: str

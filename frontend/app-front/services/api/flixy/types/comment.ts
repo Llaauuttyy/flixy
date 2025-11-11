@@ -6,6 +6,7 @@ export interface CommentCreation {
 export interface CommentDataGet {
   id: number;
   user_id: number;
+  is_deletable: boolean;
   review_id: number;
   text: string;
   created_at: Date;

@@ -368,6 +368,12 @@ export const enTranslation = {
       cancel: "Cancel",
       accept: "Delete",
     },
+    comment: {
+      title: "Delete comment?",
+      subtitle: "Your comment will be permanently removed.",
+      cancel: "Cancel",
+      accept: "Delete",
+    },
   },
   reviews: {
     title: "Reviews",

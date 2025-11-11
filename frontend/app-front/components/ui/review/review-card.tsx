@@ -186,6 +186,14 @@ export function ReviewCard({
         accessToken={accessToken}
         comments={currentReview.comments}
         reviewId={currentReview.id}
+        onDeletion={(commentId: number) => {
+          setCurrentReview((prev) => ({
+            ...prev,
+            comments: prev.comments.filter(
+              (comment) => comment.id !== commentId
+            ),
+          }));
+        }}
       />
     </Card>
   );

@@ -97,6 +97,7 @@ class ReviewService:
                 text=comment.text,
                 likes=comment.likes,
                 user_id=comment.user_id,
+                is_deletable=(comment.user_id == user_id),
                 liked_by_user=any(cl.user_id == user_id for cl in comment.comment_likes),
                 user_name=comment.user.name,
                 created_at=comment.created_at
@@ -251,6 +252,12 @@ class ReviewService:
         for like in review_likes:
             db.remove(like)
             review_to_delete.likes = 0
+
+    def remove_review_comments(self, db: Database, review_to_delete: Review):
+        review_comments = db.find_all(Comment, Comment.review_id == review_to_delete.id)
+
+        for comment in review_comments:
+            db.remove(comment)
         
     def delete_review_text(self, db: Database, user_id: int, id: int):
         try:
@@ -263,6 +270,7 @@ class ReviewService:
             review_to_delete.visible_updated_at = datetime.now()
 
             self.remove_review_likes(db, review_to_delete)
+            self.remove_review_comments(db, review_to_delete)
 
             db.save(review_to_delete)
         except IntegrityError as e:

@@ -34,6 +34,7 @@ class CommentService:
                 text=new_comment.text,
                 likes=new_comment.likes,
                 user_id=new_comment.user_id,
+                is_deletable=(new_comment.user_id == user_id),
                 user_name=new_comment.user.name,
                 created_at=new_comment.created_at
             )
@@ -74,6 +75,7 @@ class CommentService:
                 text=comment_to_like.text,
                 likes=comment_to_like.likes,
                 user_id=comment_to_like.user_id,
+                is_deletable=(comment_to_like.user_id == user_id),
                 user_name=getattr(comment_to_like.user, "name", None) if comment_to_like.user else None,
                 created_at=comment_to_like.created_at,
                 liked_by_user=liked_by_user == False
@@ -93,10 +95,24 @@ class CommentService:
                 text=comment.text,
                 likes=comment.likes,
                 user_id=comment.user_id,
+                is_deletable=(comment.user_id == user_id),
                 user_name=getattr(comment.user, "name", None) if comment.user else None,
                 liked_by_user=any(cl.user_id == user_id for cl in comment.comment_likes),
                 created_at=comment.created_at
             ) for comment in comments]
 
         except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+
+    def delete_comment(self, db: Database, user_id: int, id: int):
+        try:
+            comment_to_delete = db.find_by_multiple(Comment, id=id, user_id=user_id)
+
+            if not comment_to_delete:
+                raise HTTPException(status_code=404, detail=COMMENT_NOT_FOUND)
+
+            db.delete(comment_to_delete)
+
+        except Exception as e:
+            db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
