@@ -97,6 +97,7 @@ class ReviewService:
                 text=comment.text,
                 likes=comment.likes,
                 user_id=comment.user_id,
+                is_deletable=(comment.user_id == user_id),
                 liked_by_user=any(cl.user_id == user_id for cl in comment.comment_likes),
                 user_name=comment.user.name,
                 created_at=comment.created_at

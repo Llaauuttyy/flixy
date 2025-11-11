@@ -372,6 +372,12 @@ export const esTranslation = {
       cancel: "Cancelar",
       accept: "Eliminar",
     },
+    comment: {
+      title: "¿Eliminar comentario?",
+      subtitle: "Tu comentario será eliminado permanentemente.",
+      cancel: "Cancelar",
+      accept: "Eliminar",
+    },
   },
   reviews: {
     title: "Reseñas",

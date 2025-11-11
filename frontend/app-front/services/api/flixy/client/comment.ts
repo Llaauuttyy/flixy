@@ -47,3 +47,26 @@ export async function handleLikeComment(
 
   return response_json;
 }
+
+export async function handleDeleteComment(
+  accessToken: string | undefined,
+  commentId: number
+) {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL_CLIENT + `/comment/${commentId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
