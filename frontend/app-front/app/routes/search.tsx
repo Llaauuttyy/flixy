@@ -242,7 +242,7 @@ export default function SearchPage() {
                     </Badge>
                   </div>
                   <Pagination
-                    itemsPage={searchResults.watchlists.items}
+                    itemsPage={searchResults.watchlists?.items}
                     onPageChange={(page: number) => {
                       fetcher.load(
                         `/search?query=${searchResults.query}&watchlists_page=${page}&users_page=${searchResults.users.page}&movies_page=${searchResults.movies.page}`
@@ -250,13 +250,15 @@ export default function SearchPage() {
                     }}
                   >
                     <div className="grid grid-cols-1 gap-4">
-                      {searchResults.watchlists.items.items.map((watchlist) => (
-                        <WatchList
-                          key={watchlist.id}
-                          accessToken={String(apiResponse.accessToken)}
-                          watchlist={watchlist}
-                        />
-                      ))}
+                      {searchResults.watchlists?.items?.items?.map(
+                        (watchlist) => (
+                          <WatchList
+                            key={watchlist.id}
+                            accessToken={String(apiResponse.accessToken)}
+                            watchlist={watchlist}
+                          />
+                        )
+                      )}
                     </div>
                   </Pagination>
                 </div>
