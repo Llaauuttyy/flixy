@@ -155,6 +155,7 @@ export const enTranslation = {
     user_reviews: "reviews",
     user_follow_button: "Follow",
     user_unfollow_button: "Unfollow",
+    watchlists_section_title: "Watchlists",
   },
   not_found: {
     title_oops: "Oops!",

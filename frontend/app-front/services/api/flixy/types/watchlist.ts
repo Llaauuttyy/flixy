@@ -50,8 +50,25 @@ export interface WatchListGet {
   name: string;
   description: string | null;
   movies: Page<MovieDataGet>;
+  editable?: boolean;
   activity: WatchListActivity[];
   insights: WatchListInsights;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WatchLists {
+  items: Page<WatchListFace>;
+  total_watchlists: number;
+  total_movies: number;
+}
+
+export interface WatchListFace {
+  id: number;
+  name: string;
+  description: string;
+  movies: Page<MovieDataGet>;
+  editable?: boolean;
   created_at: string;
   updated_at: string;
 }

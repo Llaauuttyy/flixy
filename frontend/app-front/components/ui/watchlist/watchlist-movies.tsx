@@ -5,27 +5,12 @@ import type { WatchListGet } from "services/api/flixy/types/watchlist";
 import { AddMovieWatchList } from "../add-movie-watchlist";
 import WatchListMoviesDisplay from "./watchlist-movies-display";
 
-interface Movie {
-  id: number;
-  title: string;
-  year: number;
-  imdb_rating: number;
-  genres: string;
-  countries: string;
-  duration: number;
-  cast: string;
-  directors: string;
-  writers: string;
-  plot: string;
-  logo_url: string;
-  user_rating: number | null;
-}
-
 interface WatchList {
   id?: number;
   name?: string;
   description?: string;
   movies: Page<MovieDataGet>;
+  editable: boolean;
   // icon: string;
   created_at?: string;
   updated_at?: string;
@@ -104,7 +89,7 @@ export default function WatchListMovies({
           onMovieDeletion={handleMovieDeletion}
           highlightedMovies={highlightedMovies}
         />
-        {!isSeeWatchList && (
+        {!isSeeWatchList && watchList.editable && (
           <AddMovieWatchList
             showOnly={showOnly}
             accessToken={String(accessToken)}

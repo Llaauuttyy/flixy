@@ -11,9 +11,11 @@ import i18n from "i18n/i18n";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { handleWatchListDeletion } from "services/api/flixy/client/watchlists";
-import type { MovieDataGet } from "services/api/flixy/types/movie";
-import type { ApiResponse, Page } from "services/api/flixy/types/overall";
-import type { WatchListDelete } from "services/api/flixy/types/watchlist";
+import type { ApiResponse } from "services/api/flixy/types/overall";
+import type {
+  WatchListDelete,
+  WatchListFace,
+} from "services/api/flixy/types/watchlist";
 import { Button } from "../button";
 import { ConfirmationBox } from "../confirmation-box";
 import WatchListMovies from "./watchlist-movies";
@@ -21,24 +23,14 @@ import WatchListMovies from "./watchlist-movies";
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
-interface WatchList {
-  id: number;
-  name: string;
-  description: string;
-  movies: Page<MovieDataGet>;
-  // icon: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export default function WatchList({
   accessToken,
   watchlist,
   onDelete,
 }: {
   accessToken: string;
-  watchlist: WatchList;
-  onDelete(watchlistId: number): void;
+  watchlist: WatchListFace;
+  onDelete?: (watchlistId: number) => void;
 }) {
   dayjs.locale(i18n.language || "en");
 
@@ -65,7 +57,9 @@ export default function WatchList({
     try {
       await handleWatchListDeletion(accessToken, watchListDelete);
 
-      onDelete(watchlist.id);
+      if (onDelete) {
+        onDelete(watchlist.id);
+      }
     } catch (err: Error | any) {
       console.log("API DELETE /watchlist/:watchListId ", err.message);
 
@@ -115,20 +109,22 @@ export default function WatchList({
               {t("watchlists.see_watchlist")}
             </Button>
           </Link>
-          <ConfirmationBox
-            isAccepted={(value) => handleConfirmationBox(value)}
-            title={t("confirmation_box.watchlist.title")}
-            subtitle={t("confirmation_box.watchlist.subtitle")}
-            cancelText={t("confirmation_box.watchlist.cancel")}
-            acceptText={t("confirmation_box.watchlist.accept")}
-          >
-            <Button
-              disabled={isDeleting}
-              className="mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+          {watchlist.editable && (
+            <ConfirmationBox
+              isAccepted={(value) => handleConfirmationBox(value)}
+              title={t("confirmation_box.watchlist.title")}
+              subtitle={t("confirmation_box.watchlist.subtitle")}
+              cancelText={t("confirmation_box.watchlist.cancel")}
+              acceptText={t("confirmation_box.watchlist.accept")}
             >
-              <Trash size={30} color="red" />
-            </Button>
-          </ConfirmationBox>
+              <Button
+                disabled={isDeleting}
+                className="mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+              >
+                <Trash size={30} color="red" />
+              </Button>
+            </ConfirmationBox>
+          )}
         </div>
       </div>
 
