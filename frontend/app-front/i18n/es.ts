@@ -158,6 +158,7 @@ export const esTranslation = {
     user_reviews: "reseñas",
     user_follow_button: "Seguir",
     user_unfollow_button: "Dejar de seguir",
+    watchlists_section_title: "Listas",
   },
   not_found: {
     title_oops: "¡Uy!",
