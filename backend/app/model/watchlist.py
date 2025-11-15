@@ -12,6 +12,7 @@ class WatchList(SQLModel, table=True):
     user_id: int = Field(foreign_key="users.id")
     name: str = Field(unique=True)
     description: Optional[str] = None
+    private: bool = False
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 
@@ -19,3 +20,4 @@ class WatchList(SQLModel, table=True):
     watchlist_movies: List[WatchListMovie] = Relationship(back_populates="watchlist")
 
     # movies: Optional[WatchListMovie] = Relationship(back_populates="watchlists")
+    

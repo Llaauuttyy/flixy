@@ -334,6 +334,7 @@ export const esTranslation = {
     },
     visibility: "Visibilidad",
     visibility_public: "Pública",
+    visibility_private: "Privada",
     activity: {
       title: "Actividad reciente",
       no_activity: "Aún no hay actividad en esta lista.",
@@ -345,6 +346,7 @@ export const esTranslation = {
     name_placeholder: "Ingresa el nombre de la lista",
     description: "Descripción",
     description_placeholder: "Ingresa la descripción de la lista",
+    private: "Privada",
     movies: "Películas",
     create: "Crear",
     creating: "Creando...",
