@@ -55,9 +55,6 @@ export function UserCard({ user, accessToken }: UserCardProps) {
               {currentUser.followers.toLocaleString()}{" "}
               {t("search.user_followers")}
             </span>
-            <span>
-              {currentUser.reviews || 0} {t("search.user_reviews")}
-            </span>
           </div>
         </div>
         <Button
