@@ -92,7 +92,7 @@ export default function WatchList({
       const saved = await handleSaveWatchlist(accessToken, watchlist.id);
       setCurrentWatchlist((prev) => ({ ...prev, saved_by_user: saved }));
       if (onSaved) {
-        onSaved(saved, watchlist.id);
+        onSaved(saved);
       }
     } catch (err: Error | any) {
       console.log("API DELETE /watchlist/:watchListId ", err.message);

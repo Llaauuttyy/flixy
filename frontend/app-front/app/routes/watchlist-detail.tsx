@@ -16,11 +16,21 @@ import { Label } from "components/ui/label";
 import { MaxLengthInput } from "components/ui/max-length-input";
 import WatchListMovies from "components/ui/watchlist/watchlist-movies";
 import WatchListMoviesDisplay from "components/ui/watchlist/watchlist-movies-display";
-import { Clock, Edit, Eye, Film, Loader2, Pencil, Trash } from "lucide-react";
+import {
+  Bookmark,
+  Clock,
+  Edit,
+  Eye,
+  Film,
+  Loader2,
+  Pencil,
+  Trash,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLoaderData, useNavigate } from "react-router-dom";
 import {
+  handleSaveWatchlist,
   handleWatchListDeletion,
   handleWatchListEdition,
 } from "services/api/flixy/client/watchlists";
@@ -108,6 +118,7 @@ export default function WatchListsPage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [name, setName] = useState(watchlist.name || "");
   const [description, setDescription] = useState(watchlist.description || "");
@@ -170,6 +181,32 @@ export default function WatchListsPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleWatchlistSave = async () => {
+    setIsSaving(true);
+
+    let apiSaveResponse: ApiResponse = {};
+
+    try {
+      const saved = await handleSaveWatchlist(
+        String(apiResponse.accessToken),
+        watchlist.id
+      );
+      setWatchlist((prev) => ({ ...prev, saved_by_user: saved }));
+    } catch (err: Error | any) {
+      console.log("API DELETE /watchlist/:watchListId ", err.message);
+
+      if (err instanceof TypeError) {
+        apiSaveResponse.error = t("exceptions.service_error");
+        setApiDeleteResponse(apiSaveResponse);
+      }
+
+      apiSaveResponse.error = err.message;
+      setApiDeleteResponse(apiSaveResponse);
+    }
+
+    setIsSaving(false);
   };
 
   const handleEditWatchListMovieDeletion = (movie: MovieDataGet) => {
@@ -354,6 +391,19 @@ export default function WatchListsPage() {
                       <Trash size={30} color="red" />
                     </Button>
                   </ConfirmationBox>
+                )}
+                {!watchlist.editable && (
+                  <Button
+                    disabled={isSaving}
+                    onClick={handleWatchlistSave}
+                    className="mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                  >
+                    <Bookmark
+                      size={30}
+                      color="#45adf7ff"
+                      fill={watchlist.saved_by_user ? "#45adf7ff" : "none"}
+                    />
+                  </Button>
                 )}
               </div>
             </div>
