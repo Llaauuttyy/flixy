@@ -14,18 +14,8 @@ import WatchListCreator from "components/ui/watchlist/watchlist-creator";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import { useTranslation } from "react-i18next";
-import type { MovieDataGet } from "services/api/flixy/types/movie";
+import type { WatchListFace } from "services/api/flixy/types/watchlist";
 import { getAccessToken, getCachedUserData } from "services/api/utils";
-
-interface WatchListFace {
-  id: number;
-  name: string;
-  description: string;
-  movies: Page<MovieDataGet>;
-  // icon: string;
-  created_at: string;
-  updated_at: string;
-}
 
 interface WatchLists {
   items: {

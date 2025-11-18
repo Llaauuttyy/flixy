@@ -7,7 +7,10 @@ import { useTranslation } from "react-i18next";
 import { handleWatchListCreation } from "services/api/flixy/client/watchlists";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
-import type { WatchListCreate } from "services/api/flixy/types/watchlist";
+import type {
+  WatchListCreate,
+  WatchListFace,
+} from "services/api/flixy/types/watchlist";
 import { Checkbox } from "../checkbox";
 import { MaxLengthInput } from "../max-length-input";
 import WatchListCreatorMovies from "./watchlist-creator-movies";
@@ -26,17 +29,6 @@ interface Movie {
   plot: string;
   logo_url: string;
   user_rating: number | null;
-}
-
-interface WatchListFace {
-  id: number;
-  name: string;
-  description: string;
-  private: boolean;
-  movies: Page<MovieDataGet>;
-  // icon: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export default function WatchListCreator({
