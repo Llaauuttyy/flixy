@@ -72,6 +72,7 @@ export interface WatchListFace {
   description: string;
   movies: Page<MovieDataGet>;
   editable?: boolean;
+  saved_by_user: boolean;
   created_at: string;
   updated_at: string;
 }

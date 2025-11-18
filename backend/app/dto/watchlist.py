@@ -20,6 +20,7 @@ class WatchListBase(BaseModel):
     description: Optional[str] = None
     movies: Optional[Page[MovieGetResponse]] = []
     private: bool
+    saved_by_user: bool
     editable: bool
     created_at: datetime
     updated_at: datetime
@@ -46,6 +47,7 @@ class WatchListGetResponse(BaseModel):
     description: Optional[str] = None
     movies: Optional[Page[MovieGetResponse]] = []
     private: bool
+    saved_by_user: bool
     activity: Optional[list[WatchListActivity]] = []
     insights: Optional[WatchListInsights] = None
     editable: bool
@@ -76,6 +78,7 @@ class WatchListEditResponse(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     private: bool
+    saved_by_user: bool
     movie_ids_added: Optional[list[int]] = []
     movie_ids_deleted: Optional[list[int]] = []
 

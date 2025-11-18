@@ -5,6 +5,7 @@ from app.model.user import User
 from app.constants.message import MOVIE_ALREADY_IN_WATCHLIST, MOVIE_NOT_FOUND, WATCHLIST_ALREADY_EXISTS, WATCHLIST_NOT_FOUND, MOVIE_NOT_FOUND_IN_WATCHLIST
 from app.dto.movie import MovieGetResponse, MovieDTO
 from app.model.review import Review
+from app.model.watchlist_save import WatchListSave
 from fastapi import HTTPException
 from app.db.database import Database
 from sqlalchemy.exc import IntegrityError
@@ -19,13 +20,14 @@ class WatchListService:
     def get_all_watchlists(self, db: Database, user_id: int, params: Params) -> Tuple[WatchListsGetResponse, List[WatchListDTO]]:
         user = db.find_by(User, "id", user_id, options=[
             selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+            selectinload(User.watchlist_saves).selectinload(WatchListSave.watchlist).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
             with_loader_criteria(
                 Review,
                 lambda review: review.user_id == user_id
             )
         ])
 
-        if not user.watchlists:
+        if not user.watchlists and not user.watchlist_saves:
             return WatchListsGetResponse(
                 total_movies=0,
                 total_watchlists=0
@@ -33,10 +35,12 @@ class WatchListService:
 
         watchlists = []
 
+        watchlists_found = [ws.watchlist for ws in user.watchlist_saves] + user.watchlists
+        
         total_watchlists = 0
         total_movies = 0
 
-        for w in user.watchlists:
+        for w in watchlists_found:
             watchlists_movies = []
 
             for wm in w.watchlist_movies:
@@ -77,6 +81,7 @@ class WatchListService:
                 movies=paginate(watchlists_movies, movies_params),
                 private=w.private,
                 editable=w.user_id==user_id,
+                saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=w.id, user_id=user_id),
                 created_at=w.created_at,
                 updated_at=w.updated_at
             ))
@@ -180,6 +185,7 @@ class WatchListService:
             activity=watchlist_activities,
             insights=watchlist_insights,
             editable=user_id==watchlist.user_id,
+            saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=watchlist_id, user_id=user_id),
             created_at=watchlist.created_at,
             updated_at=watchlist.updated_at
         ), watchlists_movies
@@ -294,6 +300,7 @@ class WatchListService:
                 name=watchlist.name,
                 description=watchlist.description,
                 private=watchlist.private,
+                saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=watchlist.id, user_id=user_id),
                 movie_ids_added=movies_to_add,
                 movie_ids_deleted=movies_to_delete
             )
@@ -417,6 +424,7 @@ class WatchListService:
                 movies=paginate(watchlists_movies, movies_params),
                 private=w.private,
                 editable=w.user_id==user_id,
+                saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=w.id, user_id=user_id),
                 created_at=w.created_at,
                 updated_at=w.updated_at
             ))
@@ -428,3 +436,23 @@ class WatchListService:
             total_movies=total_movies,
             total_watchlists=total_watchlists
         ), watchlists
+    
+    def save_watchlist(self, db: Database, user_id: int, watchlist_id: int) -> bool:
+        try:
+            user_save = db.find_by_multiple(WatchListSave, watchlist_id=watchlist_id, user_id=user_id)
+
+            if not db.exists_by(WatchList, "id", watchlist_id):
+                raise HTTPException(status_code=404, detail=WATCHLIST_NOT_FOUND)
+            
+            saved_by_user = user_save is not None
+            if saved_by_user:
+                db.delete(user_save)
+            else:
+                user_save = WatchListSave(user_id=user_id, watchlist_id=watchlist_id)
+                db.save(user_save)
+
+            return not saved_by_user
+
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))

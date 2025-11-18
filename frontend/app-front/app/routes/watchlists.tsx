@@ -31,6 +31,8 @@ interface WatchLists {
   items: {
     items: WatchListFace[];
   };
+  total_movies: number;
+  total_watchlists: number;
 }
 
 const DEFAULT_PAGE = 1;
@@ -86,9 +88,11 @@ export default function WatchListsPage() {
   let [newWatchLists, setNewWatchLists] = useState<WatchListFace[]>([]);
 
   const [watchListsData, setWatchListsData] = useState({
-    movies: apiResponse.data.total_movies ? apiResponse.data.total_movies : 0,
-    watchlists: apiResponse.data.total_watchlists
-      ? apiResponse.data.total_watchlists
+    movies: apiResponse?.data?.watchlists?.total_movies
+      ? apiResponse?.data?.watchlists?.total_movies
+      : 0,
+    watchlists: apiResponse?.data?.watchlists?.total_watchlists
+      ? apiResponse?.data?.watchlists?.total_watchlists
       : 0,
   });
 
@@ -136,6 +140,12 @@ export default function WatchListsPage() {
         (wl) => wl.id !== watchlist_id
       ),
     }));
+  }
+
+  function handleWatchListSaved(saved: boolean) {
+    if (!saved) {
+      window.location.reload();
+    }
   }
 
   function getCreationButtons() {
@@ -295,6 +305,7 @@ export default function WatchListsPage() {
                   accessToken={String(apiResponse.accessToken)}
                   watchlist={watchlist}
                   onDelete={handleWatchListDeletion}
+                  onSaved={handleWatchListSaved}
                 />
               ))}
             </Pagination>
