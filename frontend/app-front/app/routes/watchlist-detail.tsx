@@ -10,7 +10,9 @@ import i18n from "i18n/i18n";
 import { AddMovieWatchList } from "components/ui/add-movie-watchlist";
 import { Badge } from "components/ui/badge";
 import { Button } from "components/ui/button";
+import { Checkbox } from "components/ui/checkbox";
 import { ConfirmationBox } from "components/ui/confirmation-box";
+import { Label } from "components/ui/label";
 import { MaxLengthInput } from "components/ui/max-length-input";
 import WatchListMovies from "components/ui/watchlist/watchlist-movies";
 import WatchListMoviesDisplay from "components/ui/watchlist/watchlist-movies-display";
@@ -109,6 +111,7 @@ export default function WatchListsPage() {
 
   const [name, setName] = useState(watchlist.name || "");
   const [description, setDescription] = useState(watchlist.description || "");
+  const [privateWatchlist, setPrivateWatchlist] = useState(watchlist.private);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -140,6 +143,7 @@ export default function WatchListsPage() {
       data: {
         name: name ? name.trim() : undefined,
         description: description ? description.trim() : undefined,
+        private: privateWatchlist,
         movie_ids_to_delete:
           movieIdsToDelete.length > 0 ? movieIdsToDelete : undefined,
         movie_ids_to_add: movieIdsToAdd.length > 0 ? movieIdsToAdd : undefined,
@@ -304,6 +308,24 @@ export default function WatchListsPage() {
                     {t("watchlist_detail.no_description")}
                   </p>
                 )}
+                {isEditing && (
+                  <div>
+                    <div>
+                      <Label
+                        htmlFor="private"
+                        className="text-foreground font-bold"
+                      >
+                        {t("watchlist_creator.private")}
+                      </Label>
+                    </div>
+                    <Checkbox
+                      id="private"
+                      name="private"
+                      checked={privateWatchlist}
+                      onCheckedChange={(c) => setPrivateWatchlist(Boolean(c))}
+                    />
+                  </div>
+                )}
                 {apiDeleteResponse.error && (
                   <p className="text-red-400 mb-4">{apiResponse.error}</p>
                 )}
@@ -362,7 +384,11 @@ export default function WatchListsPage() {
                 <div className="flex items-center gap-2">
                   <Eye className="w-4 h-4 text-purple-400" />
                   <span className="text-slate-300">
-                    {t("watchlist_detail.visibility_public")}
+                    {t(
+                      `watchlist_detail.visibility_${
+                        watchlist.private ? "private" : "public"
+                      }`
+                    )}
                   </span>
                 </div>
               </div>

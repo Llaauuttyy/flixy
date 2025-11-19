@@ -4,13 +4,15 @@ import type { Page } from "./overall";
 export interface WatchListCreate {
   name: string;
   description: string | null;
+  private: boolean;
   movie_ids: number[];
-  [key: string]: string | number[] | null;
+  [key: string]: string | boolean | number[] | null;
 }
 
 export interface WatchListEditData {
   name?: string;
   description?: string | null;
+  private: boolean;
   movie_ids_to_add?: number[];
   movie_ids_to_delete?: number[];
 }
@@ -50,6 +52,7 @@ export interface WatchListGet {
   name: string;
   description: string | null;
   movies: Page<MovieDataGet>;
+  private: boolean;
   editable?: boolean;
   activity: WatchListActivity[];
   insights: WatchListInsights;

@@ -75,6 +75,7 @@ class WatchListService:
                 name=w.name,
                 description=w.description,
                 movies=paginate(watchlists_movies, movies_params),
+                private=w.private,
                 editable=w.user_id==user_id,
                 created_at=w.created_at,
                 updated_at=w.updated_at
@@ -175,6 +176,7 @@ class WatchListService:
             id=watchlist.id,
             name=watchlist.name,
             description=watchlist.description,
+            private=watchlist.private,
             activity=watchlist_activities,
             insights=watchlist_insights,
             editable=user_id==watchlist.user_id,
@@ -188,7 +190,8 @@ class WatchListService:
             watchlist = WatchList(
                 user_id=user_id,
                 name=watchlist_dto.name,
-                description=watchlist_dto.description
+                description=watchlist_dto.description,
+                private=watchlist_dto.private
             )
 
             db.add(watchlist)
@@ -209,6 +212,7 @@ class WatchListService:
                 name=watchlist.name,
                 description=watchlist.description,
                 movie_ids=watchlist_dto.movie_ids,
+                private=watchlist.private
             )
 
         except IntegrityError as e:
@@ -266,6 +270,9 @@ class WatchListService:
             
             if watchlist_dto.description:
                 watchlist.description = watchlist_dto.description
+            
+            if watchlist_dto.private is not None:
+                watchlist.private = watchlist_dto.private
 
             db.add(watchlist)
 
@@ -286,6 +293,7 @@ class WatchListService:
             return WatchListEditResponse(
                 name=watchlist.name,
                 description=watchlist.description,
+                private=watchlist.private,
                 movie_ids_added=movies_to_add,
                 movie_ids_deleted=movies_to_delete
             )
@@ -359,7 +367,8 @@ class WatchListService:
             raise HTTPException(status_code=e.status_code, detail=str(e.detail))
         
     def search_watchlists(self, db: Database, search_query: str, user_id: int, params: Params) -> Tuple[WatchListsGetResponse, List[WatchListDTO]]:
-        search_conditions = db.build_condition([WatchList.name.ilike(f"%{search_query}%")])
+        private_list_condition = db.build_condition([WatchList.private == False, WatchList.user_id == user_id], "OR")
+        search_conditions = db.build_condition([WatchList.name.ilike(f"%{search_query}%"), private_list_condition])
         watchlists_found = db.find_all(WatchList, search_conditions)
 
         watchlists = []
@@ -406,6 +415,7 @@ class WatchListService:
                 name=w.name,
                 description=w.description,
                 movies=paginate(watchlists_movies, movies_params),
+                private=w.private,
                 editable=w.user_id==user_id,
                 created_at=w.created_at,
                 updated_at=w.updated_at

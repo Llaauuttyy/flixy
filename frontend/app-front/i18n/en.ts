@@ -330,6 +330,7 @@ export const enTranslation = {
     },
     visibility: "Visibility",
     visibility_public: "Public",
+    visibility_private: "Private",
     activity: {
       title: "Recent Activity",
       no_activity: "No activity in this watchlist yet.",
@@ -341,6 +342,7 @@ export const enTranslation = {
     name_placeholder: "Enter watchlist name",
     description: "Description",
     description_placeholder: "Enter watchlist description",
+    private: "Private",
     movies: "Movies",
     create: "Create",
     creating: "Creating...",
