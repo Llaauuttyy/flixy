@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { Clock, Pencil, Trash } from "lucide-react";
+import { Bookmark, Clock, Pencil, Trash } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -10,7 +10,10 @@ import "dayjs/locale/es";
 import i18n from "i18n/i18n";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { handleWatchListDeletion } from "services/api/flixy/client/watchlists";
+import {
+  handleSaveWatchlist,
+  handleWatchListDeletion,
+} from "services/api/flixy/client/watchlists";
 import type { ApiResponse } from "services/api/flixy/types/overall";
 import type {
   WatchListDelete,
@@ -27,17 +30,22 @@ export default function WatchList({
   accessToken,
   watchlist,
   onDelete,
+  onSaved,
 }: {
   accessToken: string;
   watchlist: WatchListFace;
   onDelete?: (watchlistId: number) => void;
+  onSaved?: (saved: boolean) => void;
 }) {
   dayjs.locale(i18n.language || "en");
 
   const { t } = useTranslation();
 
   const [apiResponse, setApiDeleteResponse] = useState<ApiResponse>({});
+  const [currentWatchlist, setCurrentWatchlist] =
+    useState<WatchListFace>(watchlist);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleConfirmationBox = (value: boolean) => {
     if (value) {
@@ -75,33 +83,59 @@ export default function WatchList({
     setIsDeleting(false);
   };
 
+  const handleWatchlistSave = async () => {
+    setIsSaving(true);
+
+    let apiResponse: ApiResponse = {};
+
+    try {
+      const saved = await handleSaveWatchlist(accessToken, watchlist.id);
+      setCurrentWatchlist((prev) => ({ ...prev, saved_by_user: saved }));
+      if (onSaved) {
+        onSaved(saved);
+      }
+    } catch (err: Error | any) {
+      console.log("API DELETE /watchlist/:watchListId ", err.message);
+
+      if (err instanceof TypeError) {
+        apiResponse.error = t("exceptions.service_error");
+        setApiDeleteResponse(apiResponse);
+      }
+
+      apiResponse.error = err.message;
+      setApiDeleteResponse(apiResponse);
+    }
+
+    setIsSaving(false);
+  };
+
   return (
-    <div key={watchlist.id} className="mb-12">
+    <div key={currentWatchlist.id} className="mb-12">
       {/* Watchlist Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div>
             <h2 className="text-2xl font-semibold text-white">
-              {watchlist.name}
+              {currentWatchlist.name}
             </h2>
             <div className="flex items-center gap-4 mt-1">
               <span className="text-sm text-gray-400">
-                {watchlist.movies.total}{" "}
+                {currentWatchlist.movies.total}{" "}
                 {t("watchlists.general_insights.movies")}
               </span>
               <div className="flex items-center gap-1 text-xs text-gray-500">
                 <Clock className="w-3 h-3" />
-                <span>{dayjs.utc(watchlist.created_at).fromNow()}</span>
+                <span>{dayjs.utc(currentWatchlist.created_at).fromNow()}</span>
               </div>
               <div className="flex items-center gap-1 text-xs text-gray-500">
                 <Pencil className="w-3 h-3" />
-                <span>{dayjs.utc(watchlist.updated_at).fromNow()}</span>
+                <span>{dayjs.utc(currentWatchlist.updated_at).fromNow()}</span>
               </div>
             </div>
           </div>
         </div>
         <div className="flex item-center">
-          <Link to={`/watchlists/${watchlist.id}`}>
+          <Link to={`/watchlists/${currentWatchlist.id}`}>
             <Button
               onClick={() => {}}
               className="mt-5 justify-end bg-transparent hover:underline border-none text-violet-400 text-sm font-medium cursor-pointer px-4 py-2 rounded-md transition-all duration-200 hover:bg-slate-800"
@@ -109,7 +143,7 @@ export default function WatchList({
               {t("watchlists.see_watchlist")}
             </Button>
           </Link>
-          {watchlist.editable && (
+          {currentWatchlist.editable && (
             <ConfirmationBox
               isAccepted={(value) => handleConfirmationBox(value)}
               title={t("confirmation_box.watchlist.title")}
@@ -125,6 +159,19 @@ export default function WatchList({
               </Button>
             </ConfirmationBox>
           )}
+          {!currentWatchlist.editable && (
+            <Button
+              disabled={isSaving}
+              onClick={handleWatchlistSave}
+              className="mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+            >
+              <Bookmark
+                size={30}
+                color="#45adf7ff"
+                fill={currentWatchlist.saved_by_user ? "#45adf7ff" : "none"}
+              />
+            </Button>
+          )}
         </div>
       </div>
 
@@ -135,7 +182,7 @@ export default function WatchList({
       )}
 
       {/* Movie Posters Grid */}
-      <WatchListMovies accessToken={accessToken} watchList={watchlist} />
+      <WatchListMovies accessToken={accessToken} watchList={currentWatchlist} />
     </div>
   );
 }

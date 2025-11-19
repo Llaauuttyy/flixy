@@ -71,3 +71,11 @@ def delete_watchlist(session: SessionDep, request: Request, watchlist_service: W
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
     
+@watchlist_router.post("/watchlist/{watchlist_id}/save")
+def save_watchlist(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, watchlist_id: int = Path(..., title="watchlist_id", ge=1)) -> bool:
+    user_id = request.state.user_id
+    try:
+        return watchlist_service.save_watchlist(Database(session), user_id, watchlist_id)
+    except Exception as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+    

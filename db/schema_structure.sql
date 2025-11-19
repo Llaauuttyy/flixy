@@ -175,3 +175,14 @@ CREATE TABLE comment_likes (
   CONSTRAINT comment_likes_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT comment_likes_ibfk_2 FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE
 );
+
+CREATE TABLE watchlist_saves (
+    id int NOT NULL AUTO_INCREMENT,
+    user_id int NOT NULL,
+    watchlist_id int NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY user_id (user_id, watchlist_id),
+    CONSTRAINT watchlist_saves_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT watchlist_saves_ibfk_2 FOREIGN KEY (watchlist_id) REFERENCES watchlists (id) ON DELETE CASCADE
+);
