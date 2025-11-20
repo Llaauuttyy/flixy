@@ -24,22 +24,16 @@ class AuthMiddleware(BaseHTTPMiddleware):
         
         if is_localhost(str(request.url)):
             # Si no tiene token, redirecciona la llamada
-            if True or request.headers.get("Authorization") is None:
-                request.state.username = "localhost"
-                request.state.user_id = 3
+            if request.headers.get("Authorization") is None:
                 return await call_next(request)
             
             # Si no, intenta obtener el token para asignar los datos del usuario
             try:
                 tokenData = self.get_token_data(request.headers.get("Authorization").split(" ")[1])
-                print("HOLA")
-                print(tokenData.username)
-                print(tokenData.id)
                 request.state.username = tokenData.username
                 request.state.user_id = tokenData.id
                 return await call_next(request)
             except (jwt.ExpiredSignatureError, ValueError):
-                print("HOlA ERROR")
                 return Response("Token inválido o expirado", status_code=401)
 
         auth = request.headers.get("Authorization")
