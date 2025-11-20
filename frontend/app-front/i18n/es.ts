@@ -407,6 +407,9 @@ export const esTranslation = {
     recent_reviews_subtitle: "Las últimas reseñas de la comunidad",
     genre_spotlight: "Destacado por Género",
     genre_spotlight_subtitle: "Explorá películas según tus géneros favoritos",
+    popular_watchlists: "Listas Populares",
+    popular_watchlists_subtitle:
+      "Descubrí las listas más populares creadas por la comunidad",
   },
   featured_movie_component: {
     featured: "Destacado",

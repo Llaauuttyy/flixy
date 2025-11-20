@@ -13,6 +13,7 @@ class WatchList(SQLModel, table=True):
     name: str = Field(unique=True)
     description: Optional[str] = None
     private: bool = False
+    saves: int = Field(default=0)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 

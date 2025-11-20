@@ -401,6 +401,8 @@ export const enTranslation = {
     recent_reviews_subtitle: "Latest reviews from the community",
     genre_spotlight: "Genre Spotlight",
     genre_spotlight_subtitle: "Explore movies by your favorite genres",
+    popular_watchlists: "Popular Watchlists",
+    popular_watchlists_subtitle: "Watchlists loved by the community",
   },
   featured_movie_component: {
     featured: "Featured",

@@ -3,6 +3,7 @@ import { FeaturedMovie } from "components/ui/home/featured-movie";
 import { GenreSpotlight } from "components/ui/home/genre-spotlight";
 import { GetRecommendations } from "components/ui/home/get-recommendations";
 import { LastUserPicks } from "components/ui/home/last-user-picks";
+import { PopularWatchLists } from "components/ui/home/popular-watchlists";
 import { RecentReviews } from "components/ui/home/recent-reviews";
 import { ShareYourThoughts } from "components/ui/home/share-your-thoughts";
 import { TopRatedMovies } from "components/ui/home/top-rated-movies";
@@ -14,8 +15,17 @@ import { getHomeFeed } from "services/api/flixy/server/feed";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Dictionary } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
+import type { WatchListFace } from "services/api/flixy/types/watchlist";
 import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "./+types/home";
+
+interface WatchLists {
+  items: {
+    items: WatchListFace[];
+  };
+  total_movies: number;
+  total_watchlists: number;
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   let apiResponse: ApiResponse = {};
@@ -59,6 +69,9 @@ export default function HomePage() {
   const recentReviews: ReviewDataGet[] = apiResponse.data?.feed?.recent_reviews;
   const MoviesCountByGenre: Dictionary<string> =
     apiResponse.data?.feed?.movies_count_by_genre;
+
+  const popupularWatchLists: WatchLists =
+    apiResponse.data?.feed?.popular_watchlists;
 
   if (apiResponse.error) {
     return (
@@ -142,6 +155,26 @@ export default function HomePage() {
                     accessToken={apiResponse.accessToken as string}
                   />
                 </section>
+
+                {/* Popular WatchLists */}
+                {popupularWatchLists.items.items && (
+                  <section>
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h2 className="text-3xl font-bold text-white">
+                          {t("home.popular_watchlists")}
+                        </h2>
+                        <p className="text-slate-400 mt-1">
+                          {t("home.popular_watchlists_subtitle")}
+                        </p>
+                      </div>
+                    </div>
+                    <PopularWatchLists
+                      watchlists={popupularWatchLists}
+                      accessToken={apiResponse.accessToken as string}
+                    />
+                  </section>
+                )}
 
                 {/* Recent Reviews */}
                 <section>
