@@ -3,12 +3,17 @@ from app.dto.movie import MovieGetResponse
 from app.model.review import Review
 from app.dto.feed import HomeFeed
 from app.model.movie import Movie
+from app.model.watchlist import WatchList
+from app.model.watchlist_movie import WatchListMovie
+from app.dto.watchlist import WatchListsGetResponse, WatchListBase
 from app.dto.review import ReviewGetSingularDTO
+from app.model.watchlist_save import WatchListSave
 from app.db.database import Database
 from app import utils
 from sqlalchemy.orm import selectinload, with_loader_criteria
 from sqlalchemy import case
 from typing import List, Optional, Tuple
+from fastapi_pagination import Params, paginate
 from datetime import datetime as datetime, timedelta
 import random
 
@@ -238,6 +243,86 @@ class FeedService:
         
         return genre_count
 
+    def _get_popular_watchlists(self, db: Database, user_id: int) -> List:
+        popular_watchlists = db.find_all_by_multiple(
+            model=WatchList,
+            conditions=db.build_condition([WatchList.private == False]),
+            order_by={"way": "desc", "column": "saves"},
+            options=[selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie)],
+            limit=MAX_RESULTS
+        )
+
+        watchlists = []
+
+        total_watchlists = 0
+        total_movies = 0
+
+        for w in popular_watchlists:
+            watchlists_movies = []
+
+            for wm in w.watchlist_movies:
+                movie_data = wm.movie
+
+                movie_user_rating = None
+                if movie_data.reviews:
+                    movie_user_rating = movie_data.reviews[0].rating
+
+                watchlists_movies.append(MovieGetResponse(
+                    id=movie_data.id,
+                    title=movie_data.title,
+                    year=movie_data.year,
+                    imdb_rating=movie_data.imdb_rating,
+                    genres=movie_data.genres,
+                    countries=movie_data.countries,
+                    duration=movie_data.duration,
+                    cast=movie_data.cast,
+                    directors=movie_data.directors,
+                    writers=movie_data.writers,
+                    plot=movie_data.plot,
+                    logo_url=movie_data.logo_url,
+                    user_rating=movie_user_rating,
+                    flixy_rating = utils.get_movie_average_rating(movie_data)
+                ))
+
+                total_movies += 1
+
+            movies_params = Params(
+                page=1,
+                size=5,
+            )
+
+            watchlists.append(WatchListBase(
+                id=w.id,
+                name=w.name,
+                description=w.description,
+                movies=paginate(watchlists_movies, movies_params),
+                private=w.private,
+                saves=w.saves,
+                editable=w.user_id==user_id,
+                saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=w.id, user_id=user_id),
+                created_at=w.created_at,
+                updated_at=w.updated_at
+            ))
+
+            total_watchlists += 1
+
+        if not watchlists:
+            return WatchListsGetResponse(
+                total_movies=0,
+                total_watchlists=0
+            )
+
+        watchlist_params = Params(
+            page=1,
+            size=total_watchlists,
+        )
+
+        return WatchListsGetResponse(
+            items=paginate(watchlists, watchlist_params),
+            total_movies=total_movies,
+            total_watchlists=total_watchlists
+        )
+
     def get_home_feed(self, db: Database, user_id: int) -> HomeFeed:
         featured_movie, top_rated_movies = self._get_top_rated_movies(db, user_id)
         
@@ -247,6 +332,7 @@ class FeedService:
             top_rated_movies=top_rated_movies,
             last_watched_movies=self._get_last_watched_movies(db, user_id),
             recent_reviews=self._get_recent_reviews(db),
-            movies_count_by_genre=self._get_movies_count_by_genre(db)
+            movies_count_by_genre=self._get_movies_count_by_genre(db),
+            popular_watchlists=self._get_popular_watchlists(db, user_id)
         )
         

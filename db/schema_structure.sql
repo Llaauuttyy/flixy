@@ -65,6 +65,8 @@ CREATE TABLE watchlists (
   user_id int NOT NULL,
   name varchar(256) NOT NULL,
   description varchar(1024) DEFAULT NULL,
+  private tinyint DEFAULT 0,
+  saves int NOT NULL DEFAULT 0,
   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),

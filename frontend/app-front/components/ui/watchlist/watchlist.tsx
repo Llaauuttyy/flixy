@@ -90,7 +90,11 @@ export default function WatchList({
 
     try {
       const saved = await handleSaveWatchlist(accessToken, watchlist.id);
-      setCurrentWatchlist((prev) => ({ ...prev, saved_by_user: saved }));
+      setCurrentWatchlist((prev) => ({
+        ...prev,
+        saved_by_user: saved,
+        saves: saved ? prev.saves + 1 : prev.saves - 1,
+      }));
       if (onSaved) {
         onSaved(saved);
       }
@@ -143,6 +147,20 @@ export default function WatchList({
               {t("watchlists.see_watchlist")}
             </Button>
           </Link>
+          {/* {!currentWatchlist.editable && ( */}
+          <Button
+            disabled={isSaving || currentWatchlist.editable}
+            onClick={handleWatchlistSave}
+            className="m-1 mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+          >
+            {currentWatchlist.saves}
+            <Bookmark
+              size={30}
+              color="#45adf7ff"
+              fill={currentWatchlist.saved_by_user ? "#45adf7ff" : "none"}
+            />
+          </Button>
+          {/* )} */}
           {currentWatchlist.editable && (
             <ConfirmationBox
               isAccepted={(value) => handleConfirmationBox(value)}
@@ -158,19 +176,6 @@ export default function WatchList({
                 <Trash size={30} color="red" />
               </Button>
             </ConfirmationBox>
-          )}
-          {!currentWatchlist.editable && (
-            <Button
-              disabled={isSaving}
-              onClick={handleWatchlistSave}
-              className="mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
-            >
-              <Bookmark
-                size={30}
-                color="#45adf7ff"
-                fill={currentWatchlist.saved_by_user ? "#45adf7ff" : "none"}
-              />
-            </Button>
           )}
         </div>
       </div>

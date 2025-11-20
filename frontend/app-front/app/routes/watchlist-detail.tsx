@@ -193,7 +193,11 @@ export default function WatchListsPage() {
         String(apiResponse.accessToken),
         watchlist.id
       );
-      setWatchlist((prev) => ({ ...prev, saved_by_user: saved }));
+      setWatchlist((prev) => ({
+        ...prev,
+        saved_by_user: saved,
+        saves: saved ? prev.saves + 1 : prev.saves - 1,
+      }));
     } catch (err: Error | any) {
       console.log("API DELETE /watchlist/:watchListId ", err.message);
 
@@ -368,6 +372,18 @@ export default function WatchListsPage() {
                 )}
               </div>
               <div className="flex item-center">
+                <Button
+                  disabled={isSaving || watchlist.editable}
+                  onClick={handleWatchlistSave}
+                  className="mr-1 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                >
+                  {watchlist.saves}
+                  <Bookmark
+                    size={30}
+                    color="#45adf7ff"
+                    fill={watchlist.saved_by_user ? "#45adf7ff" : "none"}
+                  />
+                </Button>
                 {watchlist.editable && !isEditing && (
                   <Button
                     onClick={setEditWatchList}
@@ -391,19 +407,6 @@ export default function WatchListsPage() {
                       <Trash size={30} color="red" />
                     </Button>
                   </ConfirmationBox>
-                )}
-                {!watchlist.editable && (
-                  <Button
-                    disabled={isSaving}
-                    onClick={handleWatchlistSave}
-                    className="mt-5 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
-                  >
-                    <Bookmark
-                      size={30}
-                      color="#45adf7ff"
-                      fill={watchlist.saved_by_user ? "#45adf7ff" : "none"}
-                    />
-                  </Button>
                 )}
               </div>
             </div>

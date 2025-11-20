@@ -80,6 +80,7 @@ class WatchListService:
                 description=w.description,
                 movies=paginate(watchlists_movies, movies_params),
                 private=w.private,
+                saves=w.saves,
                 editable=w.user_id==user_id,
                 saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=w.id, user_id=user_id),
                 created_at=w.created_at,
@@ -182,6 +183,7 @@ class WatchListService:
             name=watchlist.name,
             description=watchlist.description,
             private=watchlist.private,
+            saves=watchlist.saves,
             activity=watchlist_activities,
             insights=watchlist_insights,
             editable=user_id==watchlist.user_id,
@@ -197,7 +199,8 @@ class WatchListService:
                 user_id=user_id,
                 name=watchlist_dto.name,
                 description=watchlist_dto.description,
-                private=watchlist_dto.private
+                private=watchlist_dto.private,
+                saves=watchlist_dto.saves
             )
 
             db.add(watchlist)
@@ -218,7 +221,8 @@ class WatchListService:
                 name=watchlist.name,
                 description=watchlist.description,
                 movie_ids=watchlist_dto.movie_ids,
-                private=watchlist.private
+                private=watchlist.private,
+                saves=watchlist.saves,
             )
 
         except IntegrityError as e:
@@ -423,6 +427,7 @@ class WatchListService:
                 description=w.description,
                 movies=paginate(watchlists_movies, movies_params),
                 private=w.private,
+                saves=w.saves,
                 editable=w.user_id==user_id,
                 saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=w.id, user_id=user_id),
                 created_at=w.created_at,
@@ -440,15 +445,18 @@ class WatchListService:
     def save_watchlist(self, db: Database, user_id: int, watchlist_id: int) -> bool:
         try:
             user_save = db.find_by_multiple(WatchListSave, watchlist_id=watchlist_id, user_id=user_id)
+            watchlist = db.find_by(WatchList, "id", watchlist_id)
 
-            if not db.exists_by(WatchList, "id", watchlist_id):
+            if not watchlist:
                 raise HTTPException(status_code=404, detail=WATCHLIST_NOT_FOUND)
             
             saved_by_user = user_save is not None
             if saved_by_user:
+                watchlist.saves -= 1
                 db.delete(user_save)
             else:
                 user_save = WatchListSave(user_id=user_id, watchlist_id=watchlist_id)
+                watchlist.saves += 1
                 db.save(user_save)
 
             return not saved_by_user

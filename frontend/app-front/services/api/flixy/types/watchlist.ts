@@ -53,6 +53,7 @@ export interface WatchListGet {
   description: string | null;
   movies: Page<MovieDataGet>;
   private: boolean;
+  saves: number;
   editable?: boolean;
   saved_by_user: boolean;
   activity: WatchListActivity[];
@@ -74,6 +75,7 @@ export interface WatchListFace {
   movies: Page<MovieDataGet>;
   editable?: boolean;
   private: boolean;
+  saves: number;
   saved_by_user?: boolean;
   created_at: string;
   updated_at: string;
