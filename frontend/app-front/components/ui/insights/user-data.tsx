@@ -122,92 +122,90 @@ export const ProfileUserData = ({
           </CardContent>
         </Card>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-4">
-          {showFollowers && followResults.followers.items.length != 0 && (
-            <Card className="bg-slate-800/50 border-gray-700 mb-6">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-white">
-                    {t("profile.followers")}
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowFollowers(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    ✕
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Pagination
-                    itemsPage={followResults.followers}
-                    onPageChange={(page: number) => {
-                      fetcher.load(
-                        `/profile?followers=${page}&following=${followResults.following.page}`
-                      );
-                    }}
-                  >
-                    <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
-                      {followResults.followers.items.map((follower) => (
-                        <UserCard
-                          key={follower.id}
-                          user={follower}
-                          accessToken={accessToken}
-                        />
-                      ))}
-                    </div>
-                  </Pagination>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+      <div>
+        {showFollowers && followResults.followers.items.length != 0 && (
+          <Card className="bg-slate-800/50 border-gray-700 mb-6">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white">
+                  {t("profile.followers")}
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowFollowers(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ✕
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <Pagination
+                  itemsPage={followResults.followers}
+                  onPageChange={(page: number) => {
+                    fetcher.load(
+                      `/profile?followers=${page}&following=${followResults.following.page}`
+                    );
+                  }}
+                >
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    {followResults.followers.items.map((follower) => (
+                      <UserCard
+                        key={follower.id}
+                        user={follower}
+                        accessToken={accessToken}
+                      />
+                    ))}
+                  </div>
+                </Pagination>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-          {showFollowing && followResults.following.items.length != 0 && (
-            <Card className="bg-slate-800/50 border-gray-700 mb-6">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-white">
-                    {t("profile.following")}
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowFollowing(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    ✕
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Pagination
-                    itemsPage={followResults.following}
-                    onPageChange={(page: number) => {
-                      fetcher.load(
-                        `/profile?followers=${followResults.followers.page}&following=${page}`
-                      );
-                    }}
-                  >
-                    <div className="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-6">
-                      {followResults.following.items.map((follow) => (
-                        <UserCard
-                          key={follow.id}
-                          user={follow}
-                          accessToken={accessToken}
-                        />
-                      ))}
-                    </div>
-                  </Pagination>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        {showFollowing && followResults.following.items.length != 0 && (
+          <Card className="bg-slate-800/50 border-gray-700 mb-6">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white">
+                  {t("profile.following")}
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowFollowing(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ✕
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <Pagination
+                  itemsPage={followResults.following}
+                  onPageChange={(page: number) => {
+                    fetcher.load(
+                      `/profile?followers=${followResults.followers.page}&following=${page}`
+                    );
+                  }}
+                >
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    {followResults.following.items.map((follow) => (
+                      <UserCard
+                        key={follow.id}
+                        user={follow}
+                        accessToken={accessToken}
+                      />
+                    ))}
+                  </div>
+                </Pagination>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

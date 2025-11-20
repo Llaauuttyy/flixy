@@ -70,7 +70,7 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     if (fetcher.data?.data.reviews) {
-      setReviews(fetcher.data.data.reviews);
+      setReviews(fetcher.data.data.reviews.reviews);
     }
   }, [fetcher.data]);
 
