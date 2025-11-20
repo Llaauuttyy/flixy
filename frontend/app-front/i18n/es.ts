@@ -214,11 +214,6 @@ export const esTranslation = {
       updating: "Actualizando...",
       update: "Actualizar",
     },
-    data: {
-      tab: "Datos",
-      title: "Gestión de Datos",
-      description: "Visualiza y gestiona tus datos personales.",
-    },
     password: {
       tab: "Cambiar Contraseña",
       title: "Cambiar Contraseña",

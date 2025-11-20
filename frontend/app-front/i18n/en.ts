@@ -211,11 +211,6 @@ export const enTranslation = {
       updating: "Updating...",
       update: "Update",
     },
-    data: {
-      tab: "Data",
-      title: "Data Management",
-      description: "Visualize and manage your personal data.",
-    },
     password: {
       tab: "Change Password",
       title: "Change Password",
