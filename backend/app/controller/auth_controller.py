@@ -4,7 +4,7 @@ from app.db.database import Database
 from app.dto.login import LoginDTO, LoginResponse, RefreshTokenDTO
 from app.db.database_setup import SessionDep
 from app.service.auth_service import AuthService
-from app.dto.auth import PasswordUpdateDTO
+from app.dto.auth import ConfirmAccountDTO, ForgotPasswordDTO, PasswordUpdateDTO, ResetPasswordDTO
 from fastapi import APIRouter, Depends, Request, HTTPException
 
 auth_router = APIRouter()
@@ -12,8 +12,17 @@ auth_router = APIRouter()
 AuthServiceDep = Annotated[AuthService, Depends(lambda: AuthService())]
 
 @auth_router.post("/register")
-async def create_user(register_form: RegisterForm, session: SessionDep, auth_service: AuthServiceDep) -> RegisterDTO:
-    return auth_service.register_user(register_form, Database(session))
+async def create_user(request: Request, register_form: RegisterForm, session: SessionDep, auth_service: AuthServiceDep) -> RegisterDTO:
+    is_local = getattr(request.state, "is_local", False)
+
+    return auth_service.register_user(register_form, Database(session), is_local)
+
+@auth_router.post("/confirm-registration")
+async def reset_password(confirm_account_dto: ConfirmAccountDTO, session: SessionDep, auth_service: AuthServiceDep):
+    try:
+        return auth_service.confirm_registration(confirm_account_dto, Database(session))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @auth_router.post("/login")
 async def login(login_dto: LoginDTO, session: SessionDep, auth_service: AuthServiceDep) -> LoginResponse:
@@ -28,5 +37,19 @@ async def update_password(password_update_dto: PasswordUpdateDTO, request: Reque
     try:
         user_id = request.state.user_id
         return auth_service.update_password(password_update_dto, user_id, Database(session))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@auth_router.post("/forgot-password")
+async def forgot_password(forgot_password_dto: ForgotPasswordDTO, session: SessionDep, auth_service: AuthServiceDep):
+    try:
+        return auth_service.forgot_password(forgot_password_dto, Database(session))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@auth_router.post("/reset-password")
+async def reset_password(reset_password_dto: ResetPasswordDTO, session: SessionDep, auth_service: AuthServiceDep):
+    try:
+        return auth_service.reset_password(reset_password_dto, Database(session))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

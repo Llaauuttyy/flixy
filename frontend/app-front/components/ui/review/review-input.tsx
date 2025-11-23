@@ -12,11 +12,11 @@ import type {
   ReviewCreation,
   ReviewDataGet,
 } from "services/api/flixy/types/review";
-import { Button } from "./button";
-import { Card, CardContent } from "./card";
-import { ConfirmationBox } from "./confirmation-box";
-import { ReviewCard } from "./review-card";
-import { Textarea } from "./textarea";
+import { Button } from "../button";
+import { Card, CardContent } from "../card";
+import { ConfirmationBox } from "../confirmation-box";
+import { ReviewCard } from "../review/review-card";
+import { Textarea } from "../textarea";
 
 interface ReviewCardProps {
   accessToken: string;

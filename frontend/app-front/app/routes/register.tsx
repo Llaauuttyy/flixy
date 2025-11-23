@@ -29,7 +29,9 @@ export async function action({ request }: Route.ActionArgs) {
     console.log("API POST /register said: ", err.message);
 
     return {
-      error: "Service's not working properly. Please try again later.",
+      error:
+        err.message ||
+        "Service's not working properly. Please try again later.",
     };
   }
 }

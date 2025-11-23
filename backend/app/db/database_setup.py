@@ -9,7 +9,14 @@ HOST = getenv("DB_HOST")
 PORT = int(getenv("DB_PORT", 0))
 db_url = f"mysql+mysqlconnector://{USER}:{PASSWORD}@{HOST}:{PORT}/flixy"
 
-engine = create_engine(db_url)
+engine = create_engine(
+    db_url,
+    pool_pre_ping=True,  # verifica si la conexión sigue viva
+    pool_recycle=3600    # recicla conexiones cada hora
+)
+
+def session_factory() -> Session:
+    return Session(engine)
 
 def get_session():
     with Session(engine) as session:

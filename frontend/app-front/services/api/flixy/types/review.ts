@@ -1,3 +1,4 @@
+import type { CommentDataGet } from "./comment";
 import type { MovieDataGet } from "./movie";
 import type { Page } from "./overall";
 import type { UserAchievement } from "./user";
@@ -14,6 +15,7 @@ export interface ReviewDataGet {
   id: number;
   name: string;
   user_name: string;
+  user_id: number;
   movie_id: number;
   rating: number | null;
   text: string | null;
@@ -23,6 +25,7 @@ export interface ReviewDataGet {
   updated_at: Date;
   movie: MovieDataGet;
   achievements: UserAchievement[];
+  comments: CommentDataGet[];
   [key: string]:
     | string
     | number
@@ -30,6 +33,7 @@ export interface ReviewDataGet {
     | boolean
     | MovieDataGet
     | UserAchievement[]
+    | CommentDataGet[]
     | null
     | undefined;
 }

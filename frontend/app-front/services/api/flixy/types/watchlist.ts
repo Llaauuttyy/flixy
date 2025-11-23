@@ -1,16 +1,19 @@
 import type { MovieDataGet } from "./movie";
 import type { Page } from "./overall";
+import type { UserData } from "./user";
 
 export interface WatchListCreate {
   name: string;
   description: string | null;
+  private: boolean;
   movie_ids: number[];
-  [key: string]: string | number[] | null;
+  [key: string]: string | boolean | number[] | null;
 }
 
 export interface WatchListEditData {
   name?: string;
   description?: string | null;
+  private: boolean;
   movie_ids_to_add?: number[];
   movie_ids_to_delete?: number[];
 }
@@ -50,8 +53,33 @@ export interface WatchListGet {
   name: string;
   description: string | null;
   movies: Page<MovieDataGet>;
+  private: boolean;
+  user: UserData;
+  saves: number;
+  editable?: boolean;
+  saved_by_user: boolean;
   activity: WatchListActivity[];
   insights: WatchListInsights;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WatchLists {
+  items: Page<WatchListFace>;
+  total_watchlists: number;
+  total_movies: number;
+}
+
+export interface WatchListFace {
+  id: number;
+  name: string;
+  description: string;
+  movies: Page<MovieDataGet>;
+  editable?: boolean;
+  private: boolean;
+  user: UserData;
+  saves: number;
+  saved_by_user?: boolean;
   created_at: string;
   updated_at: string;
 }

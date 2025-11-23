@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { Page } from "services/api/flixy/types/overall";
-import { AddMovieWatchList } from "./add-movie-watchlist";
+import { AddMovieWatchList } from "../add-movie-watchlist";
 import WatchListMoviesDisplay from "./watchlist-movies-display";
 
 interface Movie {

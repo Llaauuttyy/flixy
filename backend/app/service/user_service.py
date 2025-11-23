@@ -13,12 +13,13 @@ from app.model.user_achievement import UserAchievement
 from app.model.achievement import Achievement
 from app.dto.achievement import AchievementsDTO, AchievementDTO
 from sqlalchemy.orm import selectinload
+import app.utils as utils
 import json
 
 class UserService:
     def get_all_users(self, db: Database) -> list[UserDTO]:
         users = db.find_all(User)
-        return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email) for user in users]
+        return [UserDTO(id=user.id, name=user.name, username=user.username, email=user.email, created_at=user.created_at) for user in users]
     
     def get_user_by_id(self, db: Database, user_id: int) -> UserDTO:
         user = db.find_by(User, "id", user_id)
@@ -26,11 +27,15 @@ class UserService:
             id=user.id,
             name=user.name,
             username=user.username,
-            email=user.email
+            email=user.email,
+            about_me=user.about_me if user.about_me else "",
+            created_at=user.created_at
         )
     
     def update_user_data(self, user_dto: UserUpdateDTO, user_id: int, db: Database) -> UserDTO:
         user_to_update = db.find_by(User, "id", user_id)
+
+        print(user_dto)
 
         if user_to_update is None:
             raise Exception(USER_NOT_FOUND)
@@ -46,7 +51,9 @@ class UserService:
             id=user_to_update.id,
             name=user_to_update.name,
             username=user_to_update.username,
-            email=user_to_update.email
+            email=user_to_update.email,
+            about_me=user_to_update.about_me,
+            created_at=user_to_update.created_at
         )
     
     def get_user_insights(self, db: Database, user_id: int) -> InsightDTO:
@@ -70,6 +77,8 @@ class UserService:
                 name=user.name,
                 username=user.username,
                 email=user.email,
+                about_me=user.about_me if user.about_me else "",
+                created_at=user.created_at,
                 followers=user.followers,
                 followed_by_user=db.exists_by_multiple(UserRelationship, follower_id=user_id, followed_id=user.id)
             ) for user in users]
@@ -108,6 +117,7 @@ class UserService:
             name=rel.name,
             username=rel.username,
             email=rel.email,
+            created_at=rel.created_at,
             followers=rel.followers,
             following=rel.following,
             followed_by_user=db.exists_by_multiple(UserRelationship, follower_id=user_id, followed_id=rel.id)
@@ -294,6 +304,8 @@ def get_most_liked_review(reviews: list[Review]) -> Optional[ReviewDTO]:
             writers=most_liked_review.movie.writers,
             plot=most_liked_review.movie.plot,
             logo_url=most_liked_review.movie.logo_url,
+            flixy_rating = utils.get_movie_average_rating(most_liked_review.movie)
+            
         )
     ) if most_liked_review else None
 

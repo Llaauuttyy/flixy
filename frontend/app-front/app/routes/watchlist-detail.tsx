@@ -8,17 +8,30 @@ import utc from "dayjs/plugin/utc";
 import i18n from "i18n/i18n";
 
 import { AddMovieWatchList } from "components/ui/add-movie-watchlist";
+import { UserAvatar } from "components/ui/avatar";
 import { Badge } from "components/ui/badge";
 import { Button } from "components/ui/button";
+import { Checkbox } from "components/ui/checkbox";
 import { ConfirmationBox } from "components/ui/confirmation-box";
+import { Label } from "components/ui/label";
 import { MaxLengthInput } from "components/ui/max-length-input";
-import WatchListMovies from "components/ui/watchlist-movies";
-import WatchListMoviesDisplay from "components/ui/watchlist-movies-display";
-import { Clock, Edit, Eye, Film, Loader2, Pencil, Trash } from "lucide-react";
+import WatchListMovies from "components/ui/watchlist/watchlist-movies";
+import WatchListMoviesDisplay from "components/ui/watchlist/watchlist-movies-display";
+import {
+  Bookmark,
+  Clock,
+  Edit,
+  Eye,
+  Film,
+  Loader2,
+  Pencil,
+  Trash,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLoaderData, useNavigate } from "react-router-dom";
 import {
+  handleSaveWatchlist,
   handleWatchListDeletion,
   handleWatchListEdition,
 } from "services/api/flixy/client/watchlists";
@@ -29,7 +42,7 @@ import type {
   WatchListEdit,
   WatchListGet,
 } from "services/api/flixy/types/watchlist";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { ApiResponse } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/watchlist-detail";
 
@@ -66,11 +79,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       request
     );
 
-    console.log(`Watchlist ${watchListId}: `, watchlist);
-
     apiResponse.accessToken = await getAccessToken(request);
+    const user = await getCachedUserData(request);
 
-    apiResponse.data = watchlist;
+    apiResponse.data = { watchlist, user };
     return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /watchlist/:watchListId said: ", err.message);
@@ -99,7 +111,7 @@ export default function WatchListsPage() {
   const [apiEditResponse, setApiEditResponse] = useState<ApiResponse>({});
 
   const [watchlist, setWatchlist] = useState<WatchListGet>(
-    apiResponse.data || {}
+    apiResponse.data?.watchlist || {}
   );
 
   const [moviesToDelete, setMoviesToDelete] = useState<MovieDataGet[]>([]);
@@ -107,9 +119,11 @@ export default function WatchListsPage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [name, setName] = useState(watchlist.name || "");
   const [description, setDescription] = useState(watchlist.description || "");
+  const [privateWatchlist, setPrivateWatchlist] = useState(watchlist.private);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -141,6 +155,7 @@ export default function WatchListsPage() {
       data: {
         name: name ? name.trim() : undefined,
         description: description ? description.trim() : undefined,
+        private: privateWatchlist,
         movie_ids_to_delete:
           movieIdsToDelete.length > 0 ? movieIdsToDelete : undefined,
         movie_ids_to_add: movieIdsToAdd.length > 0 ? movieIdsToAdd : undefined,
@@ -169,6 +184,36 @@ export default function WatchListsPage() {
     }
   };
 
+  const handleWatchlistSave = async () => {
+    setIsSaving(true);
+
+    let apiSaveResponse: ApiResponse = {};
+
+    try {
+      const saved = await handleSaveWatchlist(
+        String(apiResponse.accessToken),
+        watchlist.id
+      );
+      setWatchlist((prev) => ({
+        ...prev,
+        saved_by_user: saved,
+        saves: saved ? prev.saves + 1 : prev.saves - 1,
+      }));
+    } catch (err: Error | any) {
+      console.log("API DELETE /watchlist/:watchListId ", err.message);
+
+      if (err instanceof TypeError) {
+        apiSaveResponse.error = t("exceptions.service_error");
+        setApiDeleteResponse(apiSaveResponse);
+      }
+
+      apiSaveResponse.error = err.message;
+      setApiDeleteResponse(apiSaveResponse);
+    }
+
+    setIsSaving(false);
+  };
+
   const handleEditWatchListMovieDeletion = (movie: MovieDataGet) => {
     setMoviesToDelete((prevMovies) => {
       if (prevMovies.includes(movie)) {
@@ -177,8 +222,6 @@ export default function WatchListsPage() {
         return [...prevMovies, movie];
       }
     });
-
-    console.log(moviesToDelete);
   };
 
   const handleEditWatchListMovieAddition = (movie: MovieDataGet) => {
@@ -211,8 +254,6 @@ export default function WatchListsPage() {
         String(apiResponse.accessToken),
         watchListDelete
       );
-
-      console.log(response);
 
       navigator("/watchlists");
     } catch (err: Error | any) {
@@ -309,12 +350,42 @@ export default function WatchListsPage() {
                     {t("watchlist_detail.no_description")}
                   </p>
                 )}
+                {isEditing && (
+                  <div>
+                    <div>
+                      <Label
+                        htmlFor="private"
+                        className="text-foreground font-bold"
+                      >
+                        {t("watchlist_creator.private")}
+                      </Label>
+                    </div>
+                    <Checkbox
+                      id="private"
+                      name="private"
+                      checked={privateWatchlist}
+                      onCheckedChange={(c) => setPrivateWatchlist(Boolean(c))}
+                    />
+                  </div>
+                )}
                 {apiDeleteResponse.error && (
                   <p className="text-red-400 mb-4">{apiResponse.error}</p>
                 )}
               </div>
               <div className="flex item-center">
-                {!isEditing && (
+                <Button
+                  disabled={isSaving || watchlist.editable}
+                  onClick={handleWatchlistSave}
+                  className="mr-1 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
+                >
+                  {watchlist.saves}
+                  <Bookmark
+                    size={30}
+                    color="#45adf7ff"
+                    fill={watchlist.saved_by_user ? "#45adf7ff" : "none"}
+                  />
+                </Button>
+                {watchlist.editable && !isEditing && (
                   <Button
                     onClick={setEditWatchList}
                     className="mr-1 rounded-lg border bg-card text-card-foreground shadow-sm border-slate-700 bg-slate-800/50 hover:bg-slate-700 disabled:opacity-50"
@@ -322,7 +393,7 @@ export default function WatchListsPage() {
                     <Edit size={30} />
                   </Button>
                 )}
-                {!isEditing && (
+                {watchlist.editable && !isEditing && (
                   <ConfirmationBox
                     isAccepted={(value) => handleConfirmationBox(value)}
                     title={t("confirmation_box.watchlist.title")}
@@ -343,6 +414,16 @@ export default function WatchListsPage() {
 
             {!isEditing && (
               <div className="flex flex-wrap gap-6 text-sm bg-gray-800 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <UserAvatar
+                    userId={watchlist.user.id}
+                    userName={watchlist.user.username}
+                    ownUser={watchlist.editable}
+                    className="bg-purple-600 text-white"
+                    size={6}
+                  />
+                  <span>{watchlist.user.name}</span>
+                </div>
                 <div className="flex items-center gap-2">
                   <Film className="w-4 h-4 text-purple-400" />
                   <span className="text-slate-300">
@@ -367,7 +448,11 @@ export default function WatchListsPage() {
                 <div className="flex items-center gap-2">
                   <Eye className="w-4 h-4 text-purple-400" />
                   <span className="text-slate-300">
-                    {t("watchlist_detail.visibility_public")}
+                    {t(
+                      `watchlist_detail.visibility_${
+                        watchlist.private ? "private" : "public"
+                      }`
+                    )}
                   </span>
                 </div>
               </div>

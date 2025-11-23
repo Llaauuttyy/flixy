@@ -11,7 +11,7 @@ feed_router = APIRouter()
 FeedServiceDep = Annotated[FeedService, Depends(lambda: FeedService())]
 
 @feed_router.get("/feed/home")
-def get_watchlists(session: SessionDep, request: Request, feed_service: FeedServiceDep) -> HomeFeed:
+def get_feed(session: SessionDep, request: Request, feed_service: FeedServiceDep) -> HomeFeed:
     user_id = request.state.user_id
     try:
         home_feed = feed_service.get_home_feed(Database(session), user_id)

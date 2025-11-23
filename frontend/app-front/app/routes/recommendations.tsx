@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useFetcher, useLoaderData } from "react-router-dom";
 import { getRecommendations } from "services/api/flixy/server/movies";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "./+types/recommendations";
 
 interface Movie {
@@ -45,10 +45,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   try {
     recommendation = await getRecommendations(page, DEFAULT_PAGE_SIZE, request);
+    const user = await getCachedUserData(request);
 
     apiResponse.accessToken = await getAccessToken(request);
 
-    apiResponse.data = recommendation;
+    apiResponse.data = { recommendation, user };
     return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /recommendations said: ", err.message);
@@ -69,7 +70,8 @@ export default function MoviesPage() {
   const fetcher = useFetcher();
   const { t } = useTranslation();
 
-  const recommendation: Page<Movie> = fetcher.data?.data ?? apiResponse.data;
+  const recommendation: Page<Movie> =
+    fetcher.data?.data.recommendation ?? apiResponse.data?.recommendation;
 
   if (apiResponse.error) {
     return (

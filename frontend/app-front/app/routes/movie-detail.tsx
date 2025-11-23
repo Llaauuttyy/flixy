@@ -11,8 +11,8 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 
-import { ReviewCard } from "../../components/ui/review-card";
-import { ReviewInput } from "../../components/ui/review-input";
+import { ReviewCard } from "../../components/ui/review/review-card";
+import { ReviewInput } from "../../components/ui/review/review-input";
 import { Separator } from "../../components/ui/separator";
 import type { Route } from "./+types/movie-detail";
 
@@ -23,7 +23,7 @@ import {
   getWatchLists,
   handleWatchListEdition,
 } from "services/api/flixy/client/watchlists";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import { getMovieData } from "../../services/api/flixy/server/movies";
 import type {
   MovieDataGet,
@@ -98,6 +98,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     let overallData: MovieOverallData = {
       movie: movieData,
       reviews: reviewsData,
+      user: await getCachedUserData(request),
     };
     apiResponse.data = overallData;
 
@@ -233,7 +234,6 @@ export default function MovieDetail() {
 
       setApiResponseWatchLists(watchLists);
 
-      console.log("Watchlists: ", watchLists);
       if (!watchLists.data.items || watchLists.data.items.items.length === 0) {
         console.log("No more watchlists to load.");
         setReachWatchListsEnd(true);

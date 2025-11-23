@@ -1,6 +1,6 @@
 import { HeaderFull } from "components/ui/header-full";
 import { Pagination } from "components/ui/pagination";
-import { ReviewDetailHandler } from "components/ui/review-detail-handler";
+import { ReviewDetailHandler } from "components/ui/review/review-detail-handler";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,7 @@ import type {
   ReviewDataGet,
   ReviewsData,
 } from "services/api/flixy/types/review";
-import { getAccessToken } from "services/api/utils";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/reviews";
 
@@ -33,7 +33,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     apiResponse.accessToken = await getAccessToken(request);
 
-    apiResponse.data = reviewsData;
+    apiResponse.data = {
+      reviews: reviewsData,
+      user: await getCachedUserData(request),
+    };
 
     return apiResponse;
   } catch (err: Error | any) {
@@ -56,7 +59,7 @@ export default function ReviewsPage() {
   const fetcher = useFetcher();
 
   const [reviews, setReviews] = useState<Page<ReviewDataGet>>(
-    apiResponse.data.reviews ?? {
+    apiResponse.data?.reviews?.reviews ?? {
       items: [],
       total: 0,
       page: 1,
@@ -67,7 +70,7 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     if (fetcher.data?.data.reviews) {
-      setReviews(fetcher.data.data.reviews);
+      setReviews(fetcher.data.data.reviews.reviews);
     }
   }, [fetcher.data]);
 

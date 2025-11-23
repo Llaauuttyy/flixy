@@ -1,8 +1,12 @@
+
 from app.model.movie import Movie
 from app.model.review import Review
 from app.db.database import Database
 from app.dto.movie import MovieGetResponse
 from app.constants.message import MOVIE_NOT_FOUND
+
+import app.utils as utils
+
 
 class MovieService:
     def get_all_movies(self, db: Database, user_id: int, order_column: str, order_way: str, genres: list[str] = None) -> list[MovieGetResponse]:
@@ -32,7 +36,8 @@ class MovieService:
                 logo_url=movie.logo_url,
                 youtube_trailer_id=movie.youtube_trailer_id,
                 is_trailer_reliable=movie.is_trailer_reliable,
-                user_rating=review.rating if review and review.rating else None
+                user_rating=review.rating if review and review.rating else None,
+                flixy_rating = utils.get_movie_average_rating(movie)
             ) for movie, review in movies_rating
         ]
     
@@ -61,7 +66,8 @@ class MovieService:
                 logo_url=movie.logo_url,
                 youtube_trailer_id=movie.youtube_trailer_id,
                 is_trailer_reliable=movie.is_trailer_reliable,
-                user_rating= review.rating if review and review.rating else None
+                user_rating= review.rating if review and review.rating else None,
+                flixy_rating = utils.get_movie_average_rating(movie)
             ) 
         
         raise Exception(MOVIE_NOT_FOUND)
@@ -93,6 +99,7 @@ class MovieService:
                 writers=movie.writers,
                 plot=movie.plot,
                 logo_url=movie.logo_url,
-                user_rating= review.rating if review and review.rating else None
+                user_rating= review.rating if review and review.rating else None,
+                flixy_rating = utils.get_movie_average_rating(movie)
             ) for movie, review in movies_rating
         ]

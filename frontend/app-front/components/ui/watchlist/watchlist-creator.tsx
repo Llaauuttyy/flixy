@@ -1,14 +1,18 @@
 import { Loader2 } from "lucide-react";
-import { Button } from "./button";
-import { Label } from "./label";
+import { Button } from "../button";
+import { Label } from "../label";
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { handleWatchListCreation } from "services/api/flixy/client/watchlists";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
-import type { WatchListCreate } from "services/api/flixy/types/watchlist";
-import { MaxLengthInput } from "./max-length-input";
+import type {
+  WatchListCreate,
+  WatchListFace,
+} from "services/api/flixy/types/watchlist";
+import { Checkbox } from "../checkbox";
+import { MaxLengthInput } from "../max-length-input";
 import WatchListCreatorMovies from "./watchlist-creator-movies";
 
 interface Movie {
@@ -27,16 +31,6 @@ interface Movie {
   user_rating: number | null;
 }
 
-interface WatchListFace {
-  id: number;
-  name: string;
-  description: string;
-  movies: Page<MovieDataGet>;
-  // icon: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export default function WatchListCreator({
   accessToken,
   onCreation,
@@ -49,6 +43,7 @@ export default function WatchListCreator({
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState<String>("");
+  const [privateWatchlist, setPrivateWatchlist] = useState<boolean>(false);
 
   const [nameLimitReached, setNameLimitReached] = useState(false);
   const [descriptionLimitReached, setDescriptionLimitReached] = useState(false);
@@ -72,6 +67,7 @@ export default function WatchListCreator({
     let watchListData: WatchListCreate = {
       name: name,
       description: description ? description.trim() : null,
+      private: privateWatchlist,
       movie_ids: movieIds,
     };
 
@@ -94,6 +90,7 @@ export default function WatchListCreator({
         id: apiResponse.data.id,
         name: apiResponse.data.name,
         description: apiResponse.data.description,
+        private: apiResponse.data.private,
         movies: movies,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -164,6 +161,20 @@ export default function WatchListCreator({
                   setDescriptionLimitReached(descriptionLimit)
                 }
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div>
+                <Label htmlFor="private" className="text-foreground font-bold">
+                  {t("watchlist_creator.private")}
+                </Label>
+              </div>
+              <Checkbox
+                id="private"
+                name="private"
+                checked={privateWatchlist}
+                onCheckedChange={(c) => setPrivateWatchlist(Boolean(c))}
               />
             </div>
 

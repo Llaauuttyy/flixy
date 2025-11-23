@@ -12,11 +12,15 @@ watchlist_router = APIRouter()
 WatchListServiceDep = Annotated[WatchListService, Depends(lambda: WatchListService())]
 
 @watchlist_router.get("/watchlists")
-def get_watchlists(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, params: Params = Depends()) -> WatchListsGetResponse:
+def get_watchlists(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, search_query: str = None, params: Params = Depends()) -> WatchListsGetResponse:
     user_id = request.state.user_id
     try:
-        watchlists, items = watchlist_service.get_all_watchlists(Database(session), user_id, params)
-        watchlists.items = paginate(items, params) if items else items
+        if search_query is None or search_query == "":
+            watchlists, items = watchlist_service.get_all_watchlists(Database(session), user_id, params)
+            watchlists.items = paginate(items, params) if items else items
+        else:
+            watchlists, items = watchlist_service.search_watchlists(Database(session), search_query, user_id, params)
+            watchlists.items = paginate(items, params) if items else items
         return watchlists
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
@@ -65,5 +69,13 @@ def delete_watchlist(session: SessionDep, request: Request, watchlist_service: W
         watchlist_service.delete_watchlist(Database(session), user_id, watchlist_id)
         return {"watchlist_id": watchlist_id}
     except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+    
+@watchlist_router.post("/watchlist/{watchlist_id}/save")
+def save_watchlist(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, watchlist_id: int = Path(..., title="watchlist_id", ge=1)) -> bool:
+    user_id = request.state.user_id
+    try:
+        return watchlist_service.save_watchlist(Database(session), user_id, watchlist_id)
+    except Exception as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
     

@@ -81,3 +81,11 @@ def top_movie_ratings(session: SessionDep, review_service: ReviewServiceDep) -> 
         return review_service.top_movie_ratings(Database(session))
     except Exception as e:
         raise HTTPException(status_code=e.status_code, detail=str(e.detail))
+    
+@review_router.get("/review/{id}")
+def get_review(session: SessionDep, request: Request, review_service: ReviewServiceDep, id: int = Path(..., title="id", ge=1)) -> ReviewGetSingularAchievementsDTO:
+    user_id = request.state.user_id
+    try:
+        return review_service.get_review(Database(session), id, user_id)
+    except Exception as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e.detail))

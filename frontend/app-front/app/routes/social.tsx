@@ -10,7 +10,7 @@ import {
 } from "components/ui/card";
 import { HeaderFull } from "components/ui/header-full";
 import { Pagination } from "components/ui/pagination";
-import { ReviewCard } from "components/ui/review-card";
+import { ReviewCard } from "components/ui/review/review-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { RatingCard } from "components/ui/social/rating-card";
 import { TopMovies, type TopMovie } from "components/ui/social/top-movies";
@@ -29,7 +29,8 @@ import {
 } from "services/api/flixy/server/reviews";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
-import { getAccessToken } from "services/api/utils";
+import type { UserDataGet } from "services/api/flixy/types/user";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "./+types/social";
 
 dayjs.extend(relativeTime);
@@ -46,6 +47,7 @@ interface SocialData {
   reviews: Page<ReviewDataGet>;
   ratings: Page<ReviewDataGet>;
   top_movies: TopMovie[];
+  user?: UserDataGet;
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -81,6 +83,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
 
     socialData.top_movies = await getTopMovies(request);
+    socialData.user = await getCachedUserData(request);
 
     apiResponse.data = socialData;
     return apiResponse;

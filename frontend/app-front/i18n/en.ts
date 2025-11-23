@@ -38,6 +38,25 @@ export const enTranslation = {
     sign_up_button_loading: "Registering...",
     sign_up_button: "Register",
   },
+  forgot_password: {
+    title: "Reset your password",
+    description:
+      "Enter your email address below to receive a password reset link.",
+    email: "Email",
+    send_button_loading: "Sending...",
+    send_button: "Send",
+  },
+  reset_password: {
+    title: "Set a new password",
+    subtitle: "Enter your new password below",
+    new_password: "New Password",
+    confirm_new_password: "Confirm New Password",
+    reset_button_loading: "Resetting...",
+    reset_button: "Reset Password",
+  },
+  confirm_registration: {
+    confirmation_loader: "Confirming your account...",
+  },
   sidebar_nav: {
     home: "Home",
     movies: "Movies",
@@ -136,6 +155,7 @@ export const enTranslation = {
     user_reviews: "reviews",
     user_follow_button: "Follow",
     user_unfollow_button: "Unfollow",
+    watchlists_section_title: "Watchlists",
   },
   not_found: {
     title_oops: "Oops!",
@@ -148,6 +168,7 @@ export const enTranslation = {
   review_card: {
     comment_button: "Comment",
     no_reviews: "No reviews so far. Be the first!",
+    view_details: "View details",
   },
   review_input: {
     have_watched: "Have you watched",
@@ -162,6 +183,18 @@ export const enTranslation = {
     verified: "Verified review",
     visible: "Visible to the community",
   },
+  comment: {
+    input: {
+      placeholder: "Write a comment...",
+      cancel: "Cancel",
+      submit: "Comment",
+    },
+    list: {
+      hide_comments: "Hide comments",
+      show_comments: "Show comments",
+      view_all_comments: "Show more",
+    },
+  },
   settings: {
     title: "Settings",
     description: "Update your personal data or password.",
@@ -173,13 +206,10 @@ export const enTranslation = {
       name: "Name",
       username: "Username",
       email: "Email",
+      about_me: "About me",
+      about_me_empty: "Fill up your about me to get people to know you!",
       updating: "Updating...",
       update: "Update",
-    },
-    data: {
-      tab: "Data",
-      title: "Data Management",
-      description: "Visualize and manage your personal data.",
     },
     password: {
       tab: "Change Password",
@@ -200,6 +230,7 @@ export const enTranslation = {
     },
     subtitle: "Discover your patterns and achievements as a cinephile",
     edit_profile: "Edit Profile",
+    joined: "Joined",
     following: "Following",
     followers: "Followers",
     insights: {
@@ -294,6 +325,7 @@ export const enTranslation = {
     },
     visibility: "Visibility",
     visibility_public: "Public",
+    visibility_private: "Private",
     activity: {
       title: "Recent Activity",
       no_activity: "No activity in this watchlist yet.",
@@ -305,6 +337,7 @@ export const enTranslation = {
     name_placeholder: "Enter watchlist name",
     description: "Description",
     description_placeholder: "Enter watchlist description",
+    private: "Private",
     movies: "Movies",
     create: "Create",
     creating: "Creating...",
@@ -329,6 +362,12 @@ export const enTranslation = {
     watchlist: {
       title: "Delete watchlist?",
       subtitle: "Your watchlist will be gone forever.",
+      cancel: "Cancel",
+      accept: "Delete",
+    },
+    comment: {
+      title: "Delete comment?",
+      subtitle: "Your comment will be permanently removed.",
       cancel: "Cancel",
       accept: "Delete",
     },
@@ -357,6 +396,8 @@ export const enTranslation = {
     recent_reviews_subtitle: "Latest reviews from the community",
     genre_spotlight: "Genre Spotlight",
     genre_spotlight_subtitle: "Explore movies by your favorite genres",
+    popular_watchlists: "Popular Watchlists",
+    popular_watchlists_subtitle: "Watchlists loved by the community",
   },
   featured_movie_component: {
     featured: "Featured",

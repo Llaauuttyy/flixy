@@ -1,7 +1,10 @@
 import type {
+  ConfirmRegistrationData,
+  ForgotPasswordData,
   LoginCredentials,
   RefreshTokenData,
   RegistrationData,
+  ResetPasswordData,
 } from "../types/auth";
 
 export async function handleLogin(credentials: LoginCredentials) {
@@ -56,4 +59,63 @@ export async function handleRegistration(userData: RegistrationData) {
   }
 
   return response_json.id;
+}
+
+export async function handleForgotPassword(userData: ForgotPasswordData) {
+  const response = await fetch(process.env.VITE_API_URL + "/forgot-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userData),
+  });
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
+
+export async function handleResetPassword(userData: ResetPasswordData) {
+  const response = await fetch(process.env.VITE_API_URL + "/reset-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userData),
+  });
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}
+
+export async function handleConfirmRegistration(
+  userData: ConfirmRegistrationData
+) {
+  const response = await fetch(
+    process.env.VITE_API_URL + "/confirm-registration",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
 }

@@ -40,6 +40,25 @@ export const esTranslation = {
     sign_up_button_loading: "Registrando...",
     sign_up_button: "Registrarse",
   },
+  forgot_password: {
+    title: "Restablecer tu contraseña",
+    description:
+      "Ingresa tu dirección de correo electrónico a continuación para recibir un enlace de restablecimiento de contraseña.",
+    email: "Correo electrónico",
+    send_button_loading: "Enviando...",
+    send_button: "Enviar",
+  },
+  reset_password: {
+    title: "Restablecer tu contraseña",
+    subtitle: "Ingresá tu nueva contraseña a continuación",
+    new_password: "Nueva contraseña",
+    confirm_new_password: "Confirmar nueva contraseña",
+    reset_button_loading: "Restableciendo...",
+    reset_button: "Restablecer contraseña",
+  },
+  confirm_registration: {
+    confirmation_loader: "Confirmando tu registro...",
+  },
   sidebar_nav: {
     home: "Inicio",
     movies: "Películas",
@@ -139,6 +158,7 @@ export const esTranslation = {
     user_reviews: "reseñas",
     user_follow_button: "Seguir",
     user_unfollow_button: "Dejar de seguir",
+    watchlists_section_title: "Listas",
   },
   not_found: {
     title_oops: "¡Uy!",
@@ -165,6 +185,18 @@ export const esTranslation = {
     verified: "Reseña verificada",
     visible: "Visible para la comunidad",
   },
+  comment: {
+    input: {
+      placeholder: "Escribe un comentario...",
+      cancel: "Cancelar",
+      submit: "Comentar",
+    },
+    list: {
+      hide_comments: "Ocultar comentarios",
+      show_comments: "Mostrar comentarios",
+      view_all_comments: "Mostrar más",
+    },
+  },
   settings: {
     title: "Configuración",
     description: "Actualiza tus datos personales o contraseña.",
@@ -177,13 +209,10 @@ export const esTranslation = {
       name: "Nombre",
       username: "Nombre de usuario",
       email: "Correo electrónico",
+      about_me: "Sobre mí",
+      about_me_empty: "Completa tu biografía. Cuéntanos sobre ti.",
       updating: "Actualizando...",
       update: "Actualizar",
-    },
-    data: {
-      tab: "Datos",
-      title: "Gestión de Datos",
-      description: "Visualiza y gestiona tus datos personales.",
     },
     password: {
       tab: "Cambiar Contraseña",
@@ -204,6 +233,7 @@ export const esTranslation = {
     },
     subtitle: "Descubrí tus patrones y logros como cinéfilo",
     edit_profile: "Editar Perfil",
+    joined: "Se unió en",
     following: "Siguiendo",
     followers: "Seguidores",
     insights: {
@@ -299,6 +329,7 @@ export const esTranslation = {
     },
     visibility: "Visibilidad",
     visibility_public: "Pública",
+    visibility_private: "Privada",
     activity: {
       title: "Actividad reciente",
       no_activity: "Aún no hay actividad en esta lista.",
@@ -310,6 +341,7 @@ export const esTranslation = {
     name_placeholder: "Ingresa el nombre de la lista",
     description: "Descripción",
     description_placeholder: "Ingresa la descripción de la lista",
+    private: "Privada",
     movies: "Películas",
     create: "Crear",
     creating: "Creando...",
@@ -334,6 +366,12 @@ export const esTranslation = {
     watchlist: {
       title: "¿Eliminar lista?",
       subtitle: "Tu lista será eliminada permanentemente.",
+      cancel: "Cancelar",
+      accept: "Eliminar",
+    },
+    comment: {
+      title: "¿Eliminar comentario?",
+      subtitle: "Tu comentario será eliminado permanentemente.",
       cancel: "Cancelar",
       accept: "Eliminar",
     },
@@ -364,6 +402,9 @@ export const esTranslation = {
     recent_reviews_subtitle: "Las últimas reseñas de la comunidad",
     genre_spotlight: "Destacado por Género",
     genre_spotlight_subtitle: "Explorá películas según tus géneros favoritos",
+    popular_watchlists: "Listas Populares",
+    popular_watchlists_subtitle:
+      "Descubrí las listas más populares creadas por la comunidad",
   },
   featured_movie_component: {
     featured: "Destacado",

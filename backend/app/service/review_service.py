@@ -1,9 +1,12 @@
 from app.model.user import User
 from app.model.review_like import ReviewLike
 from app.model.user_achievement import UserAchievement
+from app.model.comment import Comment
 from app.dto.achievement import AchievementDTO
 from app.dto.movie import MovieGetResponse
 from app.model.user_relationship import UserRelationship
+from app.dto.comment import CommentGetDTO
+from app.model.movie import Movie
 from fastapi import HTTPException
 from app.model.review import Review
 from app.db.database import Database
@@ -14,6 +17,7 @@ from sqlalchemy.orm import selectinload
 from typing import Tuple, List, Optional
 from datetime import datetime as datetime
 from app.external.moderation_assistant import Moderator
+from app import utils
 
 class ReviewService:
     def set_up_review_singular_dto(self, review: Review, user_id: int, db: Database) -> ReviewGetSingularDTO:
@@ -52,7 +56,8 @@ class ReviewService:
                 writers=movie_data.writers,
                 plot=movie_data.plot,
                 logo_url=movie_data.logo_url,
-                user_rating=review.rating if review.rating else None
+                user_rating=review.rating if review.rating else None,
+                flixy_rating = utils.get_movie_average_rating(movie_data)
             )
 
         achievements = review.user.achievements
@@ -85,7 +90,18 @@ class ReviewService:
             name=review.user.name,
             user_name=review.user.username,
             movie=movie,
-            achievements=achievement_dtos
+            achievements=achievement_dtos,
+            comments=[CommentGetDTO(
+                id=comment.id,
+                review_id=comment.review_id,
+                text=comment.text,
+                likes=comment.likes,
+                user_id=comment.user_id,
+                is_deletable=(comment.user_id == user_id),
+                liked_by_user=any(cl.user_id == user_id for cl in comment.comment_likes),
+                user_name=comment.user.name,
+                created_at=comment.created_at
+            ) for comment in review.comments[:4]] if review.comments else []
         )
     
     def set_up_top_movie_rating_dto(self, top_movie: dict) -> TopMovieRatingDTO:
@@ -104,7 +120,8 @@ class ReviewService:
                 writers=movie_data.writers,
                 plot=movie_data.plot,
                 logo_url=movie_data.logo_url,
-                user_rating=None
+                user_rating=None,
+                flixy_rating = utils.get_movie_average_rating(movie_data)
             ),
             average_rating=top_movie["average_rating"],
             total_ratings=len(top_movie["ratings"])
@@ -157,7 +174,7 @@ class ReviewService:
             if review_dto.watch_date and review_dto.watch_date.replace(tzinfo=None) > datetime.now():
                 raise Exception(FUTURE_TRAVELER)
             
-            if review_dto.text and Moderator().is_review_insulting(review_dto.text):
+            if review_dto.text and Moderator().is_text_insulting(review_dto.text):
                 raise Exception(INSULTING_REVIEW)
             
             existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)
@@ -166,6 +183,14 @@ class ReviewService:
                 if review_dto.text:
                     existing_review.text = review_dto.text
                 if review_dto.rating:
+
+                    if existing_review.rating:
+                        existing_review.movie.flixy_ratings_sum += (-1 * existing_review.rating)
+                    else:
+                        existing_review.movie.flixy_ratings_total += 1
+
+                    existing_review.movie.flixy_ratings_sum += review_dto.rating
+
                     existing_review.rating = review_dto.rating
                 if review_dto.watch_date:
                     existing_review.watch_date = review_dto.watch_date
@@ -182,6 +207,13 @@ class ReviewService:
                     text=review_dto.text,
                     watch_date=review_dto.watch_date if review_dto.watch_date else curent_date,
                 )
+
+                movie = db.find_by(Movie, "id", review_dto.movie_id)
+
+                if review_dto.rating:
+                    movie.flixy_ratings_sum += review_dto.rating
+                    movie.flixy_ratings_total += 1
+                    db.add(movie)
 
                 db.save(new_review)
                 review = new_review
@@ -220,6 +252,12 @@ class ReviewService:
         for like in review_likes:
             db.remove(like)
             review_to_delete.likes = 0
+
+    def remove_review_comments(self, db: Database, review_to_delete: Review):
+        review_comments = db.find_all(Comment, Comment.review_id == review_to_delete.id)
+
+        for comment in review_comments:
+            db.remove(comment)
         
     def delete_review_text(self, db: Database, user_id: int, id: int):
         try:
@@ -232,6 +270,7 @@ class ReviewService:
             review_to_delete.visible_updated_at = datetime.now()
 
             self.remove_review_likes(db, review_to_delete)
+            self.remove_review_comments(db, review_to_delete)
 
             db.save(review_to_delete)
         except IntegrityError as e:
@@ -320,5 +359,16 @@ class ReviewService:
             top_movies = sorted(movie_ratings.values(), key=lambda x: x["average_rating"], reverse=True)[:10]
 
             return [self.set_up_top_movie_rating_dto(top_movie) for top_movie in top_movies]
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        
+    def get_review(self, db: Database, id: int, user_id: int) -> ReviewGetSingularAchievementsDTO:
+        try:
+            review = db.find_by(Review, "id", id, [selectinload(Review.user).selectinload(User.achievements).selectinload(UserAchievement.achievement), selectinload(Review.movie)])
+
+            if not review:
+                raise HTTPException(status_code=404, detail=REVIEW_NOT_FOUND)
+
+            return self.set_up_review_singular_achievements_dto(review, user_id, db)
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))

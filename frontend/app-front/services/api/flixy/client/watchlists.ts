@@ -129,3 +129,26 @@ export async function handleGetMovieFromWatchList(
 
   return response_json;
 }
+
+export async function handleSaveWatchlist(
+  accessToken: string | undefined,
+  watchlistId: number
+) {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL_CLIENT + `/watchlist/${watchlistId}/save`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const response_json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`${response_json.detail}`);
+  }
+
+  return response_json;
+}

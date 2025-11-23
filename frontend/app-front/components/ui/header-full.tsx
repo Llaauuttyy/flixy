@@ -1,7 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
-import { Button } from "components/ui/button";
+import { UserAvatar } from "components/ui/avatar";
 import { Input } from "components/ui/input";
-import { Bell, Loader2, Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLoaderData, useNavigate, useSubmit } from "react-router-dom";
@@ -14,6 +13,7 @@ export function HeaderFull() {
   const [searchText, setSearchText] = useState(apiResponse?.data?.query ?? "");
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const user = apiResponse?.data?.user ?? null;
 
   function signOut() {
     setIsLoading(true);
@@ -65,19 +65,11 @@ export function HeaderFull() {
               t("header.sign_out")
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-gray-300 hover:text-white hover:bg-gray-800"
-          >
-            <Bell className="h-5 w-5" />
-          </Button>
-          <Avatar>
-            <AvatarImage src="/placeholder.svg?height=32&width=32" />
-            <AvatarFallback className="bg-gray-700 text-gray-300">
-              JD
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            userId={user?.id ?? 0}
+            userName={user?.username ?? "NN"}
+            ownUser
+          />
         </div>
       </div>
     </header>

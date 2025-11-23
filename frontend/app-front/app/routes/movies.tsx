@@ -10,7 +10,8 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { getMovies } from "services/api/flixy/server/movies";
-import { getAccessToken } from "services/api/utils";
+import type { UserDataGet } from "services/api/flixy/types/user";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { ApiResponse, Page } from "../../services/api/flixy/types/overall";
 import type { Route } from "./+types/movies";
 
@@ -23,6 +24,7 @@ interface MoviesData {
   movies: Page<Movie>;
   order: Order;
   genres: string[] | null;
+  user?: UserDataGet;
 }
 
 interface Movie {
@@ -72,6 +74,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
     moviesData.order = order;
     moviesData.genres = genres;
+    moviesData.user = await getCachedUserData(request);
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -188,7 +191,9 @@ export default function MoviesPage() {
                 itemsPage={moviesData.movies}
                 onPageChange={(page: number) => {
                   fetcher.load(
-                    `/movies?page=${page}&order_column=${orderColumn}&order_way=${orderWay}&${getGenresParams()}`
+                    `/movies?page=${page}&order_column=${orderColumn}&order_way=${orderWay}&${getGenresParams(
+                      selectedGenres
+                    )}`
                   );
                 }}
               >

@@ -6,8 +6,12 @@ CREATE TABLE IF NOT EXISTS users (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   username VARCHAR(255) UNIQUE NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
+  confirmation_token varchar(45) DEFAULT NULL,
+  is_confirmed tinyint DEFAULT 0,
+  reset_token varchar(45) DEFAULT NULL,
+  reset_token_expires_at timestamp NULL DEFAULT NULL,
   followers INT DEFAULT 0,
   following INT DEFAULT 0,
   about_me VARCHAR(512) DEFAULT NULL,
@@ -31,6 +35,8 @@ CREATE TABLE movies (
   logo_url varchar(512) NOT NULL,
   youtube_trailer_id varchar(45) DEFAULT NULL,
   is_trailer_reliable tinyint DEFAULT NULL,
+  flixy_ratings_sum int NOT NULL DEFAULT 0,
+  flixy_ratings_total int NOT NULL DEFAULT 0,
   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
@@ -59,6 +65,8 @@ CREATE TABLE watchlists (
   user_id int NOT NULL,
   name varchar(256) NOT NULL,
   description varchar(1024) DEFAULT NULL,
+  private tinyint DEFAULT 0,
+  saves int NOT NULL DEFAULT 0,
   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
@@ -145,4 +153,38 @@ CREATE TABLE user_achievements (
   UNIQUE KEY user_id (user_id, achievement_id),
   CONSTRAINT user_achievements_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT user_achievements_ibfk_2 FOREIGN KEY (achievement_id) REFERENCES achievements (id) ON DELETE CASCADE
-)
+);
+
+CREATE TABLE comments (
+  id int NOT NULL AUTO_INCREMENT,
+  review_id int NOT NULL,
+  user_id int NOT NULL,
+  text varchar(1024) NOT NULL,
+  likes int DEFAULT 0,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT review_comments_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT review_comments_ibfk_2 FOREIGN KEY (review_id) REFERENCES reviews (id) ON DELETE CASCADE
+);
+
+CREATE TABLE comment_likes (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  comment_id int NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY user_id (user_id, comment_id),
+  CONSTRAINT comment_likes_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT comment_likes_ibfk_2 FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE
+);
+
+CREATE TABLE watchlist_saves (
+    id int NOT NULL AUTO_INCREMENT,
+    user_id int NOT NULL,
+    watchlist_id int NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY user_id (user_id, watchlist_id),
+    CONSTRAINT watchlist_saves_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT watchlist_saves_ibfk_2 FOREIGN KEY (watchlist_id) REFERENCES watchlists (id) ON DELETE CASCADE
+);

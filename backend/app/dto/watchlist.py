@@ -1,5 +1,6 @@
 from typing import Optional, Union
 from app.model.movie import Movie
+from app.dto.user import UserDTOMinimal
 from pydantic import BaseModel, model_validator
 from datetime import datetime as datetime
 from fastapi_pagination import Page
@@ -19,6 +20,11 @@ class WatchListBase(BaseModel):
     name: str
     description: Optional[str] = None
     movies: Optional[Page[MovieGetResponse]] = []
+    private: bool
+    user: UserDTOMinimal
+    saves: int
+    saved_by_user: bool
+    editable: bool
     created_at: datetime
     updated_at: datetime
 
@@ -43,8 +49,13 @@ class WatchListGetResponse(BaseModel):
     name: str
     description: Optional[str] = None
     movies: Optional[Page[MovieGetResponse]] = []
+    private: bool
+    user: UserDTOMinimal
+    saves: int
+    saved_by_user: bool
     activity: Optional[list[WatchListActivity]] = []
     insights: Optional[WatchListInsights] = None
+    editable: bool
     created_at: datetime
     updated_at: datetime
 
@@ -52,10 +63,13 @@ class WatchListCreationDTO(BaseModel):
     name: str
     description: Optional[str] = None
     movie_ids: Optional[list[int]] = []
+    private: bool = False
+    saves: int = 0
 
 class WatchListEditionDTO(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+    private: Optional[bool] = None
     movie_ids_to_add: Optional[list[int]] = []
     movie_ids_to_delete: Optional[list[int]] = []
 
@@ -69,6 +83,8 @@ class WatchListEditionDTO(BaseModel):
 class WatchListEditResponse(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+    private: bool
+    saved_by_user: bool
     movie_ids_added: Optional[list[int]] = []
     movie_ids_deleted: Optional[list[int]] = []
 

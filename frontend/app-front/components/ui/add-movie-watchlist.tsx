@@ -48,8 +48,6 @@ export function AddMovieWatchList({
   const isShowOnly = showOnly ?? false;
   const isShowEdit = showEdit ?? false;
 
-  console.log(watchListId);
-
   const [addingMovie, setAddingMovie] = useState(false);
   const [searchedMovies, setSearchedMovies] = useState<MovieDataGet[]>([]);
 
@@ -96,7 +94,6 @@ export function AddMovieWatchList({
             error: "Movie already exists in the watchlist.",
           });
         } else {
-          console.log("Movie not in watchlist, adding:", movie);
           onMovieSelect(movie);
         }
       } else {

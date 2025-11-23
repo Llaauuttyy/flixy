@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from app.db.database import Database
 from app.db.database_setup import SessionDep
 from app.service.user_service import UserService
@@ -25,8 +25,8 @@ def get_users(session: SessionDep, request: Request, user_service: UserServiceDe
         return HTTPException(status_code=409, detail=str(e))
 
 @user_router.get("/user")
-async def get_user(session: SessionDep, request: Request, user_service: UserServiceDep) -> UserDTO:
-    user_id = request.state.user_id
+async def get_user(session: SessionDep, request: Request, user_service: UserServiceDep, id: Optional[int] = None) -> UserDTO:
+    user_id = id if id else request.state.user_id
     return user_service.get_user_by_id(Database(session), user_id)
 
 @user_router.patch("/user")
@@ -38,8 +38,8 @@ def update_user_data(user_dto: UserUpdateDTO, request: Request, session: Session
         raise HTTPException(status_code=400, detail=str(e))
     
 @user_router.get("/user/insights")
-def get_insights(session: SessionDep, request: Request, user_service: UserServiceDep) -> InsightDTO:
-    user_id = request.state.user_id
+def get_insights(session: SessionDep, request: Request, user_service: UserServiceDep, id: Optional[int] = None) -> InsightDTO:
+    user_id = id if id else request.state.user_id
 
     try:
         insights = user_service.get_user_insights(Database(session), user_id)
@@ -64,8 +64,8 @@ def get_achievements(session: SessionDep, request: Request, user_service: UserSe
         raise HTTPException(status_code=400, detail=str(e))
     
 @user_router.get("/user/followers")
-def get_followers(session: SessionDep, request: Request, user_service: UserServiceDep) -> Page[UserDTO]:
-    user_id = request.state.user_id
+def get_followers(session: SessionDep, request: Request, user_service: UserServiceDep, id: Optional[int] = None) -> Page[UserDTO]:
+    user_id = id if id else request.state.user_id
     try:
         followers = user_service.get_user_followers(Database(session), user_id)
         return paginate(followers)
@@ -73,8 +73,8 @@ def get_followers(session: SessionDep, request: Request, user_service: UserServi
         raise HTTPException(status_code=400, detail=str(e))
     
 @user_router.get("/user/following")
-def get_following(session: SessionDep, request: Request, user_service: UserServiceDep) -> Page[UserDTO]:
-    user_id = request.state.user_id
+def get_following(session: SessionDep, request: Request, user_service: UserServiceDep, id: Optional[int] = None) -> Page[UserDTO]:
+    user_id = id if id else request.state.user_id
     try:
         following = user_service.get_user_following(Database(session), user_id)
         return paginate(following)

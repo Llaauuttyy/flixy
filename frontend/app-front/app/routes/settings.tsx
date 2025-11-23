@@ -2,7 +2,6 @@ import PasswordForm from "components/password-form";
 import { HeaderFull } from "components/ui/header-full";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { Suspense, useState } from "react";
-import { Button } from "../../components/ui/button";
 import {
   Card,
   CardContent,
@@ -28,38 +27,46 @@ import { Select } from "components/ui/select";
 import UserDataForm from "components/user-data-form";
 import i18n, { getLanguageIcon, getLanguageLabel } from "i18n/i18n";
 import { useTranslation } from "react-i18next";
+import type { ApiResponse } from "services/api/flixy/types/overall";
 import type { UserDataGet } from "../../services/api/flixy/types/user";
 
 export async function loader({ request }: Route.LoaderArgs) {
+  let apiResponse: ApiResponse = {};
+
   try {
-    const userDataResponse: UserDataGet = await handleUserDataGet(request);
+    const userDataResponse: UserDataGet = await handleUserDataGet({ request });
     console.log("Got user data successfully");
 
-    userDataResponse.accessToken = await getAccessToken(request);
+    apiResponse.data = { user: userDataResponse };
+    apiResponse.accessToken = await getAccessToken(request);
 
-    return userDataResponse;
+    return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /user said: ", err.message);
 
-    var userDataError: UserDataGet = {
-      name: "your-name",
-      username: "your-username",
-      email: "your-email",
+    apiResponse.data = {
+      user: {
+        name: "your-name",
+        username: "your-username",
+        email: "your-email",
+        about_me: "your-about-me",
+      },
     };
 
     if (err instanceof TypeError) {
-      userDataError.error =
+      apiResponse.error =
         "Service's not working properly. Please try again later.";
-      return userDataError;
+      return apiResponse;
     }
 
-    userDataError.error = err.message;
-    return userDataError;
+    apiResponse.error = err.message;
+    return apiResponse;
   }
 }
 
 export default function SettingsPage() {
-  const currentUserData: UserDataGet = useLoaderData();
+  const apiResponse: ApiResponse = useLoaderData();
+  const currentUserData: UserDataGet = apiResponse?.data?.user!;
   const { t } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || "en");
   const availableLanguages = i18n.options.resources
@@ -86,18 +93,12 @@ export default function SettingsPage() {
                   <div className="w-full flex justify-center mt-10">
                     <div className="w-full max-w-3xl">
                       <Tabs defaultValue="ajustes" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 bg-gray-800 border-gray-700">
+                        <TabsList className="grid w-full grid-cols-2 bg-gray-800 border-gray-700">
                           <TabsTrigger
                             value="ajustes"
                             className="text-gray-300 data-[state=active]:bg-gray-700 data-[state=active]:text-white"
                           >
                             {t("settings.general.tab")}
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="datos"
-                            className="text-gray-300 data-[state=active]:bg-gray-700 data-[state=active]:text-white"
-                          >
-                            {t("settings.data.tab")}
                           </TabsTrigger>
                           <TabsTrigger
                             value="contrasena"
@@ -135,59 +136,10 @@ export default function SettingsPage() {
                                   i18n.changeLanguage(value);
                                 }}
                               />
-                              <UserDataForm userData={currentUserData} />
-                            </CardContent>
-                          </Card>
-                        </TabsContent>
-
-                        <TabsContent value="datos" className="mt-6">
-                          <Card className="bg-gray-800 border-gray-700">
-                            <CardHeader>
-                              <CardTitle className="text-foreground">
-                                {t("settings.data.title")}
-                              </CardTitle>
-                              <CardDescription className="text-muted-foreground">
-                                {t("settings.data.description")}
-                              </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                              <div className="space-y-2">
-                                <Label
-                                  htmlFor="data-export"
-                                  className="text-foreground font-bold"
-                                >
-                                  Export data
-                                </Label>
-                                <p className="text-muted-foreground text-sm">
-                                  Require a copy of all your personal data
-                                  stored in the application.
-                                </p>
-                                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                                  Require export
-                                </Button>
-                              </div>
-                              <div className="space-y-2">
-                                <Label
-                                  htmlFor="data-delete"
-                                  className="text-foreground font-bold md:text-red-400"
-                                >
-                                  Delete account
-                                </Label>
-                                <p className="text-muted-foreground text-sm">
-                                  Deleting your account will remove all your
-                                  personal data from our servers.{" "}
-                                  <span className="font-bold md:text-red-500">
-                                    It cannot be undone
-                                  </span>
-                                  .
-                                </p>
-                                <Button
-                                  variant="destructive"
-                                  className="bg-gradient-to-r from-red-700 to-red-600 hover:from-red-750 hover:to-red-800"
-                                >
-                                  Delete account
-                                </Button>
-                              </div>
+                              <UserDataForm
+                                userData={currentUserData}
+                                accessToken={String(apiResponse.accessToken)}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>
@@ -204,7 +156,7 @@ export default function SettingsPage() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <PasswordForm
-                                accessToken={currentUserData.accessToken}
+                                accessToken={String(apiResponse.accessToken)}
                               />
                             </CardContent>
                           </Card>

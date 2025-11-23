@@ -3,6 +3,7 @@ import { FeaturedMovie } from "components/ui/home/featured-movie";
 import { GenreSpotlight } from "components/ui/home/genre-spotlight";
 import { GetRecommendations } from "components/ui/home/get-recommendations";
 import { LastUserPicks } from "components/ui/home/last-user-picks";
+import { PopularWatchLists } from "components/ui/home/popular-watchlists";
 import { RecentReviews } from "components/ui/home/recent-reviews";
 import { ShareYourThoughts } from "components/ui/home/share-your-thoughts";
 import { TopRatedMovies } from "components/ui/home/top-rated-movies";
@@ -14,14 +15,26 @@ import { getHomeFeed } from "services/api/flixy/server/feed";
 import type { MovieDataGet } from "services/api/flixy/types/movie";
 import type { ApiResponse, Dictionary } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
-import { getAccessToken } from "services/api/utils";
+import type { WatchListFace } from "services/api/flixy/types/watchlist";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "./+types/home";
+
+interface WatchLists {
+  items: {
+    items: WatchListFace[];
+  };
+  total_movies: number;
+  total_watchlists: number;
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   let apiResponse: ApiResponse = {};
 
   try {
-    apiResponse.data = await getHomeFeed(request);
+    const feed = await getHomeFeed(request);
+    const user = await getCachedUserData(request);
+
+    apiResponse.data = { feed, user };
 
     apiResponse.accessToken = await getAccessToken(request);
 
@@ -45,18 +58,20 @@ export default function HomePage() {
 
   const apiResponse: ApiResponse = useLoaderData();
 
-  const featuredMovie: MovieDataGet = apiResponse.data?.featured_movie;
+  const featuredMovie: MovieDataGet = apiResponse.data?.feed?.featured_movie;
   const trendingNowMovies: MovieDataGet[] =
-    apiResponse.data?.trending_now_movies;
-  const topRatedMovies: MovieDataGet[] = apiResponse.data?.top_rated_movies;
+    apiResponse.data?.feed?.trending_now_movies;
+  const topRatedMovies: MovieDataGet[] =
+    apiResponse.data?.feed?.top_rated_movies;
   const lastWatchedMoviesReviews: ReviewDataGet[] =
-    apiResponse.data?.last_watched_movies;
+    apiResponse.data?.feed?.last_watched_movies;
 
-  const recentReviews: ReviewDataGet[] = apiResponse.data?.recent_reviews;
+  const recentReviews: ReviewDataGet[] = apiResponse.data?.feed?.recent_reviews;
   const MoviesCountByGenre: Dictionary<string> =
-    apiResponse.data?.movies_count_by_genre;
+    apiResponse.data?.feed?.movies_count_by_genre;
 
-  console.log("Featured Movie: ", recentReviews);
+  const popupularWatchLists: WatchLists =
+    apiResponse.data?.feed?.popular_watchlists;
 
   if (apiResponse.error) {
     return (
@@ -140,6 +155,26 @@ export default function HomePage() {
                     accessToken={apiResponse.accessToken as string}
                   />
                 </section>
+
+                {/* Popular WatchLists */}
+                {popupularWatchLists.items.items && (
+                  <section>
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h2 className="text-3xl font-bold text-white">
+                          {t("home.popular_watchlists")}
+                        </h2>
+                        <p className="text-slate-400 mt-1">
+                          {t("home.popular_watchlists_subtitle")}
+                        </p>
+                      </div>
+                    </div>
+                    <PopularWatchLists
+                      watchlists={popupularWatchLists}
+                      accessToken={apiResponse.accessToken as string}
+                    />
+                  </section>
+                )}
 
                 {/* Recent Reviews */}
                 <section>

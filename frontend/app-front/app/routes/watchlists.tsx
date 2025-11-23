@@ -9,28 +9,20 @@ import type { Route } from "./+types/movies";
 
 import { Button } from "components/ui/button";
 import { Pagination } from "components/ui/pagination";
-import WatchList from "components/ui/watchlist";
-import WatchListCreator from "components/ui/watchlist-creator";
+import WatchList from "components/ui/watchlist/watchlist";
+import WatchListCreator from "components/ui/watchlist/watchlist-creator";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
 import { useTranslation } from "react-i18next";
-import type { MovieDataGet } from "services/api/flixy/types/movie";
-import { getAccessToken } from "services/api/utils";
-
-interface WatchListFace {
-  id: number;
-  name: string;
-  description: string;
-  movies: Page<MovieDataGet>;
-  // icon: string;
-  created_at: string;
-  updated_at: string;
-}
+import type { WatchListFace } from "services/api/flixy/types/watchlist";
+import { getAccessToken, getCachedUserData } from "services/api/utils";
 
 interface WatchLists {
   items: {
     items: WatchListFace[];
   };
+  total_movies: number;
+  total_watchlists: number;
 }
 
 const DEFAULT_PAGE = 1;
@@ -47,11 +39,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     watchlists = await getWatchLists(page, DEFAULT_PAGE_SIZE, request);
 
-    console.log("Watchlists: ", watchlists);
-
     apiResponse.accessToken = await getAccessToken(request);
 
-    apiResponse.data = watchlists;
+    apiResponse.data = { watchlists, user: await getCachedUserData(request) };
     return apiResponse;
   } catch (err: Error | any) {
     console.log("API GET /movies said: ", err.message);
@@ -75,8 +65,8 @@ export default function WatchListsPage() {
   const [isCreation, setIsCreation] = useState(false);
 
   const [watchlists, setWatchlists] = useState<Page<WatchListFace>>(
-    fetcher.data?.data.items ??
-      apiResponse.data.items ?? {
+    fetcher.data?.data?.watchlists.items ??
+      apiResponse.data?.watchlists.items ?? {
         items: [],
         total: 0,
         page: 1,
@@ -88,9 +78,11 @@ export default function WatchListsPage() {
   let [newWatchLists, setNewWatchLists] = useState<WatchListFace[]>([]);
 
   const [watchListsData, setWatchListsData] = useState({
-    movies: apiResponse.data.total_movies ? apiResponse.data.total_movies : 0,
-    watchlists: apiResponse.data.total_watchlists
-      ? apiResponse.data.total_watchlists
+    movies: apiResponse?.data?.watchlists?.total_movies
+      ? apiResponse?.data?.watchlists?.total_movies
+      : 0,
+    watchlists: apiResponse?.data?.watchlists?.total_watchlists
+      ? apiResponse?.data?.watchlists?.total_watchlists
       : 0,
   });
 
@@ -138,6 +130,12 @@ export default function WatchListsPage() {
         (wl) => wl.id !== watchlist_id
       ),
     }));
+  }
+
+  function handleWatchListSaved(saved: boolean) {
+    if (!saved) {
+      window.location.reload();
+    }
   }
 
   function getCreationButtons() {
@@ -297,6 +295,7 @@ export default function WatchListsPage() {
                   accessToken={String(apiResponse.accessToken)}
                   watchlist={watchlist}
                   onDelete={handleWatchListDeletion}
+                  onSaved={handleWatchListSaved}
                 />
               ))}
             </Pagination>
