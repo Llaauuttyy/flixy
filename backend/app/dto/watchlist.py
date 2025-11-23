@@ -80,9 +80,6 @@ class WatchListEditionDTO(BaseModel):
             raise ValueError("You must provide at least one field to edit.")
         return values
 
-class WatchListSavedOnlyDTO(BaseModel):
-    only_saved: Optional[bool] = False
-
 class WatchListEditResponse(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None

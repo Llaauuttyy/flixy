@@ -1,7 +1,7 @@
 from typing import Annotated, Optional
 from app.db.database import Database
 from app.db.database_setup import SessionDep
-from app.dto.watchlist import WatchListCreateResponse, WatchListSavedOnlyDTO, WatchListCreationDTO, WatchListsGetResponse, WatchListGetResponse, WatchListEditResponse, WatchListEditionDTO
+from app.dto.watchlist import WatchListCreateResponse, WatchListCreationDTO, WatchListsGetResponse, WatchListGetResponse, WatchListEditResponse, WatchListEditionDTO
 from app.dto.movie import MovieDTO
 from app.service.watchlist_service import WatchListService
 from fastapi import APIRouter, Depends, HTTPException, Request, Path
