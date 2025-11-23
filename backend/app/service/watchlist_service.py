@@ -18,28 +18,54 @@ from app import utils
 
 
 class WatchListService:
-    def get_all_watchlists(self, db: Database, user_id: int, params: Params) -> Tuple[WatchListsGetResponse, List[WatchListDTO]]:
-        user = db.find_by(User, "id", user_id, options=[
-            selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
-            selectinload(User.watchlist_saves).selectinload(WatchListSave.watchlist).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
-            with_loader_criteria(
-                Review,
-                lambda review: review.user_id == user_id
-            )
-        ])
+    def get_all_watchlists(self, db: Database, user_id: int, params: Params, only_saved: bool) -> Tuple[WatchListsGetResponse, List[WatchListDTO]]:
+        user = None
+        watchlists_found = []
 
-        if not user.watchlists and not user.watchlist_saves:
-            return WatchListsGetResponse(
-                total_movies=0,
-                total_watchlists=0
-            ), []
+        print("only saved vake:", only_saved)
 
+        if only_saved:
+            print("ACA")
+            user = db.find_by(User, "id", user_id, options=[
+                selectinload(User.watchlist_saves).selectinload(WatchListSave.watchlist).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+                with_loader_criteria(
+                    Review,
+                    lambda review: review.user_id == user_id
+                )
+            ])
+
+            if not user.watchlist_saves:
+                return WatchListsGetResponse(
+                    total_movies=0,
+                    total_watchlists=0
+                ), []
+
+            watchlists_found = [user_watchlist.watchlist for user_watchlist in user.watchlist_saves]
+
+        else:
+            user = db.find_by(User, "id", user_id, options=[
+                selectinload(User.watchlists).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+                selectinload(User.watchlist_saves).selectinload(WatchListSave.watchlist).selectinload(WatchList.watchlist_movies).selectinload(WatchListMovie.movie),
+                with_loader_criteria(
+                    Review,
+                    lambda review: review.user_id == user_id
+                )
+            ])
+
+            if not user.watchlists and not user.watchlist_saves:
+                return WatchListsGetResponse(
+                    total_movies=0,
+                    total_watchlists=0
+                ), []
+
+            watchlists_found = [ws.watchlist for ws in user.watchlist_saves] + user.watchlists
+        
         watchlists = []
 
-        watchlists_found = [ws.watchlist for ws in user.watchlist_saves] + user.watchlists
-        
         total_watchlists = 0
         total_movies = 0
+
+        print("Watchlists found:", len(watchlists_found))
 
         for w in watchlists_found:
             watchlists_movies = []
