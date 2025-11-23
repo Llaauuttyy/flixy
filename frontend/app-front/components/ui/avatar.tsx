@@ -51,6 +51,7 @@ interface UserAvatarProps {
   userName: string;
   ownUser?: boolean;
   className?: string;
+  size?: number;
 }
 
 const UserAvatar = ({
@@ -58,10 +59,11 @@ const UserAvatar = ({
   userName,
   ownUser,
   className,
+  size = 10,
 }: UserAvatarProps) => {
   return (
     <Link to={ownUser ? "/profile" : `/profile/${userId}`}>
-      <Avatar>
+      <Avatar className={`h-${size} w-${size}`}>
         <AvatarImage src={"/placeholder.svg"} />
         <AvatarFallback className={className ?? "bg-slate-700 text-white"}>
           {userName[0].toUpperCase()}

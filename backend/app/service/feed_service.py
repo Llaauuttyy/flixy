@@ -10,6 +10,7 @@ from app.dto.review import ReviewGetSingularDTO
 from app.model.watchlist_save import WatchListSave
 from app.db.database import Database
 from app import utils
+from app.dto.user import UserDTOMinimal
 from sqlalchemy.orm import selectinload, with_loader_criteria
 from sqlalchemy import case
 from typing import List, Optional, Tuple
@@ -297,6 +298,7 @@ class FeedService:
                 description=w.description,
                 movies=paginate(watchlists_movies, movies_params),
                 private=w.private,
+                user=UserDTOMinimal(id=w.user.id, username=w.user.username, name=w.user.name),
                 saves=w.saves,
                 editable=w.user_id==user_id,
                 saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=w.id, user_id=user_id),

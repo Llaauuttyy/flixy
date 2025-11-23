@@ -19,6 +19,7 @@ import type {
   WatchListDelete,
   WatchListFace,
 } from "services/api/flixy/types/watchlist";
+import { UserAvatar } from "../avatar";
 import { Button } from "../button";
 import { ConfirmationBox } from "../confirmation-box";
 import WatchListMovies from "./watchlist-movies";
@@ -123,6 +124,16 @@ export default function WatchList({
               {currentWatchlist.name}
             </h2>
             <div className="flex items-center gap-4 mt-1">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <UserAvatar
+                  userId={currentWatchlist.user.id}
+                  userName={currentWatchlist.user.username}
+                  ownUser={currentWatchlist.editable}
+                  className="bg-purple-600 text-white"
+                  size={7}
+                />
+                <span>{currentWatchlist.user.name}</span>
+              </div>
               <span className="text-sm text-gray-400">
                 {currentWatchlist.movies.total}{" "}
                 {t("watchlists.general_insights.movies")}
@@ -140,10 +151,7 @@ export default function WatchList({
         </div>
         <div className="flex item-center">
           <Link to={`/watchlists/${currentWatchlist.id}`}>
-            <Button
-              onClick={() => {}}
-              className="mt-5 justify-end bg-transparent hover:underline border-none text-violet-400 text-sm font-medium cursor-pointer px-4 py-2 rounded-md transition-all duration-200 hover:bg-slate-800"
-            >
+            <Button className="mt-5 justify-end bg-transparent hover:underline border-none text-violet-400 text-sm font-medium cursor-pointer px-4 py-2 rounded-md transition-all duration-200 hover:bg-slate-800">
               {t("watchlists.see_watchlist")}
             </Button>
           </Link>
@@ -160,7 +168,6 @@ export default function WatchList({
               fill={currentWatchlist.saved_by_user ? "#45adf7ff" : "none"}
             />
           </Button>
-          {/* )} */}
           {currentWatchlist.editable && (
             <ConfirmationBox
               isAccepted={(value) => handleConfirmationBox(value)}

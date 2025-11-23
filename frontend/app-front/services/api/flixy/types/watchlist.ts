@@ -1,5 +1,6 @@
 import type { MovieDataGet } from "./movie";
 import type { Page } from "./overall";
+import type { UserData } from "./user";
 
 export interface WatchListCreate {
   name: string;
@@ -53,6 +54,7 @@ export interface WatchListGet {
   description: string | null;
   movies: Page<MovieDataGet>;
   private: boolean;
+  user: UserData;
   saves: number;
   editable?: boolean;
   saved_by_user: boolean;
@@ -75,6 +77,7 @@ export interface WatchListFace {
   movies: Page<MovieDataGet>;
   editable?: boolean;
   private: boolean;
+  user: UserData;
   saves: number;
   saved_by_user?: boolean;
   created_at: string;

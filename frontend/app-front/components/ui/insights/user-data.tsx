@@ -45,7 +45,7 @@ export const ProfileUserData = ({
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold text-white">{user.name}</h1>
               {canEditData && (
                 <Link to={`/settings`}>
@@ -60,6 +60,7 @@ export const ProfileUserData = ({
                 </Link>
               )}
             </div>
+            <p className="text-gray-500 mb-2">@{user.username}</p>
             <p className="text-gray-300 mb-3">{user.about_me}</p>
             <div className="flex items-center space-x-4 text-sm text-gray-400">
               <div className="flex items-center space-x-1">
