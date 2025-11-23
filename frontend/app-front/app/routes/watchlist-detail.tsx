@@ -8,6 +8,7 @@ import utc from "dayjs/plugin/utc";
 import i18n from "i18n/i18n";
 
 import { AddMovieWatchList } from "components/ui/add-movie-watchlist";
+import { UserAvatar } from "components/ui/avatar";
 import { Badge } from "components/ui/badge";
 import { Button } from "components/ui/button";
 import { Checkbox } from "components/ui/checkbox";
@@ -413,6 +414,16 @@ export default function WatchListsPage() {
 
             {!isEditing && (
               <div className="flex flex-wrap gap-6 text-sm bg-gray-800 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <UserAvatar
+                    userId={watchlist.user.id}
+                    userName={watchlist.user.username}
+                    ownUser={watchlist.editable}
+                    className="bg-purple-600 text-white"
+                    size={6}
+                  />
+                  <span>{watchlist.user.name}</span>
+                </div>
                 <div className="flex items-center gap-2">
                   <Film className="w-4 h-4 text-purple-400" />
                   <span className="text-slate-300">

@@ -6,6 +6,7 @@ from app.constants.message import MOVIE_ALREADY_IN_WATCHLIST, MOVIE_NOT_FOUND, W
 from app.dto.movie import MovieGetResponse, MovieDTO
 from app.model.review import Review
 from app.model.watchlist_save import WatchListSave
+from app.dto.user import UserDTOMinimal
 from fastapi import HTTPException
 from app.db.database import Database
 from sqlalchemy.exc import IntegrityError
@@ -81,6 +82,7 @@ class WatchListService:
                 movies=paginate(watchlists_movies, movies_params),
                 private=w.private,
                 saves=w.saves,
+                user=UserDTOMinimal(id=w.user.id, username=w.user.username, name=w.user.name),
                 editable=w.user_id==user_id,
                 saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=w.id, user_id=user_id),
                 created_at=w.created_at,
@@ -184,6 +186,7 @@ class WatchListService:
             description=watchlist.description,
             private=watchlist.private,
             saves=watchlist.saves,
+            user=UserDTOMinimal(id=watchlist.user.id, username=watchlist.user.username, name=watchlist.user.name),
             activity=watchlist_activities,
             insights=watchlist_insights,
             editable=user_id==watchlist.user_id,
@@ -221,6 +224,7 @@ class WatchListService:
                 name=watchlist.name,
                 description=watchlist.description,
                 movie_ids=watchlist_dto.movie_ids,
+                user=UserDTOMinimal(id=watchlist.user.id, username=watchlist.user.username, name=watchlist.user.name),
                 private=watchlist.private,
                 saves=watchlist.saves,
             )
@@ -427,6 +431,7 @@ class WatchListService:
                 description=w.description,
                 movies=paginate(watchlists_movies, movies_params),
                 private=w.private,
+                user=UserDTOMinimal(id=w.user.id, username=w.user.username, name=w.user.name),
                 saves=w.saves,
                 editable=w.user_id==user_id,
                 saved_by_user=db.exists_by_multiple(WatchListSave, watchlist_id=w.id, user_id=user_id),

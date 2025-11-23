@@ -1,5 +1,6 @@
 from typing import Optional, Union
 from app.model.movie import Movie
+from app.dto.user import UserDTOMinimal
 from pydantic import BaseModel, model_validator
 from datetime import datetime as datetime
 from fastapi_pagination import Page
@@ -20,6 +21,7 @@ class WatchListBase(BaseModel):
     description: Optional[str] = None
     movies: Optional[Page[MovieGetResponse]] = []
     private: bool
+    user: UserDTOMinimal
     saves: int
     saved_by_user: bool
     editable: bool
@@ -48,6 +50,7 @@ class WatchListGetResponse(BaseModel):
     description: Optional[str] = None
     movies: Optional[Page[MovieGetResponse]] = []
     private: bool
+    user: UserDTOMinimal
     saves: int
     saved_by_user: bool
     activity: Optional[list[WatchListActivity]] = []

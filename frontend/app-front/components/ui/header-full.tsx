@@ -75,7 +75,7 @@ export function HeaderFull() {
           </Button>
           <UserAvatar
             userId={user?.id ?? 0}
-            userName={user?.name ?? "NN"}
+            userName={user?.username ?? "NN"}
             ownUser
           />
         </div>

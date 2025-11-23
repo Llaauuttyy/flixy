@@ -19,3 +19,8 @@ class UserUpdateDTO(BaseModel):
     username: str = None
     email: EmailStr = None
     about_me: str = None
+
+class UserDTOMinimal(BaseModel):
+    id: int
+    name: str
+    username: str
