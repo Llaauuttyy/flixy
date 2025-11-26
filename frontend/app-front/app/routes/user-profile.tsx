@@ -121,6 +121,7 @@ export default function UserProfile() {
           user={apiResponse.data.userData}
           accessToken={String(apiResponse.accessToken)}
           followResults={followResults}
+          userId={apiResponse.data.user.id}
         />
         {/* Header */}
         <div className="p-6 pb-0">

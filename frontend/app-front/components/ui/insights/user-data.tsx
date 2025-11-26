@@ -16,6 +16,7 @@ interface ProfileUserDataProps {
   accessToken: string;
   followResults: FollowResults;
   canEditData?: boolean;
+  userId?: number;
 }
 
 export interface FollowResults {
@@ -28,6 +29,7 @@ export const ProfileUserData = ({
   followResults,
   accessToken,
   canEditData,
+  userId,
 }: ProfileUserDataProps) => {
   const locale = i18n.language === "en" ? "en-US" : "es-ES";
   const { t } = useTranslation();
@@ -157,6 +159,7 @@ export const ProfileUserData = ({
                         key={follower.id}
                         user={follower}
                         accessToken={accessToken}
+                        userId={userId}
                       />
                     ))}
                   </div>
@@ -199,6 +202,7 @@ export const ProfileUserData = ({
                         key={follow.id}
                         user={follow}
                         accessToken={accessToken}
+                        userId={userId}
                       />
                     ))}
                   </div>
