@@ -3,12 +3,14 @@ import { getAccessToken } from "../../utils";
 export async function getWatchLists(
   page: number,
   size: number,
-  request: Request
+  request: Request,
+  only_saved: boolean = false
 ) {
   const token = await getAccessToken(request);
 
   const response = await fetch(
-    process.env.VITE_API_URL + `/watchlists?page=${page}&size=${size}`,
+    process.env.VITE_API_URL +
+      `/watchlists?page=${page}&size=${size}&only_saved=${only_saved}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

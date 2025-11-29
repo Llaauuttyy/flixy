@@ -116,6 +116,7 @@ export default function MovieInsights() {
           user={apiResponse.data.user}
           accessToken={String(apiResponse.accessToken)}
           followResults={followResults}
+          userId={apiResponse.data.user.id}
           canEditData
         />
         {/* Header */}

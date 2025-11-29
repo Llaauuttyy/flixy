@@ -12,11 +12,11 @@ watchlist_router = APIRouter()
 WatchListServiceDep = Annotated[WatchListService, Depends(lambda: WatchListService())]
 
 @watchlist_router.get("/watchlists")
-def get_watchlists(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, search_query: str = None, params: Params = Depends()) -> WatchListsGetResponse:
+def get_watchlists(session: SessionDep, request: Request, watchlist_service: WatchListServiceDep, only_saved: bool = False, search_query: str = None, params: Params = Depends()) -> WatchListsGetResponse:
     user_id = request.state.user_id
     try:
         if search_query is None or search_query == "":
-            watchlists, items = watchlist_service.get_all_watchlists(Database(session), user_id, params)
+            watchlists, items = watchlist_service.get_all_watchlists(Database(session), user_id, params, only_saved if only_saved else False)
             watchlists.items = paginate(items, params) if items else items
         else:
             watchlists, items = watchlist_service.search_watchlists(Database(session), search_query, user_id, params)

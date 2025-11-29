@@ -133,6 +133,10 @@ export const enTranslation = {
       subtitle: "Best rated by the community",
       ratings: "ratings",
     },
+    saved_watchlists: {
+      title: "Saved Watchlists",
+      subtitle: "Watchlists you've saved for later",
+    },
   },
   recommendations: {
     title: "Explore",

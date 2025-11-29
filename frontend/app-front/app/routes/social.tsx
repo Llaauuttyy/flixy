@@ -14,6 +14,7 @@ import { ReviewCard } from "components/ui/review/review-card";
 import { SidebarNav } from "components/ui/sidebar-nav";
 import { RatingCard } from "components/ui/social/rating-card";
 import { TopMovies, type TopMovie } from "components/ui/social/top-movies";
+import WatchList from "components/ui/watchlist/watchlist";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
 import "dayjs/locale/es";
@@ -27,9 +28,11 @@ import {
   getLatestReviews,
   getTopMovies,
 } from "services/api/flixy/server/reviews";
+import { getWatchLists } from "services/api/flixy/server/watchlists";
 import type { ApiResponse, Page } from "services/api/flixy/types/overall";
 import type { ReviewDataGet } from "services/api/flixy/types/review";
 import type { UserDataGet } from "services/api/flixy/types/user";
+import type { WatchListFace } from "services/api/flixy/types/watchlist";
 import { getAccessToken, getCachedUserData } from "services/api/utils";
 import type { Route } from "./+types/social";
 
@@ -43,10 +46,19 @@ const DEFAULT_TAB = "following";
 
 type Tab = "following" | "all";
 
+interface WatchLists {
+  items: {
+    items: WatchListFace[];
+  };
+  total_movies: number;
+  total_watchlists: number;
+}
+
 interface SocialData {
   reviews: Page<ReviewDataGet>;
   ratings: Page<ReviewDataGet>;
   top_movies: TopMovie[];
+  savedWatchlists: WatchLists;
   user?: UserDataGet;
 }
 
@@ -60,6 +72,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const ratingTab = url.searchParams.get("rating_tab") ?? `${DEFAULT_TAB}`;
   const ratingPage = parseInt(
     url.searchParams.get("rating_page") ?? `${DEFAULT_PAGE}`
+  );
+
+  const watchlistPage = parseInt(
+    url.searchParams.get("watchlist_page") ?? `${DEFAULT_PAGE}`
   );
 
   let apiResponse: ApiResponse = {};
@@ -85,6 +101,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     socialData.top_movies = await getTopMovies(request);
     socialData.user = await getCachedUserData(request);
 
+    socialData.savedWatchlists = await getWatchLists(
+      watchlistPage,
+      DEFAULT_REVIEW_PAGE_SIZE,
+      request,
+      true
+    );
+
     apiResponse.data = socialData;
     return apiResponse;
   } catch (err: Error | any) {
@@ -109,6 +132,7 @@ export default function SocialPage() {
   const [reviewPage, setReviewPage] = useState<number>(DEFAULT_PAGE);
   const [activeRatingTab, setActiveRatingTab] = useState<Tab>(DEFAULT_TAB);
   const [ratingPage, setRatingPage] = useState<number>(DEFAULT_PAGE);
+  const [watchlistPage, setWatchlistPage] = useState<number>(DEFAULT_PAGE);
   const { t } = useTranslation();
 
   const apiResponse: ApiResponse = useLoaderData();
@@ -120,13 +144,16 @@ export default function SocialPage() {
     fetcher.data?.data.ratings ?? (apiResponse.data?.ratings || {});
   let topMovies: TopMovie[] =
     fetcher.data?.data.top_movies ?? (apiResponse.data?.top_movies || []);
+  let watchlists: Page<WatchListFace> =
+    fetcher.data?.data?.savedWatchlists.items ??
+    apiResponse.data?.savedWatchlists.items;
 
   const handleReviewTabChange = (newTab: Tab) => {
     if (activeReviewTab === newTab) return;
     setActiveReviewTab(newTab);
     setReviewPage(DEFAULT_PAGE);
     fetcher.load(
-      `/social?review_tab=${newTab}&review_page=${DEFAULT_PAGE}&rating_tab=${activeRatingTab}&rating_page=${ratingPage}`
+      `/social?review_tab=${newTab}&review_page=${DEFAULT_PAGE}&rating_tab=${activeRatingTab}&rating_page=${ratingPage}&watchlist_page=${watchlistPage}`
     );
   };
 
@@ -135,7 +162,7 @@ export default function SocialPage() {
     setActiveRatingTab(newTab);
     setRatingPage(DEFAULT_PAGE);
     fetcher.load(
-      `/social?rating_tab=${newTab}&rating_page=${DEFAULT_PAGE}&review_tab=${activeReviewTab}&review_page=${reviewPage}`
+      `/social?rating_tab=${newTab}&rating_page=${DEFAULT_PAGE}&review_tab=${activeReviewTab}&review_page=${reviewPage}&watchlist_page=${watchlistPage}`
     );
   };
 
@@ -273,6 +300,47 @@ export default function SocialPage() {
                         <TopMovies topMovies={topMovies} />
                       </CardContent>
                     </Card>
+
+                    {/* Saved Watchlists */}
+                    {watchlists.items && (
+                      <Card className="bg-gray-800 border-gray-700">
+                        <CardHeader>
+                          <CardTitle className="text-white">
+                            {t("social.saved_watchlists.title")}
+                          </CardTitle>
+                          <CardDescription className="text-gray-400">
+                            {t("social.saved_watchlists.subtitle")}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="p-6 pt-0">
+                            {watchlists.items &&
+                              watchlists.items.length !== 0 && (
+                                <Pagination
+                                  itemsPage={watchlists}
+                                  onPageChange={(page: number) => {
+                                    setWatchlistPage(page);
+                                    fetcher.load(
+                                      `/social?watchlist_page=${page}`
+                                    );
+                                  }}
+                                >
+                                  {watchlists.items.map((watchlist) => (
+                                    <WatchList
+                                      // ID para que no cargue datos del DOM anterior.
+                                      key={watchlist.id}
+                                      accessToken={String(
+                                        apiResponse.accessToken
+                                      )}
+                                      watchlist={watchlist}
+                                    />
+                                  ))}
+                                </Pagination>
+                              )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
                   </div>
                 </div>
               </div>

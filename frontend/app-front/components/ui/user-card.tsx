@@ -7,9 +7,10 @@ import { Button } from "./button";
 interface UserCardProps {
   user: any;
   accessToken: string;
+  userId?: number;
 }
 
-export function UserCard({ user, accessToken }: UserCardProps) {
+export function UserCard({ user, accessToken, userId }: UserCardProps) {
   const { t } = useTranslation();
   const [followDisabled, setFollowDisabled] = useState(false);
   const [currentUser, setCurrentUser] = useState(user);
@@ -57,20 +58,22 @@ export function UserCard({ user, accessToken }: UserCardProps) {
             </span>
           </div>
         </div>
-        <Button
-          size="sm"
-          className={
-            currentUser.followed_by_user
-              ? "bg-gray-500 hover:bg-gray-600 text-white"
-              : "bg-pink-500 hover:bg-pink-600 text-white"
-          }
-          onClick={() => handleFollowUser(currentUser.id)}
-          disabled={followDisabled}
-        >
-          {currentUser.followed_by_user
-            ? t("search.user_unfollow_button")
-            : t("search.user_follow_button")}
-        </Button>
+        {userId !== currentUser.id && (
+          <Button
+            size="sm"
+            className={
+              currentUser.followed_by_user
+                ? "bg-gray-500 hover:bg-gray-600 text-white"
+                : "bg-pink-500 hover:bg-pink-600 text-white"
+            }
+            onClick={() => handleFollowUser(currentUser.id)}
+            disabled={followDisabled}
+          >
+            {currentUser.followed_by_user
+              ? t("search.user_unfollow_button")
+              : t("search.user_follow_button")}
+          </Button>
+        )}
       </div>
     </div>
   );

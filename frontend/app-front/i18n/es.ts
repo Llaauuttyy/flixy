@@ -136,6 +136,10 @@ export const esTranslation = {
       subtitle: "Las mejores valoradas por la comunidad",
       ratings: "puntuaciones",
     },
+    saved_watchlists: {
+      title: "Listas de Películas Guardadas",
+      subtitle: "Tus listas de películas guardadas para ver más tarde",
+    },
   },
   recommendations: {
     title: "Explora",
