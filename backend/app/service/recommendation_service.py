@@ -233,6 +233,7 @@ class RecommendationService:
             ]
 
     def get_decision_forest_recommendations(self, user_id: int):
+        return []
         with session_factory() as session:
             db = Database(session)
             user_reviews = list(db.find_all_by_multiple(
