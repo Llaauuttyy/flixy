@@ -32,6 +32,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const page = parseInt(url.searchParams.get("page") ?? `${DEFAULT_PAGE}`, 10);
 
+  console.log("Loading watchlists page:", page);
+
   let apiResponse: ApiResponse = {};
 
   let watchlists: WatchLists = {} as WatchLists;
@@ -87,8 +89,8 @@ export default function WatchListsPage() {
   });
 
   useEffect(() => {
-    if (fetcher.data?.data.items) {
-      setWatchlists(fetcher.data.data.items);
+    if (fetcher.data?.data.watchlists.items) {
+      setWatchlists(fetcher.data.data.watchlists.items);
     }
   }, [fetcher.data]);
 
@@ -292,6 +294,7 @@ export default function WatchListsPage() {
             >
               {watchlists.items.map((watchlist) => (
                 <WatchList
+                  key={watchlist.id}
                   accessToken={String(apiResponse.accessToken)}
                   watchlist={watchlist}
                   onDelete={handleWatchListDeletion}
