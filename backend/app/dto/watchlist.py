@@ -90,6 +90,8 @@ class WatchListEditResponse(BaseModel):
 
 class WatchListCreateResponse(WatchListCreationDTO):
     id: int
+    user: UserDTOMinimal
+    editable: bool
     
 class WatchListMovieCreationDTO(BaseModel):
     watchlist_id: int
