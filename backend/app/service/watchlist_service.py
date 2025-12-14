@@ -252,6 +252,7 @@ class WatchListService:
                 movie_ids=watchlist_dto.movie_ids,
                 user=UserDTOMinimal(id=watchlist.user.id, username=watchlist.user.username, name=watchlist.user.name),
                 private=watchlist.private,
+                editable=True,
                 saves=watchlist.saves,
             )
 

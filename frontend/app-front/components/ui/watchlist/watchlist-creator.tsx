@@ -92,6 +92,9 @@ export default function WatchListCreator({
         description: apiResponse.data.description,
         private: apiResponse.data.private,
         movies: movies,
+        user: apiResponse.data.user,
+        editable: apiResponse.data.editable,
+        saves: apiResponse.data.saves,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
