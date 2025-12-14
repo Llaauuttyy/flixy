@@ -189,7 +189,9 @@ export default function ReviewDetail() {
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <div className="flex gap-1">
-                            {Array.from({ length: 5 }).map((_, i) => (
+                            {Array.from({
+                              length: currentReview.rating as number,
+                            }).map((_, i) => (
                               <Star
                                 key={i}
                                 className="h-5 w-5 fill-purple-500 text-purple-500"
