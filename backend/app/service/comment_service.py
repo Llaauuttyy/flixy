@@ -15,8 +15,8 @@ class CommentService:
             if not db.exists_by(Review, "id", comment_dto.review_id):
                 raise Exception(REVIEW_NOT_FOUND)
 
-            if Moderator().is_text_insulting(comment_dto.text):
-                raise Exception(INSULTING_COMMENT)
+            # if Moderator().is_text_insulting(comment_dto.text):
+            #     raise Exception(INSULTING_COMMENT)
             
             new_comment = Comment(
                 review_id=comment_dto.review_id,

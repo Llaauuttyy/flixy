@@ -63,6 +63,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     10
   );
 
+  console.log(query, moviesPage, usersPage, watchlistsPage);
+
   let apiResponse: ApiResponse = {};
 
   let searchResults: SearchResults = {} as SearchResults;
@@ -178,7 +180,7 @@ export default function SearchPage() {
                     itemsPage={searchResults.movies}
                     onPageChange={(page: number) => {
                       fetcher.load(
-                        `/search?query=${searchResults.query}&movies_page=${page}&users_page=${searchResults.users.page}&watchlists_page=${searchResults.watchlists.items.page}`
+                        `/search?query=${searchResults.query}&movies_page=${page}&users_page=${searchResults.users.page ?? DEFAULT_PAGE}&watchlists_page=${searchResults.watchlists.items.page ?? DEFAULT_PAGE}`
                       );
                     }}
                   >
@@ -211,7 +213,7 @@ export default function SearchPage() {
                     itemsPage={searchResults.users}
                     onPageChange={(page: number) => {
                       fetcher.load(
-                        `/search?query=${searchResults.query}&users_page=${page}&movies_page=${searchResults.movies.page}&watchlists_page=${searchResults.watchlists.items.page}`
+                        `/search?query=${searchResults.query}&users_page=${page}&movies_page=${searchResults.movies.page ?? DEFAULT_PAGE}&watchlists_page=${searchResults.watchlists.items.page ?? DEFAULT_PAGE}`
                       );
                     }}
                   >
@@ -245,7 +247,7 @@ export default function SearchPage() {
                     itemsPage={searchResults.watchlists?.items}
                     onPageChange={(page: number) => {
                       fetcher.load(
-                        `/search?query=${searchResults.query}&watchlists_page=${page}&users_page=${searchResults.users.page}&movies_page=${searchResults.movies.page}`
+                        `/search?query=${searchResults.query}&watchlists_page=${page}&users_page=${searchResults.users.page ?? DEFAULT_PAGE}&movies_page=${searchResults.movies.page ?? DEFAULT_PAGE}`
                       );
                     }}
                   >

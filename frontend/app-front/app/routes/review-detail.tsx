@@ -287,6 +287,15 @@ export default function ReviewDetail() {
                       <CommentCard
                         accessToken={String(apiResponse.accessToken)}
                         comment={comment}
+                        onDeletion={(deletedCommentId: number) => {
+                          setCurrentComments((prev) => ({
+                            ...prev,
+                            total: prev.total - 1,
+                            items: prev.items.filter(
+                              (c) => c.id !== deletedCommentId
+                            ),
+                          }));
+                        }}
                       />
                     ))}
                   </div>

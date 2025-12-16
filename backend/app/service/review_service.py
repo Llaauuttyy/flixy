@@ -174,8 +174,8 @@ class ReviewService:
             if review_dto.watch_date and review_dto.watch_date.replace(tzinfo=None) > datetime.now():
                 raise Exception(FUTURE_TRAVELER)
             
-            if review_dto.text and Moderator().is_text_insulting(review_dto.text):
-                raise Exception(INSULTING_REVIEW)
+            # if review_dto.text and Moderator().is_text_insulting(review_dto.text):
+            #     raise Exception(INSULTING_REVIEW)
             
             existing_review = db.find_by_multiple(Review, user_id=user_id, movie_id=review_dto.movie_id)
 

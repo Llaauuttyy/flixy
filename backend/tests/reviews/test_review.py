@@ -50,20 +50,20 @@ def test_review_with_invalid_date_should_return_future_traveler_error():
 
     assert response_json["detail"] == FUTURE_TRAVELER
 
-def test_review_with_insulting_content_should_return_insulting_review_error():
-    time = (datetime.now()).strftime("%Y-%m-%dT%H:%M:%S")
-    review_dto = {
-        "movie_id": 1,
-        "text": "What a shitty movie!",
-        "watch_date": time
-    }
+# def test_review_with_insulting_content_should_return_insulting_review_error():
+#     time = (datetime.now()).strftime("%Y-%m-%dT%H:%M:%S")
+#     review_dto = {
+#         "movie_id": 1,
+#         "text": "What a shitty movie!",
+#         "watch_date": time
+#     }
 
-    response = client.post("/review", json=review_dto)
+#     response = client.post("/review", json=review_dto)
 
-    assert response.status_code == 400
-    response_json = response.json()
+#     assert response.status_code == 400
+#     response_json = response.json()
 
-    assert response_json["detail"] == INSULTING_REVIEW
+#     assert response_json["detail"] == INSULTING_REVIEW
 
 def test_review_with_valid_rating_should_return_review():
     time = (datetime.now()).strftime("%Y-%m-%dT%H:%M:%S")
