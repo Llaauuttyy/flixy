@@ -1,4 +1,5 @@
 import * as Icons from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { UserAchievement } from "services/api/flixy/types/user";
 import { BadgeIcon, getBadgeColor, getBadgeColorRGB } from "../../utils";
 import { Card, CardContent } from "../card";
@@ -9,7 +10,24 @@ interface BadgeProps {
   badge: UserAchievement;
 }
 
+const getBadgeName = (iconName: IconName) => {
+  switch (iconName) {
+    case "Sparkles":
+      return "spotlight_reviewer";
+    case "BookOpen":
+      return "prolific_critic";
+    case "Eye":
+      return "movie_marathon";
+    case "Clock":
+      return "dedicated_cinephile";
+    default:
+      return "achievement";
+  }
+};
+
 export function SingularBadge({ badge }: BadgeProps) {
+  const { t } = useTranslation();
+
   return (
     <div key={badge.name} className="relative group inline-block">
       <div className={`rounded-full`}>
@@ -47,14 +65,22 @@ export function SingularBadge({ badge }: BadgeProps) {
                         badge.unlocked ? "text-white" : "text-slate-500"
                       }`}
                     >
-                      {badge.name}
+                      {t(
+                        `profile.insights.badge_gallery.${getBadgeName(
+                          badge.icon_name as IconName
+                        )}.title`
+                      )}
                     </h3>
                     <p
                       className={`text-xs mt-1 ${
                         badge.unlocked ? "text-slate-400" : "text-slate-600"
                       }`}
                     >
-                      {badge.description}
+                      {t(
+                        `profile.insights.badge_gallery.${getBadgeName(
+                          badge.icon_name as IconName
+                        )}.description`
+                      )}
                     </p>
                   </div>
                 </div>

@@ -8,11 +8,25 @@ import { Badge } from "../badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../card";
 
 type IconName = keyof typeof Icons;
-// type IconName = keyof typeof Icons;
 
 interface BadgeGalleryProps {
   achievementsInsights: UserAchievement[];
 }
+
+const getBadgeName = (iconName: IconName) => {
+  switch (iconName) {
+    case "Sparkles":
+      return "spotlight_reviewer";
+    case "BookOpen":
+      return "prolific_critic";
+    case "Eye":
+      return "movie_marathon";
+    case "Clock":
+      return "dedicated_cinephile";
+    default:
+      return "achievement";
+  }
+};
 
 export function BadgeGallery({ achievementsInsights }: BadgeGalleryProps) {
   const { t } = useTranslation();
@@ -60,14 +74,22 @@ export function BadgeGallery({ achievementsInsights }: BadgeGalleryProps) {
                         badge.unlocked ? "text-white" : "text-slate-500"
                       }`}
                     >
-                      {badge.name}
+                      {t(
+                        `profile.insights.badge_gallery.${getBadgeName(
+                          badge.icon_name as IconName
+                        )}.title`
+                      )}
                     </h3>
                     <p
                       className={`text-xs mt-1 ${
                         badge.unlocked ? "text-slate-400" : "text-slate-600"
                       }`}
                     >
-                      {badge.description}
+                      {t(
+                        `profile.insights.badge_gallery.${getBadgeName(
+                          badge.icon_name as IconName
+                        )}.description`
+                      )}
                     </p>
                   </div>
                   <Badge className={getBadgeLockedColor(badge.unlocked)}>

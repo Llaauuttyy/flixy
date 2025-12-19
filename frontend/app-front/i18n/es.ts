@@ -175,6 +175,7 @@ export const esTranslation = {
   review_card: {
     comment_button: "Comentar",
     no_reviews: "Todavía no hay reseñas. Podés ser el primero!",
+    view_details: "Ver detalles",
   },
   review_input: {
     have_watched: "¿Has visto la película",
@@ -222,9 +223,9 @@ export const esTranslation = {
       tab: "Cambiar Contraseña",
       title: "Cambiar Contraseña",
       description: "Actualiza tu contraseña para mantener tu cuenta segura.",
-      current_password: "Current Password",
-      new_password: "New Password",
-      confirm_new_password: "Confirm New Password",
+      current_password: "Contraseña Actual",
+      new_password: "Nueva Contraseña",
+      confirm_new_password: "Confirmar Nueva Contraseña",
       updating: "Actualizando...",
       update: "Actualizar",
     },
@@ -291,6 +292,22 @@ export const esTranslation = {
       },
       badge_gallery: {
         title: "Logros y Medallas",
+        spotlight_reviewer: {
+          title: "Crítico Destacado",
+          description: "Más de 20 likes en una reseña",
+        },
+        prolific_critic: {
+          title: "Crítico Prolífico",
+          description: "Más de 200 reseñas escritas",
+        },
+        movie_marathon: {
+          title: "Maratón de Películas",
+          description: "Más de 1000 películas vistas",
+        },
+        dedicated_cinephile: {
+          title: "Cinefilo Dedicado",
+          description: "Más de 3000 horas vistas",
+        },
       },
       no_activity: "Todavía no hay actividad en ningún género.",
     },
@@ -385,7 +402,6 @@ export const esTranslation = {
     subtitle:
       "Organiza tus reseñas de películas y nunca pierdas de vista tus opiniones",
   },
-
   review_detail_handler_component: {
     you_watched_movie: "¡Viste esta película!",
     give_review_question: "¿Por qué no darle una reseña?",

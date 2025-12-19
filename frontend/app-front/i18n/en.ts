@@ -288,6 +288,22 @@ export const enTranslation = {
       },
       badge_gallery: {
         title: "Achievements & Badges",
+        spotlight_reviewer: {
+          title: "Spotlight Reviewer",
+          description: "More than 20 likes on one review",
+        },
+        prolific_critic: {
+          title: "Prolific Critic",
+          description: "More than 200 reviews written",
+        },
+        movie_marathon: {
+          title: "Movie Marathon",
+          description: "More than 1000 movies watched",
+        },
+        dedicated_cinephile: {
+          title: "Dedicated Cinephile",
+          description: "More than 3000 hours watched",
+        },
       },
       no_activity: "No activity found in any genre yet.",
     },
